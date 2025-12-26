@@ -52,6 +52,7 @@ function App() {
   }, []);
 
 
+  // Titlebar button functionality
   useEffect(() => {
     const minimize = document.getElementById("titlebar-minimize");
     const maximize = document.getElementById("titlebar-maximize");
