@@ -19,7 +19,12 @@
       "identifier": "shell:allow-execute",
       "allow": [
         {
-          "name": "binaries/my-sidecar/api",
+          "args": [
+            {"validator": ".+"},
+            {"validator": ".+"},
+            {"validator": ".+"}
+          ],
+          "name": "binaries/my-sidecar/kalam-Sidecar",
           "sidecar": true
         }
       ]

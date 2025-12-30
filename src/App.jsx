@@ -1,28 +1,13 @@
 import { useState, useEffect } from "react";
 import "./App.css";
 import { getCurrentWindow } from '@tauri-apps/api/window';
-import { Command } from '@tauri-apps/plugin-shell';
-import { listen } from "@tauri-apps/api/event";
-import { app } from "@tauri-apps/api";
-
-
-async function runSidecar() {
-  const command = Command.sidecar('binaries/my-sidecar/api');
-  const output = await command.execute();
-  return output.stdout;
-}
-
+import SideCar from "./SideCar";
 
 function App() {
-  const [name, setName] = useState("");
   const [isMaximized, setIsMaximized] = useState(false);
-
-  async function handleClick() {
-    setButtonClicked(true);
-    const res = await runSidecar();
-    setMsg(res);
-    setTimeout(() => setButtonClicked(false), 1000);
-  }
+  const [testInput, setTestInput] = useState("wallpaper");
+  const [testInput2, setTestInput2] = useState("C:\\Rainmeter\\Rainmeter.exe");
+  const [testInput3, setTestInput3] = useState("Mond");
 
   const appWindow = getCurrentWindow();
 
@@ -76,6 +61,11 @@ function App() {
     };
   }, []);
 
+  const out = async () => {
+    const output = await SideCar(testInput, testInput2, testInput3);
+    console.log("SideCar output:", output);
+  }
+
   return (
     <main className="container" >
       <div className="titlebar" data-tauri-drag-region>
@@ -125,9 +115,9 @@ function App() {
           </button>
         </div>
       </div>
-      {/* <div className="Menu-Left">
-        <h1>Kalam App</h1>
-      </div> */}
+      <div className="hello">
+        <button onClick={out}>Run Sidecar</button>
+      </div>
     </main>
   );
 }

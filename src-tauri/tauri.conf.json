@@ -29,7 +29,7 @@
   },
   "bundle": {
     "externalBin": [
-      "binaries/my-sidecar/api"
+      "binaries/my-sidecar/kalam-Sidecar"
     ],
     "active": true,
     "targets": "all",
