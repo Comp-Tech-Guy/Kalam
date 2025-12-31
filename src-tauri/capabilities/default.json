@@ -20,14 +20,24 @@
       "allow": [
         {
           "args": [
-            {"validator": ".+"},
-            {"validator": ".+"},
-            {"validator": ".+"}
+            {
+              "validator": ".+"
+            },
+            {
+              "validator": ".+"
+            },
+            {
+              "validator": ".+"
+            },
+            {
+              "validator": ".+"
+            }
           ],
           "name": "binaries/my-sidecar/kalam-Sidecar",
           "sidecar": true
         }
       ]
-    }
+    },
+    "dialog:default"
   ]
 }

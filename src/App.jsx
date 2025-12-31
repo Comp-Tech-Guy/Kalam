@@ -2,13 +2,40 @@ import { useState, useEffect } from "react";
 import "./App.css";
 import { getCurrentWindow } from '@tauri-apps/api/window';
 import SideCar from "./SideCar";
+import {open} from '@tauri-apps/plugin-dialog';
 
 function App() {
   const [isMaximized, setIsMaximized] = useState(false);
-  const [testInput, setTestInput] = useState("wallpaper");
-  const [testInput2, setTestInput2] = useState("C:\\Rainmeter\\Rainmeter.exe");
-  const [testInput3, setTestInput3] = useState("Mond");
-
+  const [arg1_all_desktops, setArg1AllDesktops] = useState("True");
+  const [arg2_image_path, setArg2ImagePath] = useState("C:\\EveryFiles\\Wallpaper\\GreenFussy.jpg");
+  const [arg3_rainmeter_path, setArg3RainmeterPath] = useState("C:\\Rainmeter\\Rainmeter.exe");
+  const [arg4_layout, setArg4Layout] = useState("Sound");
+  async function selectFile() {
+    try {
+      const select = await open({
+        multiple: false,
+        directory: false,
+        title: "Select a file",
+        filters: [{
+          name: "Images",
+          extensions: ["png", "jpg", "jpeg"]
+        }]
+      });
+      
+          if(select === null) {
+            console.log("No file selected");
+            return;
+          }
+      
+          console.log("Selected file path:", select);
+          setArg2ImagePath(select);
+    } catch (e) {
+      console.log("Error selecting file:", e);
+      return;
+    }
+  }
+  
+  
   const appWindow = getCurrentWindow();
 
   const changeMax = async () => {
@@ -62,7 +89,7 @@ function App() {
   }, []);
 
   const out = async () => {
-    const output = await SideCar(testInput, testInput2, testInput3);
+    const output = await SideCar(arg1_all_desktops, arg2_image_path, arg3_rainmeter_path, arg4_layout);
     console.log("SideCar output:", output);
   }
 
@@ -117,6 +144,8 @@ function App() {
       </div>
       <div className="hello">
         <button onClick={out}>Run Sidecar</button>
+        <br />
+        <button onClick={selectFile}>Select Image File</button>
       </div>
     </main>
   );
