@@ -1,41 +1,19 @@
 import { useState, useEffect } from "react";
 import "./App.css";
 import { getCurrentWindow } from '@tauri-apps/api/window';
-import SideCar from "./SideCar";
-import {open} from '@tauri-apps/plugin-dialog';
+import { open } from '@tauri-apps/plugin-dialog';
+import { initializeStorage } from './JS/fileSystem';
+import ProfilePage from "./profile";
 
 function App() {
   const [isMaximized, setIsMaximized] = useState(false);
-  const [arg1_all_desktops, setArg1AllDesktops] = useState("True");
-  const [arg2_image_path, setArg2ImagePath] = useState("C:\\EveryFiles\\Wallpaper\\GreenFussy.jpg");
-  const [arg3_rainmeter_path, setArg3RainmeterPath] = useState("C:\\Rainmeter\\Rainmeter.exe");
-  const [arg4_layout, setArg4Layout] = useState("Sound");
-  async function selectFile() {
-    try {
-      const select = await open({
-        multiple: false,
-        directory: false,
-        title: "Select a file",
-        filters: [{
-          name: "Images",
-          extensions: ["png", "jpg", "jpeg"]
-        }]
-      });
-      
-          if(select === null) {
-            console.log("No file selected");
-            return;
-          }
-      
-          console.log("Selected file path:", select);
-          setArg2ImagePath(select);
-    } catch (e) {
-      console.log("Error selecting file:", e);
-      return;
-    }
-  }
-  
-  
+  const [isInitialized, setIsInitialized] = useState();
+  const [Profile, setProfile] = useState(false);
+
+  useEffect(() => {
+    setIsInitialized(initializeStorage());
+  }, []);
+
   const appWindow = getCurrentWindow();
 
   const changeMax = async () => {
@@ -88,10 +66,9 @@ function App() {
     };
   }, []);
 
-  const out = async () => {
-    const output = await SideCar(arg1_all_desktops, arg2_image_path, arg3_rainmeter_path, arg4_layout);
-    console.log("SideCar output:", output);
-  }
+  const changeUsestate = () => {
+    setProfile(!Profile);
+  };
 
   return (
     <main className="container" >
@@ -143,11 +120,15 @@ function App() {
         </div>
       </div>
       <div className="hello">
-        <button onClick={out}>Run Sidecar</button>
+        <button onClick={changeUsestate}>Run Sidecar</button>
         <br />
-        <button onClick={selectFile}>Select Image File</button>
+        <ProfilePage/>
+        {/* {Profile ? (
+        ) : (
+          <h1>Hello</h1>
+        )} */}
       </div>
-    </main>
+    </main>   
   );
 }
 
