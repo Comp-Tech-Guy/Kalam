@@ -72,4 +72,8 @@ body {
 
 .hello {
   margin-top:40px;
+  display: flex;
+  gap:20px;
+  justify-content: center;
+  margin-bottom: 30px;
 }

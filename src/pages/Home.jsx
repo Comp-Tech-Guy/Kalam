@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
-import "./App.css";
+import "../App.css";
 import { getCurrentWindow } from '@tauri-apps/api/window';
 import { open } from '@tauri-apps/plugin-dialog';
-import { initializeStorage } from './JS/fileSystem';
-import ProfilePage from "./profile";
+import { initializeStorage } from '../JS/fileSystem';
+import { Link, NavLink, Outlet } from "react-router-dom";
 
-function App() {
+function Home() {
   const [isMaximized, setIsMaximized] = useState(false);
   const [isInitialized, setIsInitialized] = useState();
   const [Profile, setProfile] = useState(false);
@@ -79,7 +79,7 @@ function App() {
 
             <path d="M200 295L40 215L200 135L360 215L200 295Z" fill="#334155" />
 
-            <path d="M200 240L55 167.5L200 95L345 167.5L200 240Z" stroke="#00F5D4" stroke-width="8" stroke-linejoin="round" />
+            <path d="M200 240L55 167.5L200 95L345 167.5L200 240Z" stroke="#19f5de" strokeWidth="8" strokeLinejoin="round" />
 
             <path d="M200 190L40 110L200 30L360 110L200 190Z" fill="#E2E8F0" />
 
@@ -91,9 +91,9 @@ function App() {
             </defs>
           </svg>
         </div>
-        <div class="controls">
+        <div className="controls">
           <button id="titlebar-minimize" title="minimize">
-            <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-minus"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-minus"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
           </button>
           <button id="titlebar-maximize" title="maximize">
             {isMaximized ? (
@@ -101,35 +101,33 @@ function App() {
               <svg width="17" height="17" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M8 5H17C18.1 5 19 5.9 19 7V16"
                   stroke="white"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round" />
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round" />
 
-                <rect x="5" y="8" width="11" height="11" rx="2" stroke="white" stroke-width="2" />
+                <rect x="5" y="8" width="11" height="11" rx="2" stroke="white" strokeWidth="2" />
               </svg>
             ) : (
               /* MAXIMIZE ICON */
               <svg width="17" height="17" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect x="6" y="6" width="12" height="12" rx="2" stroke="white" stroke-width="2" />
+                <rect x="6" y="6" width="12" height="12" rx="2" stroke="white" strokeWidth="2" />
               </svg>
             )}
           </button>
           <button id="titlebar-close" title="close">
-            <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-x"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
           </button>
         </div>
       </div>
       <div className="hello">
-        <button onClick={changeUsestate}>Run Sidecar</button>
-        <br />
-        <ProfilePage/>
-        {/* {Profile ? (
-        ) : (
-          <h1>Hello</h1>
-        )} */}
+        <Link to="/">Home</Link>
+        <Link to="/profile">Profile</Link>
       </div>
+      <main>
+        <Outlet/>
+      </main>
     </main>   
   );
 }
 
-export default App;
+export default Home;

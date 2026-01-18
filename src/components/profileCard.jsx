@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { updateCreateProfile } from "./JS/fileSystem"
+import { updateCreateProfile } from "../JS/fileSystem"
 
 import { useState } from "react";
 
