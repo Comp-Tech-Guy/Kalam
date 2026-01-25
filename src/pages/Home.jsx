@@ -1,9 +1,8 @@
 import { useState, useEffect } from "react";
-import "../App.css";
+import "../Home.css";
 import { getCurrentWindow } from '@tauri-apps/api/window';
-import { open } from '@tauri-apps/plugin-dialog';
 import { initializeStorage } from '../JS/fileSystem';
-import { Link, NavLink, Outlet } from "react-router-dom";
+import { Link, Outlet } from "react-router-dom";
 
 function Home() {
   const [isMaximized, setIsMaximized] = useState(false);
@@ -119,14 +118,24 @@ function Home() {
           </button>
         </div>
       </div>
-      <div className="hello">
-        <Link to="/">Home</Link>
-        <Link to="/profile">Profile</Link>
-      </div>
-      <main>
-        <Outlet/>
+      <main className="MainPg">
+        <nav>
+          <Link to="/">
+            <div>
+              Home
+            </div>
+          </Link>
+          <Link to="/profile">
+            <div>
+              Profile
+            </div>
+          </Link>
+        </nav>
+        <div className="PageContainer">
+          <Outlet />
+        </div>
       </main>
-    </main>   
+    </main>
   );
 }
 

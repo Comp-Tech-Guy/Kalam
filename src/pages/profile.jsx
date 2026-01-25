@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { open } from "@tauri-apps/plugin-dialog";
 import SideCar from "../JS/SideCar"; 
-import { Link } from "react-router-dom";
 
 function ProfilePage(){
     const [arg1_all_desktops, setArg1AllDesktops] = useState(null);
@@ -41,12 +40,12 @@ function ProfilePage(){
     }
 
     return (
-        <div style={{display:"flex", flexDirection:"column", color:"white"}}>
-            <label style={{display:"flex", justifyContent:"space-between", width:"600px"}}>
+        <div className="profilePg">
+            <label>
                 Name: 
                 <input type="text" onChange={(e) => setArg5Name(e.target.value)}/>
             </label>
-            <label style={{display:"flex", justifyContent:"space-between", width:"600px"}}>
+            <label>
                 All-Desktop/Virtual-Desktop(For Wallaper): 
                 <input type="checkbox" onChange={(e) => {
                     const isTrue = e.target.checked;
@@ -54,20 +53,20 @@ function ProfilePage(){
                     setArg1AllDesktops(isString);
                 }}/>
             </label>
-            <label style={{display:"flex", justifyContent:"space-between", width:"600px"}}>
+            <label>
                 Wallpaper-IMG: 
                 <button onClick={selectFile}>Select file</button>
             </label>
-            <label style={{display:"flex", justifyContent:"space-between", width:"600px"}}>
+            <label>
                 Rainmeter-Path: 
                 <input type="text" onChange={(e) => setArg3RainmeterPath(e.target.value)}/>
             </label>
-            <label style={{display:"flex", justifyContent:"space-between", width:"600px"}}>
+            <label>
                 Rainmeter-Layout-Name:
                 <input type="text" onChange={(e) => setArg4Layout(e.target.value)}/>
             </label>
-            <label style={{display:"flex", justifyContent:"end", width:"600px"}}>
-                <button style={{width:"50px"}} onClick={out}>Enter</button>
+            <label>
+                <button onClick={out}>Enter</button>
             </label>
         </div>
     )   

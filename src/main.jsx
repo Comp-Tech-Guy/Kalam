@@ -3,7 +3,7 @@ import ReactDOM from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import App from "./pages/App";
 import Home from "./pages/Home";
-import ProfilePage from "./pages/profile";
+import ProfilePage from "./pages/Profile";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
