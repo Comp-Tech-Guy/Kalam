@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { open } from "@tauri-apps/plugin-dialog";
 import SideCar from "../JS/SideCar"; 
+import "./App.css";
 
 function ProfilePage(){
     const [arg1_all_desktops, setArg1AllDesktops] = useState(null);

@@ -3,8 +3,9 @@
 h1{
     font-family: "Lexend";
     margin: 0;
+    color: white;
 }
 
-.AppPg{
+.AppPg, .settingPg, .profilePg{
     margin:20px;
 }

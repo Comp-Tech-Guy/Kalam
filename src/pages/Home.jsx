@@ -130,6 +130,11 @@ function Home() {
               Profile
             </div>
           </Link>
+          <Link to="/setting">
+            <div>
+              Settings
+            </div>
+          </Link>
         </nav>
         <div className="PageContainer">
           <Outlet />
