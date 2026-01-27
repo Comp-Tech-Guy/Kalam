@@ -42,33 +42,33 @@ function ProfilePage(){
 
     return (
         <div className="profilePg">
-            <label>
+            <div>
                 Name: 
                 <input type="text" onChange={(e) => setArg5Name(e.target.value)}/>
-            </label>
-            <label>
+            </div>
+            <div>
                 All-Desktop/Virtual-Desktop(For Wallaper): 
                 <input type="checkbox" onChange={(e) => {
                     const isTrue = e.target.checked;
                     const isString = "" + isTrue
                     setArg1AllDesktops(isString);
                 }}/>
-            </label>
-            <label>
+            </div>
+            <div>
                 Wallpaper-IMG: 
                 <button onClick={selectFile}>Select file</button>
-            </label>
-            <label>
+            </div>
+            <div>
                 Rainmeter-Path: 
                 <input type="text" onChange={(e) => setArg3RainmeterPath(e.target.value)}/>
-            </label>
-            <label>
+            </div>
+            <div>
                 Rainmeter-Layout-Name:
                 <input type="text" onChange={(e) => setArg4Layout(e.target.value)}/>
-            </label>
-            <label>
+            </div>
+            <div>
                 <button onClick={out}>Enter</button>
-            </label>
+            </div>
         </div>
     )   
 }

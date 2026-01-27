@@ -132,7 +132,7 @@ function Home() {
           </Link>
           <Link to="/setting">
             <div>
-              Settings
+              Setting
             </div>
           </Link>
         </nav>

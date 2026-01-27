@@ -1,11 +1,137 @@
+/* ========================================
+  1. EXTERNAL RESOURCES & VARIABLES
+  ========================================
+*/
 @import url('https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap');
 
-h1{
-    font-family: "Lexend";
+/* ========================================
+  2. GLOBAL STYLES
+  ========================================
+*/
+h1 {
+    font-family: "Lexend", sans-serif;
     margin: 0;
     color: white;
 }
 
-.AppPg, .settingPg, .profilePg{
-    margin:20px;
+/* Standard page spacing for layout consistency */
+.AppPg,
+.settingPg,
+.profilePg {
+    margin: 20px;
+}
+
+/* ========================================
+  3. PROFILE PAGE LAYOUT (GRID)
+  ========================================
+*/
+.profilePg {
+    font-family: 'Lexend', sans-serif;
+    display: grid;
+    /* Col 1: Label (auto-width) | Col 2: Input (fills remaining space) */
+    grid-template-columns: auto 1fr;
+    gap: 20px 15px;
+    align-items: center;
+    padding: 40px;
+    max-width: 600px;
+    color: white;
+}
+
+/* ========================================
+  4. FORM ELEMENTS
+  ========================================
+*/
+
+/* Labels: Using 'contents' allows the label text and input 
+   to act as separate cells in the parent grid */
+.profilePg div {
+    display: contents;
+    font-size: 1rem;
+    font-weight: 300;
+    letter-spacing: 0.5px;
+}
+
+/* Text Input Styling */
+.profilePg input[type="text"] {
+    font-family: 'Lexend', sans-serif;
+    background: rgba(255, 255, 255, 0.1);
+    /* Transparent glass effect */
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    padding: 8px 12px;
+    color: white;
+    outline: none;
+    transition: border-color 0.2s ease-in-out;
+}
+
+/* Input Focus: Teal highlight */
+.profilePg input[type="text"]:focus {
+    border-color: #1eb8a5;
+}
+
+/* Checkbox specific sizing */
+.profilePg input[type="checkbox"] {
+    appearance: none;
+    /* Removes the default grey look */
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 4px;
+    position: relative;
+    cursor: pointer;
+}
+
+.profilePg input[type="checkbox"]:checked {
+    background: #1eb8a5;
+    /* Background turns teal when clicked */
+    border-color: #1eb8a5;
+}
+
+/* Creating the checkmark using a pseudo-element */
+.profilePg input[type="checkbox"]:checked::after {
+    content: '';
+    position: absolute;
+    left: 6px;
+    top: 2px;
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+    /* Rotates a border to look like an 'L' shape */
+}
+
+/* ========================================
+  5. BUTTONS & ACTIONS
+  ========================================
+*/
+.profilePg button {
+    font-family: 'Lexend', sans-serif;
+    background: #1eb8a5;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: opacity 0.2s;
+}
+
+.profilePg button:hover {
+    opacity: 0.9;
+}
+
+/* Footer/Submit Button Container: 
+   Makes the last label/button span both grid columns */
+.profilePg div:last-child {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.profilePg div:last-child button {
+    width: 120px;
+    margin-top: 10px;
 }
