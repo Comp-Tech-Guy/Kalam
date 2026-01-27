@@ -4,15 +4,14 @@ import SideCar from "../JS/SideCar";
 import "./App.css";
 
 function ProfilePage(){
-    const [arg1_all_desktops, setArg1AllDesktops] = useState(null);
     const [arg2_image_path, setArg2ImagePath] = useState(null);
     const [arg3_rainmeter_path, setArg3RainmeterPath] = useState(null);
     const [arg4_layout, setArg4Layout] = useState(null);
     const [arg5_Name, setArg5Name] = useState(null);
 
     const out = async () => {
-        if(setArg1AllDesktops != null && setArg2ImagePath != null && setArg3RainmeterPath != null && setArg4Layout != null && setArg5Name != null)
-            await SideCar(arg1_all_desktops, arg2_image_path, arg3_rainmeter_path, arg4_layout);
+        if(setArg2ImagePath != null && setArg3RainmeterPath != null && setArg4Layout != null && setArg5Name != null)
+            await SideCar(arg2_image_path, arg3_rainmeter_path, arg4_layout);
     }
 
     async function selectFile() {
@@ -45,14 +44,6 @@ function ProfilePage(){
             <div>
                 Name: 
                 <input type="text" onChange={(e) => setArg5Name(e.target.value)}/>
-            </div>
-            <div>
-                All-Desktop/Virtual-Desktop(For Wallaper): 
-                <input type="checkbox" onChange={(e) => {
-                    const isTrue = e.target.checked;
-                    const isString = "" + isTrue
-                    setArg1AllDesktops(isString);
-                }}/>
             </div>
             <div>
                 Wallpaper-IMG: 

@@ -69,40 +69,6 @@ h1 {
     border-color: #1eb8a5;
 }
 
-/* Checkbox specific sizing */
-.profilePg input[type="checkbox"] {
-    appearance: none;
-    /* Removes the default grey look */
-    -webkit-appearance: none;
-    width: 20px;
-    height: 20px;
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.4);
-    border-radius: 4px;
-    position: relative;
-    cursor: pointer;
-}
-
-.profilePg input[type="checkbox"]:checked {
-    background: #1eb8a5;
-    /* Background turns teal when clicked */
-    border-color: #1eb8a5;
-}
-
-/* Creating the checkmark using a pseudo-element */
-.profilePg input[type="checkbox"]:checked::after {
-    content: '';
-    position: absolute;
-    left: 6px;
-    top: 2px;
-    width: 5px;
-    height: 10px;
-    border: solid white;
-    border-width: 0 2px 2px 0;
-    transform: rotate(45deg);
-    /* Rotates a border to look like an 'L' shape */
-}
-
 /* ========================================
   5. BUTTONS & ACTIONS
   ========================================
