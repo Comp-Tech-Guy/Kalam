@@ -1,51 +1,114 @@
-import { mkdir, readTextFile, exists, BaseDirectory, writeTextFile } from "@tauri-apps/plugin-fs";
+import {mkdir, exists, writeTextFile, readTextFile, BaseDirectory } from "@tauri-apps/plugin-fs";
+import { appDataDir, join } from "@tauri-apps/api/path";
 
-export async function initializeStorage() {
-    try {
-        // Checking for UserData Folder
-        const folderExists = await exists('UserData', { baseDir: BaseDirectory.AppData })
-        if (!folderExists) {
-            await mkdir('UserData', {
-                baseDir: BaseDirectory.AppData,
-                recursive: true
+export async function initializeFS(){
+    try{
+        await mkdir('', {
+            baseDir: BaseDirectory.AppData,
+            recursive: true
+        });
+        
+        const files = ['userSettings.json', 'userProfiles.json']
+        const fileExist = await exists(files[0], {
+            baseDir: BaseDirectory.AppData
+        });
+        const fileExist2 = await exists(files[1], {
+            baseDir: BaseDirectory.AppData
+        });
+        if(!fileExist){
+            await writeTextFile(files[0], JSON.stringify({}, null, 2), {
+                baseDir:BaseDirectory.AppData
             });
-            console.log("App data directory created.");
         }
-
-        const fileExist = await exists("UserData\\profile.json", {baseDir: BaseDirectory.AppData})
-        if(!fileExist) {
-            await writeTextFile("UserData\\profile.json", JSON.stringify([]), {
-                baseDir: BaseDirectory.AppData
+        if(!fileExist2){
+            await writeTextFile(files[1], JSON.stringify({
+                profiles:[]
+            }, null, 2), {
+                baseDir:BaseDirectory.AppData
             });
         }
-        return true;
-    } catch (e) {
-        console.log("could not initialize : ", e)
-        return false;
+    }catch(error){
+        console.log(error);
     }
 }
 
-export async function updateCreateProfile(isInitialized, all_desktop, image_path, rainmeter_path, layout) {    
-    const stringWallPath = String.raw`${image_path}`;
-    const stringRainPath = String.raw`${rainmeter_path}`;
+async function update(fileName, updatedData){
+    const appDataPath = await appDataDir();
+    const filePath = await join(appDataPath, '', fileName);
+    await writeTextFile(filePath, JSON.stringify(updatedData, null, 2))
+}
 
-    if (isInitialized) {
-        const jsonData = [
-            {
-                "All_desktop": all_desktop,
-                "Rainmeter": stringRainPath,
-                "RainmeterLayout": layout,
-                "Wallpaper_Path": stringWallPath
-            }
-        ];
-
-        const profileJSon = await readTextFile("UserData\\profile.json", { baseDir: BaseDirectory.AppData });
-        const profileJSON2 = JSON.parse(profileJSon);
-        profileJSON2.push(jsonData);
-
-        await writeTextFile("UserData\\profile.json", JSON.stringify(profileJSON2, null, 2), { baseDir: BaseDirectory.AppData });
+export async function getData(fileName){
+    try{
+        const appDataPath = await appDataDir();
+        const filePath = await join(appDataPath, '', fileName);
+        const contents = await readTextFile(filePath);
+        return JSON.parse(contents);
+    }catch(error){
+        console.log(error);
     }
-    else{
-        initializeStorage()
+}
+
+export async function addData(fileName, newData){
+    try{
+        const currentData = await getData(fileName);
+        if(fileName === "userProfiles.json"){
+            const updatedData = {
+                ...currentData,
+                "profiles": [
+                    ...currentData.profiles,
+                    newData
+                ]
+            };
+            update(fileName, updatedData)
+        }else{
+            const updatedData = {
+                ...currentData,
+                newData
+            };
+            update(fileName, updatedData)
+        }
+    }catch(error){
+        console.log(error);
+    }
+}
+
+export async function removeData(fileName, target_id){
+    try{
+        if(fileName === "userProfiles.json"){
+            const currentData = await getData(fileName);
+            const updatedData = {
+                profiles: currentData.profiles.filter(p => p.id != target_id)
+            }
+            console.log(updatedData);
+            update(fileName, updatedData);
+        }else{
+            // Not fully Finished
+            const currentData = await getData(fileName);
+            const updatedData = currentData.filter(p => p != target_id)
+            console.log(updatedData);
+            update(fileName, updatedData);
+        }
+    }catch(error){
+        console.log(error);
+    }
+}
+
+export async function editData(fileName, targetedData){
+    try{
+        // Need to do the if else stateMent for each file
+        const currentData = await getData(fileName);
+        const updatedData  = {
+            profiles: currentData.profiles.map((p) =>{
+                if(p.id == targetedData.id){
+                    return targetedData;
+                }
+                return p;
+            })
+        }
+        
+        update(fileName, updatedData);
+    }catch(error){
+        console.log(error);
     }
 }

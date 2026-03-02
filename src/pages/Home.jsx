@@ -1,16 +1,15 @@
 import { useState, useEffect } from "react";
 import "../Home.css";
 import { getCurrentWindow } from '@tauri-apps/api/window';
-import { initializeStorage } from '../JS/fileSystem';
+import { initializeFS } from '../JS/fileSystem';
 import { Link, Outlet } from "react-router-dom";
 
 function Home() {
   const [isMaximized, setIsMaximized] = useState(false);
-  const [isInitialized, setIsInitialized] = useState();
   const [Profile, setProfile] = useState(false);
 
   useEffect(() => {
-    setIsInitialized(initializeStorage());
+    initializeFS()
   }, []);
 
   const appWindow = getCurrentWindow();

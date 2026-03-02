@@ -40,19 +40,17 @@
     },
     "dialog:default",
     "fs:default",
+    "fs:allow-mkdir",
+    "fs:allow-write-text-file",
+    "fs:allow-exists",
     {
       "identifier": "fs:scope",
       "allow": [
         {
-          "path": "$APPDATA/**"
-        }
-      ]
-    },
-    {
-      "identifier": "fs:allow-write-text-file",
-      "allow": [
+          "path": "$APPDATA"
+        },
         {
-          "path": "$APPDATA/**"
+          "path": "$APPDATA/**/*"
         }
       ]
     }
