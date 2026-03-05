@@ -16,7 +16,9 @@ export async function initializeFS(){
             baseDir: BaseDirectory.AppData
         });
         if(!fileExist){
-            await writeTextFile(files[0], JSON.stringify({}, null, 2), {
+            await writeTextFile(files[0], JSON.stringify({
+                "rainmeter-Path": "null"
+            }, null, 2), {
                 baseDir:BaseDirectory.AppData
             });
         }
@@ -60,13 +62,12 @@ export async function addData(fileName, newData){
                     newData
                 ]
             };
-            update(fileName, updatedData)
+            update(fileName, updatedData);
         }else{
-            const updatedData = {
-                ...currentData,
-                newData
-            };
-            update(fileName, updatedData)
+            for (let i = 0; i < newData.length; i++) {                
+                currentData[newData[i].key] = newData[i].data;
+            }
+            update(fileName, currentData);
         }
     }catch(error){
         console.log(error);
@@ -83,11 +84,11 @@ export async function removeData(fileName, target_id){
             console.log(updatedData);
             update(fileName, updatedData);
         }else{
-            // Not fully Finished
             const currentData = await getData(fileName);
-            const updatedData = currentData.filter(p => p != target_id)
-            console.log(updatedData);
-            update(fileName, updatedData);
+            if(currentData.hasOwnProperty(target_id) && currentData[target_id] != "null"){
+                currentData[target_id] = "null";
+                update(fileName, currentData);
+            }
         }
     }catch(error){
         console.log(error);
@@ -96,18 +97,26 @@ export async function removeData(fileName, target_id){
 
 export async function editData(fileName, targetedData){
     try{
-        // Need to do the if else stateMent for each file
-        const currentData = await getData(fileName);
-        const updatedData  = {
-            profiles: currentData.profiles.map((p) =>{
-                if(p.id == targetedData.id){
-                    return targetedData;
+        if(fileName === "userProfiles.json"){
+            const currentData = await getData(fileName);
+            const updatedData  = {
+                profiles: currentData.profiles.map((p) =>{
+                    if(p.id == targetedData.id){
+                        return targetedData;
+                    }
+                    return p;
+                })
+            }
+            update(fileName, updatedData);
+        }else{
+            const currentData = await getData(fileName);
+            for (let i = 0; i < targetedData.length; i++) {
+                if(currentData.hasOwnProperty(targetedData[i].key)){
+                    currentData[targetedData[i].key] = targetedData[i].data;
                 }
-                return p;
-            })
+            }
+            update(fileName, currentData);
         }
-        
-        update(fileName, updatedData);
     }catch(error){
         console.log(error);
     }
