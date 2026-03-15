@@ -1,18 +1,55 @@
-import { useState } from "react";
-import { updateCreateProfile } from "../JS/fileSystem"
+import { removeData } from "../JS/fileSystem";
+import SideCar from "../JS/SideCar";
+import "./ProfileCard.css";
 
-import { useState } from "react";
+// Use PascalCase for components and destructure props
+function ProfileCard(data) {
+    // Check if data exists and has a profiles array
+    const hasProfiles = data && data.profiles && data.profiles.length > 0;
 
-function profileCard() {
-    const [Name, isName] = useState();
+    const onStart = (id) => {
+        SideCar(id);
+    }
+    const onRemove = (id) => {
+        removeData("userProfiles.json", id);
+    }
 
     return (
-        <div className="ProfCard">
-            <h2>Name</h2>
-            <button>Start</button>
+        <div className="profile-grid">
+            {data ? (
+                hasProfiles ? (
+                    data.profiles.map((profile) => (
+                        <div key={profile.id} className="profile-card">
+                            <div className="card-content">
+                                <h3 className="profile-name">{profile.Name}</h3>
+                            </div>
+                            <div className="card-actions">
+                                <button
+                                    className="btn btn-start"
+                                    onClick={() => onStart(profile.id)}
+                                >
+                                    Start
+                                </button>
+                                <button
+                                    className="btn btn-remove"
+                                    onClick={() => onRemove(profile.id)}
+                                >
+                                    Remove
+                                </button>
+                            </div>
+                        </div>
+                    ))
+                ) : (
+                    <p className="no-profiles">No profiles found.</p>
+                )
+            ) : (
+                <div className="loading-container">
+                    <span className="loader"></span>
+                    <p>Loading profiles...</p>
+                </div>
+            )}
         </div>
     );
-
 }
 
-export default profileCard
+export default ProfileCard;

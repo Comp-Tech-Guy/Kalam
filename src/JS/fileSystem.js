@@ -17,7 +17,8 @@ export async function initializeFS(){
         });
         if(!fileExist){
             await writeTextFile(files[0], JSON.stringify({
-                "rainmeter-Path": "null"
+                "rainmeter-Path": "",
+                "Yasb-Config-Path": ""
             }, null, 2), {
                 baseDir:BaseDirectory.AppData
             });
@@ -59,21 +60,14 @@ export async function getLength(fileName){
 export async function addData(fileName, newData){
     try{
         const currentData = await getData(fileName);
-        if(fileName === "userProfiles.json"){
-            const updatedData = {
-                ...currentData,
-                "profiles": [
-                    ...currentData.profiles,
-                    newData
-                ]
-            };
-            update(fileName, updatedData);
-        }else{
-            for (let i = 0; i < newData.length; i++) {                
-                currentData[newData[i].key] = newData[i].data;
-            }
-            update(fileName, currentData);
-        }
+        const updatedData = {
+            ...currentData,
+            "profiles": [
+                ...currentData.profiles,
+                newData
+            ]
+        };
+        update(fileName, updatedData);
     }catch(error){
         console.log(error);
     }
@@ -90,8 +84,8 @@ export async function removeData(fileName, target_id){
             update(fileName, updatedData);
         }else{
             const currentData = await getData(fileName);
-            if(currentData.hasOwnProperty(target_id) && currentData[target_id] != "null"){
-                currentData[target_id] = "null";
+            if(currentData.hasOwnProperty(target_id) && currentData[target_id] != ""){
+                currentData[target_id] = "";
                 update(fileName, currentData);
             }
         }
@@ -115,10 +109,9 @@ export async function editData(fileName, targetedData){
             update(fileName, updatedData);
         }else{
             const currentData = await getData(fileName);
-            for (let i = 0; i < targetedData.length; i++) {
-                if(currentData.hasOwnProperty(targetedData[i].key)){
-                    currentData[targetedData[i].key] = targetedData[i].data;
-                }
+            const arrayList = Object.keys(currentData)
+            for (let i = 0; i < arrayList.length; i++) {
+                currentData[arrayList[i]] = targetedData[arrayList[i]];
             }
             update(fileName, currentData);
         }

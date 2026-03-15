@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { open } from "@tauri-apps/plugin-dialog";
-import SideCar from "../JS/SideCar"; 
 import { getLength, addData } from "../JS/fileSystem";
 import "./App.css";
 
@@ -25,7 +24,6 @@ function ProfilePage(){
         setImagePath("");
         setRainLayout("");
         setName("");
-        console.log("Done");
     }
 
     async function selectFile() {
@@ -55,24 +53,27 @@ function ProfilePage(){
 
     return (
         <div className="profilePg">
-            <div>
-                Name: 
-                <input type="text" value={name} onChange={(e) => setName(e.target.value)}/>
-            </div>
-            <div>
-                Wallpaper-IMG: 
-                {imagePath ? (
-                    <button onClick={selectFile}>Selected</button>
-                ): (
-                    <button onClick={selectFile}>Select file</button>
-                )}
-            </div>
-            <div>
-                Rainmeter-Layout-Name:
-                <input type="text" value={rainLayout} onChange={(e) => setRainLayout(e.target.value)}/>
-            </div>
-            <div>
-                <button onClick={storeData}>Enter</button>
+            <h1>Add Profile</h1>
+            <div className="profileCont">
+                <div>
+                    Name:
+                    <input type="text" value={name} onChange={(e) => setName(e.target.value)} />
+                </div>
+                <div>
+                    Wallpaper-IMG:
+                    {imagePath ? (
+                        <button onClick={selectFile}>Selected</button>
+                    ) : (
+                        <button onClick={selectFile}>Select file</button>
+                    )}
+                </div>
+                <div>
+                    Rainmeter-Layout-Name:
+                    <input type="text" value={rainLayout} onChange={(e) => setRainLayout(e.target.value)} />
+                </div>
+                <div>
+                    <button onClick={storeData}>Add Profile</button>
+                </div>
             </div>
         </div>
     )   

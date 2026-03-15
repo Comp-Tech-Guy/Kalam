@@ -1,13 +1,9 @@
+import { appDataDir } from "@tauri-apps/api/path";
 import { Command } from "@tauri-apps/plugin-shell";
 
-async function SideCar(arg1, arg2, arg3, arg4) {
-    console.log("SideCar called with args:", arg1, arg2, arg3, arg4);
-    const command = Command.sidecar('binaries/my-sidecar/kalam-Sidecar' , [
-        arg1,
-        arg2,
-        arg3,
-        arg4
-    ]);
+async function SideCar(profileId) {
+    const folder = await appDataDir()
+    const command = Command.sidecar('binaries/my-sidecar/kalam-Sidecar' , folder, profileId);
     const output = await command.execute();
     return output.stdout;
 }

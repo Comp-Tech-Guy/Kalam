@@ -1,0 +1,76 @@
+/* Container for the cards */
+.profile-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+    padding: 20px;
+    font-family: 'Lexend', sans-serif;
+    color:white;
+}
+
+/* Static Glassmorphic Card */
+.profile-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    /* Removed transform and background transitions from the card */
+}
+
+.profile-name {
+    margin: 0 0 15px 0;
+    color: white;
+    font-weight: 500;
+    font-size: 1.2rem;
+}
+
+/* Action Buttons Area */
+.card-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.btn {
+    font-family: 'Lexend', sans-serif;
+    flex: 1;
+    padding: 10px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    border: none;
+    transition: opacity 0.2s ease, background-color 0.2s ease;
+}
+
+/* Teal "Start" Button Hover */
+.btn-start {
+    background: #1eb8a5;
+    color: white;
+}
+
+.btn-start:hover {
+    opacity: 0.9;
+    background-color: #22d1bc;
+}
+
+/* "Remove" Button Hover */
+.btn-remove {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.btn-remove:hover {
+    background: rgba(255, 71, 71, 0.2); /* Subtle red tint on hover */
+    border-color: #ff4747;
+}
+
+/* Loading/Empty States */
+.loading-container {
+    grid-column: 1 / -1;
+    text-align: center;
+    color: white;
+}

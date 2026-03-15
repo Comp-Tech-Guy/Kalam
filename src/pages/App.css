@@ -25,7 +25,7 @@ h1 {
   3. PROFILE PAGE LAYOUT (GRID)
   ========================================
 */
-.profilePg {
+.profileCont, .settingCont {
     font-family: 'Lexend', sans-serif;
     display: grid;
     /* Col 1: Label (auto-width) | Col 2: Input (fills remaining space) */
@@ -44,7 +44,7 @@ h1 {
 
 /* Labels: Using 'contents' allows the label text and input 
    to act as separate cells in the parent grid */
-.profilePg div {
+.profileCont  div, .settingCont div {
     display: contents;
     font-size: 1rem;
     font-weight: 300;
@@ -52,7 +52,7 @@ h1 {
 }
 
 /* Text Input Styling */
-.profilePg input[type="text"] {
+.profileCont input[type="text"], .settingCont input[type="text"] {
     font-family: 'Lexend', sans-serif;
     background: rgba(255, 255, 255, 0.1);
     /* Transparent glass effect */
@@ -65,7 +65,7 @@ h1 {
 }
 
 /* Input Focus: Teal highlight */
-.profilePg input[type="text"]:focus {
+.profileCont input[type="text"]:focus {
     border-color: #1eb8a5;
 }
 
@@ -73,7 +73,7 @@ h1 {
   5. BUTTONS & ACTIONS
   ========================================
 */
-.profilePg button {
+.profileCont button, .settingCont button {
     font-family: 'Lexend', sans-serif;
     background: #1eb8a5;
     color: white;
@@ -85,19 +85,19 @@ h1 {
     transition: opacity 0.2s;
 }
 
-.profilePg button:hover {
+.profileCont button:hover, .settingCont button:hover {
     opacity: 0.9;
 }
 
 /* Footer/Submit Button Container: 
    Makes the last label/button span both grid columns */
-.profilePg div:last-child {
+.profileCont div:last-child, .settingCont div:last-child {
     grid-column: 1 / -1;
     display: flex;
     justify-content: flex-end;
 }
 
-.profilePg div:last-child button {
+.profileCont div:last-child button, .settingCont div:last-child button {
     width: 120px;
     margin-top: 10px;
 }
