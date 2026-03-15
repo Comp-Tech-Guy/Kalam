@@ -4,7 +4,7 @@
 body, html{
   margin: 0;
   background-color: #0D0F12;
-  /* overflow: hidden; */
+  overflow: hidden;
 }
 /* Titlebar styles */
 

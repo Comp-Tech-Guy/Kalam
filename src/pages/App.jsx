@@ -1,5 +1,5 @@
 import "./App.css"
-import { addData, editData, getData, removeData } from "../JS/fileSystem";
+import { getData } from "../JS/fileSystem";
 import { useEffect, useState } from "react";
 
 function App() {

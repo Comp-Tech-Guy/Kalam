@@ -1,17 +1,31 @@
 import { useState } from "react";
 import { open } from "@tauri-apps/plugin-dialog";
 import SideCar from "../JS/SideCar"; 
+import { getLength, addData } from "../JS/fileSystem";
 import "./App.css";
 
 function ProfilePage(){
-    const [arg2_image_path, setArg2ImagePath] = useState(null);
-    const [arg3_rainmeter_path, setArg3RainmeterPath] = useState(null);
-    const [arg4_layout, setArg4Layout] = useState(null);
-    const [arg5_Name, setArg5Name] = useState(null);
+    const [imagePath, setImagePath] = useState("");
+    const [rainLayout, setRainLayout] = useState("");
+    const [name, setName] = useState("");
 
-    const out = async () => {
-        if(setArg2ImagePath != null && setArg3RainmeterPath != null && setArg4Layout != null && setArg5Name != null)
-            await SideCar(arg2_image_path, arg3_rainmeter_path, arg4_layout);
+    const storeData = async () => {
+        const id = await getLength("userProfiles.json");
+        const data = {
+            "id": id,
+            "Name": name,
+            "RainmeterLayoutName": rainLayout,
+            "Wallaper-Path": imagePath
+        }
+        addData("userProfiles.json", data);
+        reset();
+    }
+
+    const reset = () => {
+        setImagePath("");
+        setRainLayout("");
+        setName("");
+        console.log("Done");
     }
 
     async function selectFile() {
@@ -32,7 +46,7 @@ function ProfilePage(){
             }
 
             console.log("Selected file path:", select);
-            setArg2ImagePath(select);
+            setImagePath(select);
         } catch (e) {
             console.log("Error selecting file:", e);
             return;
@@ -43,22 +57,22 @@ function ProfilePage(){
         <div className="profilePg">
             <div>
                 Name: 
-                <input type="text" onChange={(e) => setArg5Name(e.target.value)}/>
+                <input type="text" value={name} onChange={(e) => setName(e.target.value)}/>
             </div>
             <div>
                 Wallpaper-IMG: 
-                <button onClick={selectFile}>Select file</button>
-            </div>
-            <div>
-                Rainmeter-Path: 
-                <input type="text" onChange={(e) => setArg3RainmeterPath(e.target.value)}/>
+                {imagePath ? (
+                    <button onClick={selectFile}>Selected</button>
+                ): (
+                    <button onClick={selectFile}>Select file</button>
+                )}
             </div>
             <div>
                 Rainmeter-Layout-Name:
-                <input type="text" onChange={(e) => setArg4Layout(e.target.value)}/>
+                <input type="text" value={rainLayout} onChange={(e) => setRainLayout(e.target.value)}/>
             </div>
             <div>
-                <button onClick={out}>Enter</button>
+                <button onClick={storeData}>Enter</button>
             </div>
         </div>
     )   
