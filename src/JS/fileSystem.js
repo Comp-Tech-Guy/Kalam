@@ -46,7 +46,7 @@ export async function getData(fileName){
         const appDataPath = await appDataDir();
         const filePath = await join(appDataPath, '', fileName);
         const contents = await readTextFile(filePath);
-        return JSON.parse(contents);
+        return await JSON.parse(contents);
     }catch(error){
         console.log(error);
     }

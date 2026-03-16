@@ -17,11 +17,11 @@ function ProfilePage(){
             "RainmeterLayoutName": rainLayout,
             "Wallaper-Path": imagePath
         }
-        addData("userProfiles.json", data);
         setAdded(true)
-        setTimeout(() => {
-            setAdded(false)
-        }, 4000)
+        await addData("userProfiles.json", data);
+        setAdded(false)
+        // setTimeout(() => {
+        // }, 2000)
         reset();
     }
 
