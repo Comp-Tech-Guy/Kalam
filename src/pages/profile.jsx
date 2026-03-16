@@ -3,9 +3,11 @@ import { open } from "@tauri-apps/plugin-dialog";
 import { getLength, addData } from "../JS/fileSystem";
 import "./App.css";
 
-function ProfilePage(){
+function ProfilePage() {
     const [imagePath, setImagePath] = useState("");
     const [rainLayout, setRainLayout] = useState("");
+    const [yasbYaml, setYasbYaml] = useState("");
+    const [yasbCSS, setYasbCSS] = useState("");
     const [name, setName] = useState("");
     const [added, setAdded] = useState(Boolean);
 
@@ -15,13 +17,13 @@ function ProfilePage(){
             "id": id,
             "Name": name,
             "RainmeterLayoutName": rainLayout,
-            "Wallaper-Path": imagePath
+            "Wallaper-Path": imagePath,
+            "Yasb-Yaml": yasbYaml,
+            "Yasb-CSS": yasbCSS
         }
         setAdded(true)
         await addData("userProfiles.json", data);
         setAdded(false)
-        // setTimeout(() => {
-        // }, 2000)
         reset();
     }
 
@@ -76,15 +78,29 @@ function ProfilePage(){
                     <input type="text" value={rainLayout} onChange={(e) => setRainLayout(e.target.value)} />
                 </div>
                 <div>
+                    Yasb-Yaml-Code:
+                    <textarea
+                        value={yasbYaml}
+                        onChange={(e) => setYasbYaml(e.target.value)}
+                    />
+                </div>
+                <div>
+                    Yasb-CSS-Code:
+                    <textarea
+                        value={yasbCSS}
+                        onChange={(e) => setYasbCSS(e.target.value)}
+                    />
+                </div>
+                <div>
                     {added ? (
                         <button>Added</button>
-                    ): (
+                    ) : (
                         <button onClick={storeData}>Add Profile</button>
                     )}
                 </div>
             </div>
         </div>
-    )   
+    )
 }
 
 export default ProfilePage

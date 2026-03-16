@@ -25,7 +25,8 @@ h1 {
   3. PROFILE PAGE LAYOUT (GRID)
   ========================================
 */
-.profileCont, .settingCont {
+.profileCont,
+.settingCont {
     font-family: 'Lexend', sans-serif;
     display: grid;
     /* Col 1: Label (auto-width) | Col 2: Input (fills remaining space) */
@@ -35,6 +36,7 @@ h1 {
     padding: 40px;
     max-width: 600px;
     color: white;
+    align-items: start;
 }
 
 /* ========================================
@@ -44,7 +46,8 @@ h1 {
 
 /* Labels: Using 'contents' allows the label text and input 
    to act as separate cells in the parent grid */
-.profileCont  div, .settingCont div {
+.profileCont div,
+.settingCont div {
     display: contents;
     font-size: 1rem;
     font-weight: 300;
@@ -52,7 +55,8 @@ h1 {
 }
 
 /* Text Input Styling */
-.profileCont input[type="text"], .settingCont input[type="text"] {
+.profileCont input[type="text"],
+.settingCont input[type="text"] {
     font-family: 'Lexend', sans-serif;
     background: rgba(255, 255, 255, 0.1);
     /* Transparent glass effect */
@@ -73,7 +77,8 @@ h1 {
   5. BUTTONS & ACTIONS
   ========================================
 */
-.profileCont button, .settingCont button {
+.profileCont button,
+.settingCont button {
     font-family: 'Lexend', sans-serif;
     background: #1eb8a5;
     color: white;
@@ -85,19 +90,44 @@ h1 {
     transition: opacity 0.2s;
 }
 
-.profileCont button:hover, .settingCont button:hover {
+.profileCont button:hover,
+.settingCont button:hover {
     opacity: 0.9;
 }
 
 /* Footer/Submit Button Container: 
    Makes the last label/button span both grid columns */
-.profileCont div:last-child, .settingCont div:last-child {
+.profileCont div:last-child,
+.settingCont div:last-child {
     grid-column: 1 / -1;
     display: flex;
     justify-content: flex-end;
 }
 
-.profileCont div:last-child button, .settingCont div:last-child button {
+.profileCont div:last-child button,
+.settingCont div:last-child button {
     width: 120px;
     margin-top: 10px;
+}
+
+/* Update your CSS to include textarea */
+.profileCont input[type="text"],
+.profileCont textarea,
+.settingCont input[type="text"] {
+    font-family: 'Lexend', sans-serif;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    padding: 8px 12px;
+    color: white;
+    outline: none;
+    transition: border-color 0.2s ease-in-out;
+    /* This locks horizontal resizing and allows vertical */
+    resize: vertical;
+}
+
+/* Apply focus state to textarea as well */
+.profileCont textarea:focus,
+.settingCont textarea:focus {
+    border-color: #1eb8a5;
 }
