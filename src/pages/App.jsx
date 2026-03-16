@@ -1,7 +1,7 @@
 import "./App.css"
 import { getData } from "../JS/fileSystem";
 import { useEffect, useState } from "react";
-import profileCard from "../components/profileCard";
+import ProfileCard from "../components/profileCard";
 
 function App() {
     const [data, setData] = useState(null);
@@ -18,7 +18,7 @@ function App() {
         <main className="AppPg">
             <h1>Home</h1>
             <button onClick={dataRecieve}>Refresh</button>
-            {profileCard(data)}
+            <ProfileCard data={data} onRecieve={dataRecieve}/>
         </main>
     );
 }

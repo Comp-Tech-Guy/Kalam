@@ -80,7 +80,6 @@ export async function removeData(fileName, target_id){
             const updatedData = {
                 profiles: currentData.profiles.filter(p => p.id != target_id)
             }
-            console.log(updatedData);
             update(fileName, updatedData);
         }else{
             const currentData = await getData(fileName);

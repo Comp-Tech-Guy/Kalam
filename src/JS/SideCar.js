@@ -5,7 +5,7 @@ async function SideCar(profileId) {
     const folder = await appDataDir()
     const command = Command.sidecar('binaries/my-sidecar/kalam-Sidecar' , [folder, profileId.toString()]);
     const output = await command.execute();
-    // return output.stdout;
+    return output.stdout;
 }
 
 export default SideCar;

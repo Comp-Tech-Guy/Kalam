@@ -3,15 +3,16 @@ import SideCar from "../JS/SideCar";
 import "./ProfileCard.css";
 
 // Use PascalCase for components and destructure props
-function ProfileCard(data) {
+function ProfileCard({ data, onRecieve }) {
     // Check if data exists and has a profiles array
     const hasProfiles = data && data.profiles && data.profiles.length > 0;
 
     const onStart = (id) => {
         SideCar(id);
     }
-    const onRemove = (id) => {
-        removeData("userProfiles.json", id);
+    const onRemove = async (id) => {
+        await removeData("userProfiles.json", id);
+        await onRecieve();
     }
 
     return (

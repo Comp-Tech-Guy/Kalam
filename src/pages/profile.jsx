@@ -7,6 +7,7 @@ function ProfilePage(){
     const [imagePath, setImagePath] = useState("");
     const [rainLayout, setRainLayout] = useState("");
     const [name, setName] = useState("");
+    const [added, setAdded] = useState(Boolean);
 
     const storeData = async () => {
         const id = await getLength("userProfiles.json");
@@ -17,6 +18,10 @@ function ProfilePage(){
             "Wallaper-Path": imagePath
         }
         addData("userProfiles.json", data);
+        setAdded(true)
+        setTimeout(() => {
+            setAdded(false)
+        }, 4000)
         reset();
     }
 
@@ -43,7 +48,6 @@ function ProfilePage(){
                 return;
             }
 
-            console.log("Selected file path:", select);
             setImagePath(select);
         } catch (e) {
             console.log("Error selecting file:", e);
@@ -72,7 +76,11 @@ function ProfilePage(){
                     <input type="text" value={rainLayout} onChange={(e) => setRainLayout(e.target.value)} />
                 </div>
                 <div>
-                    <button onClick={storeData}>Add Profile</button>
+                    {added ? (
+                        <button>Added</button>
+                    ): (
+                        <button onClick={storeData}>Add Profile</button>
+                    )}
                 </div>
             </div>
         </div>
