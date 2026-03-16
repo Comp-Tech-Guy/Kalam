@@ -25,12 +25,6 @@
             },
             {
               "validator": ".+"
-            },
-            {
-              "validator": ".+"
-            },
-            {
-              "validator": ".+"
             }
           ],
           "name": "binaries/my-sidecar/kalam-Sidecar",
