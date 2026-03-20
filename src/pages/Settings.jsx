@@ -4,11 +4,13 @@ import { editData, getData } from "../JS/fileSystem";
 
 function Settings() {
     const [rainPath, setRainPath] = useState('');
+    const [yasbExe, setYasbExe] = useState('');
     const [yasbPath, setYasbPath] = useState('');
 
     const setData = async () => {
         const data = await getData("userSettings.json");
         setRainPath(data["rainmeter-Path"])
+        setYasbExe(data["Yasb-Exe-Path"])
         setYasbPath(data["Yasb-Config-Path"])
     }
 
@@ -19,7 +21,8 @@ function Settings() {
     const storeData = async () => {
         const data = {
             "rainmeter-Path": rainPath,
-            "Yasb-Config-Path": yasbPath
+            "Yasb-Config-Path": yasbPath,
+            "Yasb-Exe-Path": yasbExe
         }
         editData("userSettings.json", data);
     }
@@ -31,6 +34,10 @@ function Settings() {
                 <div>
                     Yasb Config Path:
                     <input type="text" value={yasbPath} onChange={(e) => setYasbPath(e.target.value)} />
+                </div>
+                <div>
+                    Yasb Exe Path:
+                    <input type="text" value={yasbExe} onChange={(e) => setYasbExe(e.target.value)} />
                 </div>
                 <div>
                     Rainmeter Path:

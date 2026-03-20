@@ -29,6 +29,8 @@ function ProfilePage() {
 
     const reset = () => {
         setImagePath("");
+        setYasbCSS("");
+        setYasbYaml("");
         setRainLayout("");
         setName("");
     }

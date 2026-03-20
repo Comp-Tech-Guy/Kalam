@@ -18,7 +18,8 @@ export async function initializeFS(){
         if(!fileExist){
             await writeTextFile(files[0], JSON.stringify({
                 "rainmeter-Path": "",
-                "Yasb-Config-Path": ""
+                "Yasb-Config-Path": "",
+                "Yasb-Exe-Path": ""
             }, null, 2), {
                 baseDir:BaseDirectory.AppData
             });
