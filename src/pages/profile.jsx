@@ -83,6 +83,7 @@ function ProfilePage() {
                     Yasb-Yaml-Code:
                     <textarea
                         value={yasbYaml}
+                        rows={9}
                         onChange={(e) => setYasbYaml(e.target.value)}
                     />
                 </div>
@@ -90,6 +91,7 @@ function ProfilePage() {
                     Yasb-CSS-Code:
                     <textarea
                         value={yasbCSS}
+                        rows={9}
                         onChange={(e) => setYasbCSS(e.target.value)}
                     />
                 </div>

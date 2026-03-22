@@ -32,7 +32,6 @@ h1 {
     /* Col 1: Label (auto-width) | Col 2: Input (fills remaining space) */
     grid-template-columns: auto 1fr;
     gap: 20px 15px;
-    align-items: center;
     padding: 40px;
     max-width: 600px;
     color: white;
