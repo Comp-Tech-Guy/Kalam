@@ -1,0 +1,52 @@
+import "./Dashboard.css"
+import { getData } from "../../services/storage";
+import { useEffect, useState, useCallback } from "react";
+import ProfileCard from "../../components/ProfileCard/ProfileCard";
+
+function Dashboard() {
+    const [data, setData] = useState(null);
+    
+    const dataRecieve = useCallback(async () => {
+        const json = await getData("userProfiles.json");
+        setData(json);
+    }, []);
+
+    useEffect(() => {
+        dataRecieve();
+    }, [dataRecieve]);
+
+    const hasProfiles = data && data.profiles && data.profiles.length > 0;
+
+    return (
+        <main className="AppPg">
+            <header>
+                <h1>My Profiles</h1>
+                <p>Select a configuration to apply to your desktop.</p>
+                <button className="btn-refresh" onClick={dataRecieve}>
+                    Refresh List
+                </button>
+            </header>
+            
+            <div className="profile-grid">
+                {data ? (
+                    hasProfiles ? (
+                        data.profiles.map((profile) => (
+                            <ProfileCard key={profile.id} data={profile} onRecieve={dataRecieve} />
+                        ))
+                    ) : (
+                        <div className="no-profiles">
+                            <p>No profiles found. Create your first one in the "New Profile" tab.</p>
+                        </div>
+                    )
+                ) : (
+                    <div className="loading-container">
+                        <span className="loader"></span>
+                        <p>Loading your setups...</p>
+                    </div>
+                )}
+            </div>
+        </main>
+    );
+}
+
+export default Dashboard;

@@ -1,12 +1,11 @@
 import { useState, useEffect } from "react";
-import "../Home.css";
+import "./AppLayout.css";
 import { getCurrentWindow } from '@tauri-apps/api/window';
-import { initializeFS } from '../JS/fileSystem';
-import { Link, Outlet } from "react-router-dom";
+import { initializeFS } from '../services/storage';
+import { NavLink, Outlet } from "react-router-dom";
 
-function Home() {
+function AppLayout() {
   const [isMaximized, setIsMaximized] = useState(false);
-  const [Profile, setProfile] = useState(false);
 
   useEffect(() => {
     initializeFS()
@@ -24,7 +23,6 @@ function Home() {
     setIsMaximized(!isMaximized);
   };
 
-  // Listen to window resize events to update isMaximized state to change Icon
   useEffect(() => {
     function handleResize() {
       appWindow.isMaximized().then((newState) => setIsMaximized(newState));
@@ -40,7 +38,6 @@ function Home() {
   }, []);
 
 
-  // Titlebar button functionality
   useEffect(() => {
     const minimize = document.getElementById("titlebar-minimize");
     const maximize = document.getElementById("titlebar-maximize");
@@ -49,14 +46,13 @@ function Home() {
     if (!minimize || !close) return;
 
     const onMinimize = () => appWindow.minimize();
-    const onMaximize = () => changeMax(maximize);
+    const onMaximize = () => changeMax();
     const onClose = () => appWindow.close();
 
     maximize.addEventListener("click", onMaximize);
     minimize.addEventListener("click", onMinimize);
     close.addEventListener("click", onClose);
 
-    // cleanup (VERY important)
     return () => {
       minimize.removeEventListener("click", onMinimize);
       maximize.removeEventListener("click", onMaximize);
@@ -64,76 +60,49 @@ function Home() {
     };
   }, []);
 
-  const changeUsestate = () => {
-    setProfile(!Profile);
-  };
-
   return (
     <main className="container" >
       <div className="titlebar" data-tauri-drag-region>
         <div className="app-icon">
-          <svg width="30" height="30" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <svg width="24" height="24" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M200 350L40 270L200 190L360 270L200 350Z" fill="#1A1D23" />
-
             <path d="M200 295L40 215L200 135L360 215L200 295Z" fill="#334155" />
-
             <path d="M200 240L55 167.5L200 95L345 167.5L200 240Z" stroke="#19f5de" strokeWidth="8" strokeLinejoin="round" />
-
             <path d="M200 190L40 110L200 30L360 110L200 190Z" fill="#E2E8F0" />
-
-            <defs>
-              <filter id="glow" x="0" y="0" width="400" height="400" filterUnits="userSpaceOnUse">
-                <feGaussianBlur stdDeviation="4" result="blur" />
-                <feComposite in="SourceGraphic" in2="blur" operator="over" />
-              </filter>
-            </defs>
           </svg>
         </div>
         <div className="controls">
           <button id="titlebar-minimize" title="minimize">
-            <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-minus"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
           </button>
           <button id="titlebar-maximize" title="maximize">
             {isMaximized ? (
-              /* RESTORE ICON */
-              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M8 5H17C18.1 5 19 5.9 19 7V16"
-                  stroke="white"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round" />
-
-                <rect x="5" y="8" width="11" height="11" rx="2" stroke="white" strokeWidth="2" />
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M8 5H17C18.1 5 19 5.9 19 7V16" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                <rect x="5" y="8" width="11" height="11" rx="1.5" stroke="currentColor" strokeWidth="2.5" />
               </svg>
             ) : (
-              /* MAXIMIZE ICON */
-              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect x="6" y="6" width="12" height="12" rx="2" stroke="white" strokeWidth="2" />
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="6" y="6" width="12" height="12" rx="2" stroke="currentColor" strokeWidth="2.5" />
               </svg>
             )}
           </button>
           <button id="titlebar-close" title="close">
-            <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-x"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
           </button>
         </div>
       </div>
       <main className="MainPg">
         <nav>
-          <Link to="/">
-            <div>
-              Home
-            </div>
-          </Link>
-          <Link to="/profile">
-            <div>
-              Profile
-            </div>
-          </Link>
-          <Link to="/setting">
-            <div>
-              Setting
-            </div>
-          </Link>
+          <NavLink to="/" end className={({ isActive }) => isActive ? "active" : ""}>
+            <div>Home</div>
+          </NavLink>
+          <NavLink to="/profile" className={({ isActive }) => isActive ? "active" : ""}>
+            <div>New Profile</div>
+          </NavLink>
+          <NavLink to="/setting" className={({ isActive }) => isActive ? "active" : ""}>
+            <div>Settings</div>
+          </NavLink>
         </nav>
         <div className="PageContainer">
           <Outlet />
@@ -143,4 +112,4 @@ function Home() {
   );
 }
 
-export default Home;
+export default AppLayout;
