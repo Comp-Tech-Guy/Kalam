@@ -20,7 +20,8 @@
         "minimizable": true,
         "closable": true,
         "decorations": false,
-        "center": true
+        "center": true,
+        "backgroundColor": "#0D0F12"
       }
     ],
     "security": {
