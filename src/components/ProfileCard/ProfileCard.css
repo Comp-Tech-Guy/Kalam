@@ -16,7 +16,6 @@
     transition: var(--trans-smooth);
     backdrop-filter: var(--glass-blur);
     position: relative;
-    overflow: hidden;
 }
 
 .profile-card:hover {
@@ -35,12 +34,12 @@
 
 .card-actions {
     display: flex;
-    gap: 12px;
+    gap: 8px;
+    flex-wrap: wrap;
 }
 
 .btn {
     font-family: inherit;
-    flex: 1;
     padding: 10px 16px;
     border-radius: 10px;
     cursor: pointer;
@@ -51,11 +50,20 @@
     display: inline-flex;
     justify-content: center;
     align-items: center;
+    white-space: nowrap;
+    min-width: 0;
 }
 
 .btn-start {
     background: var(--accent);
     color: var(--bg-darker);
+    flex: 0 0 auto;
+}
+
+.btn-edit,
+.btn-remove {
+    flex: 1;
+    min-width: 60px;
 }
 
 .btn-start:hover {

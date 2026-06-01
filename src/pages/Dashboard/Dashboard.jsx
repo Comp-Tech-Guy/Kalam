@@ -6,14 +6,16 @@ import ProfileCard from "../../components/ProfileCard/ProfileCard";
 function Dashboard() {
     const [data, setData] = useState(null);
     
-    const dataRecieve = useCallback(async () => {
-        const json = await getData("userProfiles.json");
+    const dataRecieve = useCallback(async (forceRefresh) => {
+        const json = await getData("userProfiles.json", forceRefresh);
         setData(json);
     }, []);
 
     useEffect(() => {
         dataRecieve();
     }, [dataRecieve]);
+
+    const refresh = () => dataRecieve(true);
 
     const hasProfiles = data && data.profiles && data.profiles.length > 0;
 
@@ -22,7 +24,7 @@ function Dashboard() {
             <header>
                 <h1>My Profiles</h1>
                 <p>Select a configuration to apply to your desktop.</p>
-                <button className="btn-refresh" onClick={dataRecieve}>
+                <button className="btn-refresh" onClick={refresh}>
                     Refresh List
                 </button>
             </header>
@@ -31,7 +33,7 @@ function Dashboard() {
                 {data ? (
                     hasProfiles ? (
                         data.profiles.map((profile) => (
-                            <ProfileCard key={profile.id} data={profile} onRecieve={dataRecieve} />
+                            <ProfileCard key={profile.id} data={profile} onRecieve={refresh} />
                         ))
                     ) : (
                         <div className="no-profiles">

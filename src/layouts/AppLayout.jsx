@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import "./AppLayout.css";
 import { getCurrentWindow } from '@tauri-apps/api/window';
 import { initializeFS } from '../services/storage';
@@ -6,6 +6,9 @@ import { NavLink, Outlet } from "react-router-dom";
 
 function AppLayout() {
   const [isMaximized, setIsMaximized] = useState(false);
+  const minimizeRef = useRef(null);
+  const maximizeRef = useRef(null);
+  const closeRef = useRef(null);
 
   useEffect(() => {
     initializeFS()
@@ -14,49 +17,46 @@ function AppLayout() {
   const appWindow = getCurrentWindow();
 
   const changeMax = async () => {
-    const isMaximized = await appWindow.isMaximized();
-    if (isMaximized) {
+    const maximized = await appWindow.isMaximized();
+    if (maximized) {
       await appWindow.unmaximize();
     } else {
       await appWindow.maximize();
     }
-    setIsMaximized(!isMaximized);
+    setIsMaximized(!maximized);
   };
 
   useEffect(() => {
     function handleResize() {
-      appWindow.isMaximized().then((newState) => setIsMaximized(newState));
+      appWindow.isMaximized().then(setIsMaximized);
     }
     handleResize();
 
-    const unlisten = appWindow.listen('tauri://resize', async () => {
-      handleResize();
-    });
+    const unlisten = appWindow.listen('tauri://resize', handleResize);
     return () => {
       unlisten.then((u) => u());
     };
   }, []);
 
-
   useEffect(() => {
-    const minimize = document.getElementById("titlebar-minimize");
-    const maximize = document.getElementById("titlebar-maximize");
-    const close = document.getElementById("titlebar-close");
+    const minBtn = minimizeRef.current;
+    const maxBtn = maximizeRef.current;
+    const clsBtn = closeRef.current;
 
-    if (!minimize || !close) return;
+    if (!minBtn || !maxBtn || !clsBtn) return;
 
     const onMinimize = () => appWindow.minimize();
     const onMaximize = () => changeMax();
     const onClose = () => appWindow.close();
 
-    maximize.addEventListener("click", onMaximize);
-    minimize.addEventListener("click", onMinimize);
-    close.addEventListener("click", onClose);
+    minBtn.addEventListener("click", onMinimize);
+    maxBtn.addEventListener("click", onMaximize);
+    clsBtn.addEventListener("click", onClose);
 
     return () => {
-      minimize.removeEventListener("click", onMinimize);
-      maximize.removeEventListener("click", onMaximize);
-      close.removeEventListener("click", onClose);
+      minBtn.removeEventListener("click", onMinimize);
+      maxBtn.removeEventListener("click", onMaximize);
+      clsBtn.removeEventListener("click", onClose);
     };
   }, []);
 
@@ -72,10 +72,10 @@ function AppLayout() {
           </svg>
         </div>
         <div className="controls">
-          <button id="titlebar-minimize" title="minimize">
+          <button ref={minimizeRef} title="minimize">
             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
           </button>
-          <button id="titlebar-maximize" title="maximize">
+          <button ref={maximizeRef} title="maximize">
             {isMaximized ? (
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M8 5H17C18.1 5 19 5.9 19 7V16" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -87,7 +87,7 @@ function AppLayout() {
               </svg>
             )}
           </button>
-          <button id="titlebar-close" title="close">
+          <button ref={closeRef} title="close">
             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
           </button>
         </div>

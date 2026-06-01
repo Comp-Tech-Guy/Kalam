@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { open } from "@tauri-apps/plugin-dialog";
-import { getLength, addData, editData } from "../../services/storage";
+import { addData, editData } from "../../services/storage";
 import "../Dashboard/Dashboard.css";
 
 function CreateProfile() {
@@ -27,7 +27,7 @@ function CreateProfile() {
       setProfileId(p.id);
       setHeadName("Edit");
       setName(p.Name || "");
-      setImagePath(p["Wallaper-Path"] || "");
+      setImagePath(p["Wallpaper-Path"] || "");
       setRainLayout(p.RainmeterLayoutName || "");
       setYasbYaml(p["Yasb-Yaml"] || "");
       setYasbCSS(p["Yasb-CSS"] || "");
@@ -44,14 +44,14 @@ function CreateProfile() {
   const storeData = async () => {
     let id = profileId;
     if (!isEditing) {
-      id = await getLength("userProfiles.json");
+      id = Date.now();
     }
     
     const data = {
       id: id,
       Name: name,
       RainmeterLayoutName: rainLayout,
-      "Wallaper-Path": imagePath,
+      "Wallpaper-Path": imagePath,
       "Yasb-Yaml": yasbYaml,
       "Yasb-CSS": yasbCSS,
       "GlazeWM-Config": glazeWm,
