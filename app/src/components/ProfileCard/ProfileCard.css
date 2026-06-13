@@ -1,0 +1,118 @@
+.profile-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 24px;
+    padding: 32px;
+}
+
+.profile-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-light);
+    border-radius: 16px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: var(--trans-smooth);
+    backdrop-filter: var(--glass-blur);
+    position: relative;
+}
+
+.profile-card:hover {
+    border-color: var(--border-active);
+    transform: translateY(-4px);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.profile-name {
+    margin: 0 0 20px 0;
+    color: var(--text-main);
+    font-weight: 600;
+    font-size: 1.25rem;
+    letter-spacing: -0.01em;
+}
+
+.card-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.btn {
+    font-family: inherit;
+    padding: 10px 16px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    border: 1px solid transparent;
+    transition: var(--trans-smooth);
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    white-space: nowrap;
+    min-width: 0;
+}
+
+.btn-start {
+    background: var(--accent);
+    color: var(--bg-darker);
+    flex: 0 0 auto;
+}
+
+.btn-edit,
+.btn-remove {
+    flex: 1;
+    min-width: 60px;
+}
+
+.btn-start:hover {
+    background: #22d1bc;
+    box-shadow: 0 0 20px var(--accent-glow);
+}
+
+.btn-remove {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-muted);
+    border: 1px solid var(--border-light);
+}
+
+.btn-remove:hover {
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--danger);
+    border-color: rgba(239, 68, 68, 0.2);
+
+}
+
+.btn-edit {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-muted);
+    border: 1px solid var(--border-light);
+}
+
+.btn-edit:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: #ffffff; /* Brightens up to full white */
+    border-color: rgba(255, 255, 255, 0.25);
+}
+
+/* Loading/Empty States */
+.no-profiles {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 60px;
+    color: var(--text-muted);
+    font-size: 1.1rem;
+    border: 2px dashed var(--border-light);
+    border-radius: 20px;
+}
+
+.loading-container {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    padding: 60px;
+    color: var(--text-muted);
+}

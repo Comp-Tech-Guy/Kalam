@@ -1,0 +1,112 @@
+@import "../index.css";
+
+.app-icon {
+  margin-top: 8px;
+  margin-left: 12px;
+  opacity: 0.8;
+}
+
+.titlebar {
+  display: flex;
+  justify-content: space-between;
+  height: 40px;
+  background: var(--bg-sidebar);
+  user-select: none;
+  position: sticky;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.titlebar .controls {
+  display: flex;
+}
+
+.titlebar button {
+  appearance: none;
+  padding: 0;
+  margin: 0;
+  border: none;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 45px;
+  height: 39px;
+  color: var(--text-muted);
+  background-color: transparent;
+  transition: all 0.2s ease;
+}
+
+.titlebar button:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-main);
+}
+
+.titlebar #titlebar-close:hover {
+  background: var(--danger);
+  color: white;
+}
+
+/* Layout */
+.MainPg {
+  display: flex;
+  flex-direction: row;
+  height: calc(100vh - 40px);
+  width: 100%;
+  background-color: var(--bg-main);
+}
+
+nav {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 240px;
+  background-color: var(--bg-sidebar);
+  border-right: 1px solid var(--border-light);
+  padding: 20px 12px;
+  box-sizing: border-box;
+  gap: 8px;
+}
+
+nav a {
+  height: 40px;
+  width: 100%;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  border-radius: 8px;
+  transition: var(--trans-smooth);
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  font-weight: 400;
+  background: transparent;
+  margin: 0;
+}
+
+nav a div {
+  padding-left: 12px;
+}
+
+nav a:hover {
+  background: var(--bg-card);
+  color: var(--text-main);
+}
+
+/* Active State for Links - assuming you'll use NavLink or similar logic later, 
+   but for now styling the current behavior */
+nav a.active {
+  background: var(--accent-glow);
+  color: var(--accent);
+  font-weight: 500;
+  border: 1px solid var(--border-active);
+}
+
+.PageContainer {
+  flex: 1;
+  height: 100%;
+  overflow-y: auto;
+  padding: 0;
+  background-color: var(--bg-main);
+}
