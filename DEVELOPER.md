@@ -15,39 +15,39 @@ Kalam is a desktop **profile manager** for Windows customization tools. Users cr
 ## Architecture
 
 ```
-┌─────────────────────────────────────────────────────────┐
-│                    Tauri App (WebView)                   │
-│  ┌─────────────────────────────────────────────────────┐ │
+┌───────────────────────────────────────────────────────────┐
+│                    Tauri App (WebView)                    │
+│  ┌──────────────────────────────────────────────────────┐ │
 │  │  React Frontend                                      │ │
-│  │  ┌──────────┐ ┌──────────────┐ ┌──────────────────┐ │ │
-│  │  │Dashboard │ │CreateProfile │ │    Settings       │ │ │
-│  │  │ (profiles│ │ (add/edit)   │ │ (global paths)   │ │ │
-│  │  │  list)   │ │              │ │                  │ │ │
-│  │  └────┬─────┘ └──────┬───────┘ └────────┬─────────┘ │ │
+│  │  ┌──────────┐ ┌──────────────┐ ┌──────────────────┐  │ │
+│  │  │Dashboard │ │CreateProfile │ │    Settings      │  │ │
+│  │  │ (profiles│ │ (add/edit)   │ │ (global paths)   │  │ │
+│  │  │  list)   │ │              │ │                  │  │ │
+│  │  └────┬─────┘ └──────┬───────┘ └────────┬─────────┘  │ │
 │  │       │              │                   │           │ │
 │  │  ┌────▼──────────────▼───────────────────▼─────────┐ │ │
-│  │  │              storage.js (CRUD + cache)           │ │ │
-│  │  │  reads/writes userProfiles.json & userSettings   │ │ │
+│  │  │              storage.js (CRUD + cache)          │ │ │
+│  │  │  reads/writes userProfiles.json & userSettings  │ │ │
 │  │  └────────────────────┬────────────────────────────┘ │ │
 │  │                       │                              │ │
 │  │  ┌────────────────────▼────────────────────────────┐ │ │
-│  │  │              sidecar.js                          │ │ │
+│  │  │              sidecar.js                         │ │ │
 │  │  │  spawns Python .exe via Command.sidecar()       │ │ │
 │  │  └────────────────────┬────────────────────────────┘ │ │
-│  └───────────────────────┼─────────────────────────────┘ │
-└──────────────────────────┼──────────────────────────────┘
+│  └───────────────────────┼──────────────────────────────┘ │
+└──────────────────────────┼────────────────────────────────┘
                            │ Tauri shell plugin
 ┌──────────────────────────▼──────────────────────────────┐
 │  Python Sidecar (kalam-Sidecar.exe)                     │
 │                                                         │
 │  1. Read userProfiles.json + userSettings.json          │
 │  2. Apply or kill each app based on profile config:     │
-│     • Rainmeter — load layout / kill                   │
-│     • Wallpaper — set via Win32 API                    │
-│     • YASB — inject config.yaml + styles.css / kill    │
-│     • GlazeWM — write config.yaml, restart / kill      │
-│     • Zebar — write settings.json, restart / kill      │
-│     • Windhawk (Planned) — Registry injection          │
+│     • Rainmeter — load layout / kill                    │
+│     • Wallpaper — set via Win32 API                     │
+│     • YASB — inject config.yaml + styles.css / kill     │
+│     • GlazeWM — write config.yaml, restart / kill       │
+│     • Zebar — write settings.json, restart / kill       │
+│     • Windhawk (Planned) — Registry injection           │
 │  3. Write activeProfile to settings                     │
 └─────────────────────────────────────────────────────────┘
 ```
