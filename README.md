@@ -18,4 +18,3 @@ npm run tauri dev
 
 ## Documentation
 - [Developer Docs](../DEVELOPER.md) — architecture, schema, Windhawk details, build guide
-- [AI Context](../GEMINI.md) — project structure overview for AI assistants
