@@ -27,7 +27,9 @@ export async function initializeFS(){
             "Yasb-Config-Path": "",
             "Yasb-Exe-Path": "",
             "GlazeWM-Config-Path": "",
-            "Zebar-Config-Path": ""
+            "Zebar-Config-Path": "",
+            "Windhawk-Type": "Installed",
+            "Windhawk-Path": ""
         };
 
         if(!fileExist){

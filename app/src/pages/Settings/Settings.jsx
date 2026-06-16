@@ -53,6 +53,7 @@ function Settings() {
             if (found['GlazeWM-Config-Path']) setGlazePath(found['GlazeWM-Config-Path']);
             if (found['Zebar-Config-Path']) setZebarPath(found['Zebar-Config-Path']);
             if (found['Windhawk-Path']) setWindhawkPath(found['Windhawk-Path']);
+            if (found['Windhawk-Type']) setWindhawkType(found['Windhawk-Type']);
 
             if (Object.keys(found).length === 0) {
                 setError("No tool installations detected. Please set paths manually.");

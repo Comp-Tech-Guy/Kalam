@@ -126,7 +126,38 @@ def _read_mod_subkey(mod_subkey, mod_id):
     return entry
 
 
-def scan_windhawk_registry(folder_path):
+def _scan_portable_mods(windhawk_path):
+    mods = []
+    windhawk_dir = os.path.dirname(windhawk_path) if windhawk_path else ""
+    if not windhawk_dir or not os.path.isdir(windhawk_dir):
+        return mods
+
+    ini_path = os.path.join(windhawk_dir, "windhawk.ini")
+    app_data = "AppData"
+    if os.path.exists(ini_path):
+        try:
+            with open(ini_path) as f:
+                for line in f:
+                    if line.startswith("AppDataPath="):
+                        val = line.split("=", 1)[1].strip()
+                        if os.path.isabs(val):
+                            app_data = val
+                        else:
+                            app_data = os.path.normpath(os.path.join(windhawk_dir, val))
+                        break
+        except OSError:
+            pass
+
+    mods_dir = os.path.join(app_data, "Mods")
+    if os.path.isdir(mods_dir):
+        for mod_id in os.listdir(mods_dir):
+            mod_path = os.path.join(mods_dir, mod_id)
+            if os.path.isdir(mod_path):
+                mods.append({"id": mod_id, "name": mod_id, "enabled": 1})
+    return mods
+
+
+def scan_windhawk_registry(folder_path, user_settings=None):
     manifest_path = os.path.join(folder_path, "windhawkManifest.json")
     mods = []
     seen_ids = set()
@@ -163,6 +194,12 @@ def scan_windhawk_registry(folder_path):
         if mods:
             break
 
+    if not mods and user_settings:
+        wh_type = user_settings.get("Windhawk-Type", "Installed")
+        wh_path = user_settings.get("Windhawk-Path", "")
+        if wh_type == "Portable" and wh_path:
+            mods = _scan_portable_mods(wh_path)
+
     with open(manifest_path, 'w') as f:
         json.dump({"installedMods": mods}, f, indent=2)
     return mods
@@ -177,7 +214,20 @@ def _reg_format_value(name, value):
     return f'"{name}"="{escaped}"'
 
 
+def _is_elevated():
+    try:
+        return ctypes.windll.shell32.IsUserAnAdmin() != 0
+    except AttributeError:
+        return False
+
+
 def _run_elevated(file, params):
+    if _is_elevated():
+        result = subprocess.run([file, params], capture_output=True, text=True, creationflags=_NO_WINDOW)
+        if result.returncode != 0:
+            raise PermissionError(f"Elevated command failed: {result.stderr or result.stdout}")
+        return True
+
     class _SHELLEXECUTEINFO(ctypes.Structure):
         _fields_ = [
             ('cbSize', ctypes.c_ulong),
@@ -204,9 +254,13 @@ def _run_elevated(file, params):
     sei.lpParameters = params
     sei.nShow = 0
     if not ctypes.windll.shell32.ShellExecuteExW(ctypes.byref(sei)):
-        return False
+        raise PermissionError("User cancelled or failed to elevate")
     ctypes.windll.kernel32.WaitForSingleObject(sei.hProcess, 60000)
+    exit_code = ctypes.c_ulong()
+    ctypes.windll.kernel32.GetExitCodeProcess(sei.hProcess, ctypes.byref(exit_code))
     ctypes.windll.kernel32.CloseHandle(sei.hProcess)
+    if exit_code.value != 0:
+        raise PermissionError(f"Elevated script failed with exit code {exit_code.value}")
     return True
 
 
@@ -242,8 +296,7 @@ def _apply_windhawk_hklm(mods):
             f.write('@net stop WindhawkEngine\n')
             f.write('@net start WindhawkEngine\n')
 
-        if not _run_elevated(bat_file, ''):
-            raise PermissionError("User cancelled or failed to elevate")
+        _run_elevated(bat_file, '')
     finally:
         for p in [reg_file, bat_file]:
             try:
@@ -275,46 +328,27 @@ def apply_windhawk_profile(profile, user_settings, folder_path):
     wh_type = user_settings.get("Windhawk-Type", "Installed")
 
     if wh_type == "Installed":
+        _apply_windhawk_hklm(mods)
+    else:
+        wh_path = user_settings.get("Windhawk-Path", "")
+        windhawk_dir = os.path.dirname(wh_path) if wh_path else ""
+
+        # Portable Windhawk stores mod settings in files under AppData/, not in registry.
+        # The exact file format is undocumented, so we apply changes directly via HKLM
+        # (the officially documented mechanism per the Windhawk maintainer).
         try:
             _apply_windhawk_hklm(mods)
         except PermissionError:
-            print("WARNING: Admin privileges required for Windhawk changes (HKLM)")
-            return
+            print("WARNING: Could not write Windhawk settings to registry (not admin). "
+                  "For portable mode, pre-configure mods in Windhawk UI.")
         except Exception as e:
-            print(f"WARNING: Failed to apply Windhawk profile: {e}")
-            return
-    else:
-        try:
-            parent_key = winreg.CreateKey(winreg.HKEY_CURRENT_USER, r"SOFTWARE\Windhawk\Engine\Mods")
-            for mod in mods:
-                mod_id = mod.get("id", "")
-                enabled = mod.get("enabled", 0)
-                mod_key = winreg.CreateKey(parent_key, mod_id)
-                disabled_val = 0 if enabled else 1
-                winreg.SetValueEx(mod_key, "Disabled", 0, winreg.REG_DWORD, disabled_val)
-                settings = mod.get("settings", {})
-                if isinstance(settings, dict) and settings:
-                    settings_key = winreg.CreateKey(mod_key, "Settings")
-                    for sk, sv in settings.items():
-                        if isinstance(sv, bool):
-                            winreg.SetValueEx(settings_key, sk, 0, winreg.REG_DWORD, int(sv))
-                        elif isinstance(sv, int):
-                            winreg.SetValueEx(settings_key, sk, 0, winreg.REG_DWORD, sv)
-                        else:
-                            winreg.SetValueEx(settings_key, sk, 0, winreg.REG_SZ, str(sv))
-                    winreg.CloseKey(settings_key)
-                    winreg.SetValueEx(mod_key, "SettingsChangeTime", 0, winreg.REG_QWORD, int(time.time()))
-                winreg.CloseKey(mod_key)
-            winreg.CloseKey(parent_key)
-        except Exception as e:
-            print(f"WARNING: Failed to write portable Windhawk settings: {e}")
-            return
-        wh_path = user_settings.get("Windhawk-Path", "")
-        if wh_path:
+            print(f"WARNING: Failed to apply Windhawk settings: {e}")
+
+        if wh_path and os.path.exists(wh_path):
             kill_process("windhawk.exe")
             subprocess.Popen([wh_path], creationflags=_NO_WINDOW)
         else:
-            print("WARNING: Windhawk path not configured for portable mode")
+            print("WARNING: Windhawk path not configured or not found for portable mode")
 
 
 def autodetect_paths():
@@ -337,6 +371,17 @@ def autodetect_paths():
         if os.path.exists(p):
             paths["Windhawk-Path"] = p
             break
+
+    wh_type = "Portable"
+    for root_key in [winreg.HKEY_LOCAL_MACHINE]:
+        try:
+            key = winreg.OpenKey(root_key, r"SOFTWARE\Windhawk\Engine")
+            winreg.CloseKey(key)
+            wh_type = "Installed"
+            break
+        except (FileNotFoundError, PermissionError, OSError):
+            pass
+    paths["Windhawk-Type"] = wh_type
 
     user_home = os.path.expanduser("~")
     yasb_config = os.path.join(user_home, ".yasb")
@@ -364,7 +409,14 @@ if __name__ == "__main__":
         target_arg = sys.argv[2]
 
         if target_arg == "scan":
-            scan_windhawk_registry(folder_path)
+            settings_path = os.path.join(folder_path, "userSettings.json")
+            scan_settings = None
+            try:
+                with open(settings_path) as f:
+                    scan_settings = json.load(f)
+            except (FileNotFoundError, json.JSONDecodeError):
+                pass
+            scan_windhawk_registry(folder_path, scan_settings)
             sys.exit(0)
 
         if target_arg == "autodetect":

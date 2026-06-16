@@ -161,23 +161,38 @@ $json | ConvertTo-Json -Depth 10 | Set-Content $path -Encoding UTF8
 
 ---
 
-## Windhawk Implementation Plan (TODO)
+## Windhawk Integration (Implemented)
 
-### 1. Sidecar (Python)
-- [ ] Implement `scan_windhawk_registry()`: Reads `HKLM\SOFTWARE\Windhawk\Mods` and writes to `windhawkManifest.json`.
-- [ ] Implement `apply_windhawk_profile()`:
-    - Writes `Enabled` DWORD (0 or 1) to Registry.
-    - Writes setting subkeys to `HKLM\SOFTWARE\Windhawk\Engine\Mods`.
-- [ ] Implement `restart_windhawk_service()`: Uses `sc.exe` or `psutil` to restart the service to force-apply changes.
+### Installed Mode (HKLM Registry)
+- `scan_windhawk_registry()`: Reads `HKLM\SOFTWARE\Windhawk\Engine\Mods` → writes `windhawkManifest.json`
+- `apply_windhawk_profile()` (Installed):
+  - Generates `.reg` file with mod `Disabled` DWORD, `Settings` subkeys, and `SettingsChangeTime` QWORD
+  - Wraps in `.bat` that does `reg import` + `net stop/start WindhawkEngine`
+  - Elevates via `ShellExecuteExW(runas)` → 1 UAC prompt
+  - This is the official mechanism confirmed by the Windhawk maintainer (m417z, discussion #73, #393)
 
-### 2. Frontend (React)
-- [ ] **Manifest Loading:** Read `windhawkManifest.json` to populate a list of available mods in `CreateProfile.jsx`.
-- [ ] **Mod Toggles:** Allow users to pick which mods are active for a specific profile.
-- [ ] **Advanced Settings:** Provide a text area for raw JSON/YAML setting injection per mod.
+### Portable Mode (File-based — Limited)
+- **Portable Windhawk does NOT use the registry** — stores everything in `AppData/Mods/` files (undocumented format)
+- Scan falls back to reading `{windhawk_dir}/AppData/Mods/` directories to discover mods
+- Apply writes to HKLM as best-effort (only documented programmatic mechanism), then kills/restarts `windhawk.exe`
+- Full settings injection requires pre-configuring mods via Windhawk UI
 
-### 3. Permissions
-- [ ] Sidecar must be executed with Administrative privileges to modify `HKEY_LOCAL_MACHINE`.
-- [ ] Update Tauri `capabilities` to allow service management commands.
+### Registry Layout (Installed)
+```
+HKLM\SOFTWARE\Windhawk\Engine\Mods\{ModID}/
+  ├── Disabled          REG_DWORD   (1=disabled, 0=enabled)
+  ├── SettingsChangeTime REG_QWORD   (timestamp → triggers reload)
+  └── Settings/          KEY
+      └── setting_name = REG_SZ/DWORD value
+```
+
+### Key Details
+- `Disabled` DWORD is INVERTED from `enabled` field in profile (1=disabled, 0=enabled)
+- `.reg` files require UTF-16 LE with BOM
+- `SettingsChangeTime` must be QWORD type
+- Windhawk service name is `WindhawkEngine`
+- `_run_elevated` now detects if already running as admin (`IsUserAnAdmin`) to skip UAC prompt
+- If elevation is cancelled or fails, a `PermissionError` propagates to the frontend (no longer silently swallowed)
 
 ---
 
@@ -188,7 +203,7 @@ $json | ConvertTo-Json -Depth 10 | Set-Content $path -Encoding UTF8
 
 ## Roadmap
 - [x] **Onboarding Wizard** — 5-step first-run flow
-- [ ] **Windhawk Integration** (High Priority)
+- [x] **Windhawk Integration** — HKLM registry (Installed) + file-based (Portable, limited)
 - [ ] **Komorebi Support**
 - [ ] **Global Color Sync** (Accents across all tools)
 - [ ] **Auto-Discovery of tool paths**

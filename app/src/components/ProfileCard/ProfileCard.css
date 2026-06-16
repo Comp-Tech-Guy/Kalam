@@ -32,6 +32,16 @@
     letter-spacing: -0.01em;
 }
 
+.profile-error {
+    color: var(--danger, #ef4444);
+    font-size: 0.85rem;
+    margin: 0 0 16px 0;
+    padding: 8px 12px;
+    background: rgba(239, 68, 68, 0.1);
+    border-radius: 8px;
+    border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
 .card-actions {
     display: flex;
     gap: 8px;
