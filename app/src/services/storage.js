@@ -22,6 +22,7 @@ export async function initializeFS(){
             baseDir: BaseDirectory.AppData
         });
         const defaultSettings = {
+            "onboardingComplete": false,
             "rainmeter-Path": "",
             "Yasb-Config-Path": "",
             "Yasb-Exe-Path": "",
@@ -137,6 +138,19 @@ export async function editData(fileName, targetedData){
         }
         bustCache(fileName);
     }catch(error){
+        console.log(error);
+    }
+}
+
+export async function setOnboardingComplete(value = true) {
+    try {
+        const currentData = await getData('userSettings.json', true);
+        const updated = { ...currentData, onboardingComplete: value };
+        const appDataPath = await appDataDir();
+        const filePath = await join(appDataPath, '', 'userSettings.json');
+        await writeTextFile(filePath, JSON.stringify(updated, null, 2));
+        bustCache('userSettings.json');
+    } catch (error) {
         console.log(error);
     }
 }

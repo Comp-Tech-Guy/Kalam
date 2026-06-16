@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import "../Dashboard/Dashboard.css"
-import { editData, getData } from "../../services/storage";
+import { editData, getData, setOnboardingComplete } from "../../services/storage";
 import { autoDetectPaths as detectSidecarPaths } from "../../services/sidecar";
 
 function Settings() {
@@ -15,6 +15,7 @@ function Settings() {
     const [saved, setSaved] = useState(false);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    const [onboardingReset, setOnboardingReset] = useState(false);
 
     const loadData = async () => {
         setLoading(true);
@@ -82,6 +83,12 @@ function Settings() {
             setError("Failed to save settings");
         }
     }
+
+    const resetOnboarding = async () => {
+        await setOnboardingComplete(false);
+        setOnboardingReset(true);
+        setTimeout(() => setOnboardingReset(false), 3000);
+    };
 
     if (loading) {
         return (
@@ -199,6 +206,16 @@ function Settings() {
                         style={{ marginRight: "auto" }}
                     >
                         {detecting ? "Scanning..." : "Auto Detect Paths"}
+                    </button>
+                    <button
+                        id="settings-reset-onboarding"
+                        className="btn-detect"
+                        onClick={resetOnboarding}
+                        disabled={onboardingReset}
+                        style={{ opacity: 0.75 }}
+                        title="Reset the onboarding wizard — it will show again on next app launch"
+                    >
+                        {onboardingReset ? "Onboarding Reset ✓" : "Show Onboarding Again"}
                     </button>
                     <button className="btn-submit" onClick={storeData} disabled={saved}>
                         {saved ? "Settings Saved!" : "Save Changes"}

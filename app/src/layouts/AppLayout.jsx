@@ -1,17 +1,26 @@
 import { useState, useEffect, useRef } from "react";
 import "./AppLayout.css";
 import { getCurrentWindow } from '@tauri-apps/api/window';
-import { initializeFS } from '../services/storage';
+import { initializeFS, getData } from '../services/storage';
 import { NavLink, Outlet } from "react-router-dom";
+import Onboarding from '../pages/Onboarding/Onboarding';
 
 function AppLayout() {
   const [isMaximized, setIsMaximized] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(false);
   const minimizeRef = useRef(null);
   const maximizeRef = useRef(null);
   const closeRef = useRef(null);
 
   useEffect(() => {
-    initializeFS()
+    async function init() {
+      await initializeFS();
+      const settings = await getData('userSettings.json', true);
+      if (settings && settings.onboardingComplete === false) {
+        setShowOnboarding(true);
+      }
+    }
+    init();
   }, []);
 
   const appWindow = getCurrentWindow();
@@ -62,6 +71,9 @@ function AppLayout() {
 
   return (
     <main className="container" >
+      {showOnboarding && (
+        <Onboarding onDone={() => setShowOnboarding(false)} />
+      )}
       <div className="titlebar" data-tauri-drag-region>
         <div className="app-icon">
           <svg width="24" height="24" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
