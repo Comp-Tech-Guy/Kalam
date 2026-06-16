@@ -6,6 +6,7 @@ import ctypes
 import psutil
 import time
 import yaml
+import winreg
 
 _NO_WINDOW = subprocess.CREATE_NO_WINDOW
 
@@ -98,10 +99,234 @@ def zebar_apply(config_json, config_path):
     subprocess.Popen(["zebar.exe"], creationflags=_NO_WINDOW)
 
 
+def _read_mod_subkey(mod_subkey, mod_id):
+    entry = {"id": mod_id, "name": mod_id, "enabled": 0}
+    try:
+        disabled, _ = winreg.QueryValueEx(mod_subkey, "Disabled")
+        entry["enabled"] = 0 if disabled else 1
+    except (FileNotFoundError, OSError):
+        entry["enabled"] = 1
+    try:
+        settings_key = winreg.OpenKey(mod_subkey, "Settings")
+        try:
+            j = 0
+            settings = {}
+            while True:
+                try:
+                    val_name, val_data, val_type = winreg.EnumValue(settings_key, j)
+                    settings[val_name] = val_data
+                    j += 1
+                except OSError:
+                    break
+            entry["settings"] = settings
+        finally:
+            winreg.CloseKey(settings_key)
+    except (FileNotFoundError, OSError):
+        pass
+    return entry
+
+
+def scan_windhawk_registry(folder_path):
+    manifest_path = os.path.join(folder_path, "windhawkManifest.json")
+    mods = []
+    seen_ids = set()
+
+    for key_path in [r"SOFTWARE\Windhawk\Engine\Mods", r"SOFTWARE\Windhawk\Mods"]:
+        for root_key in [winreg.HKEY_LOCAL_MACHINE, winreg.HKEY_CURRENT_USER]:
+            try:
+                key = winreg.OpenKey(root_key, key_path)
+            except (FileNotFoundError, PermissionError, OSError):
+                continue
+            try:
+                i = 0
+                while True:
+                    try:
+                        mod_id = winreg.EnumKey(key, i)
+                        if mod_id not in seen_ids:
+                            seen_ids.add(mod_id)
+                            try:
+                                mod_subkey = winreg.OpenKey(key, mod_id)
+                                try:
+                                    entry = _read_mod_subkey(mod_subkey, mod_id)
+                                finally:
+                                    winreg.CloseKey(mod_subkey)
+                            except OSError:
+                                entry = {"id": mod_id, "name": mod_id, "enabled": 1}
+                            mods.append(entry)
+                        i += 1
+                    except OSError:
+                        break
+            finally:
+                winreg.CloseKey(key)
+            if mods:
+                break
+        if mods:
+            break
+
+    with open(manifest_path, 'w') as f:
+        json.dump({"installedMods": mods}, f, indent=2)
+    return mods
+
+
+def _reg_format_value(name, value):
+    if isinstance(value, bool):
+        return f'"{name}"=dword:{int(value):08x}'
+    if isinstance(value, int):
+        return f'"{name}"=dword:{value:08x}'
+    escaped = str(value).replace("\\", "\\\\").replace('"', '\\"')
+    return f'"{name}"="{escaped}"'
+
+
+def _run_elevated(file, params):
+    class _SHELLEXECUTEINFO(ctypes.Structure):
+        _fields_ = [
+            ('cbSize', ctypes.c_ulong),
+            ('fMask', ctypes.c_ulong),
+            ('hwnd', ctypes.c_void_p),
+            ('lpVerb', ctypes.c_wchar_p),
+            ('lpFile', ctypes.c_wchar_p),
+            ('lpParameters', ctypes.c_wchar_p),
+            ('lpDirectory', ctypes.c_wchar_p),
+            ('nShow', ctypes.c_int),
+            ('hInstApp', ctypes.c_void_p),
+            ('lpIDList', ctypes.c_void_p),
+            ('lpClass', ctypes.c_wchar_p),
+            ('hKeyClass', ctypes.c_void_p),
+            ('dwHotKey', ctypes.c_ulong),
+            ('hMonitor', ctypes.c_void_p),
+            ('hProcess', ctypes.c_void_p),
+        ]
+    sei = _SHELLEXECUTEINFO()
+    sei.cbSize = ctypes.sizeof(sei)
+    sei.fMask = 0x00000040
+    sei.lpVerb = 'runas'
+    sei.lpFile = file
+    sei.lpParameters = params
+    sei.nShow = 0
+    if not ctypes.windll.shell32.ShellExecuteExW(ctypes.byref(sei)):
+        return False
+    ctypes.windll.kernel32.WaitForSingleObject(sei.hProcess, 60000)
+    ctypes.windll.kernel32.CloseHandle(sei.hProcess)
+    return True
+
+
+def _apply_windhawk_hklm(mods):
+    import tempfile as _tempfile
+    reg_lines = ['Windows Registry Editor Version 5.00', '']
+    for mod in mods:
+        mod_id = mod.get("id", "")
+        enabled = mod.get("enabled", 0)
+        mod_path = rf"HKEY_LOCAL_MACHINE\SOFTWARE\Windhawk\Engine\Mods\{mod_id}"
+        reg_lines.append(f'[{mod_path}]')
+        disabled_val = 0 if enabled else 1
+        reg_lines.append(f'"Disabled"=dword:{disabled_val:08x}')
+        reg_lines.append(f'"SettingsChangeTime"=qword:{int(time.time()):016x}')
+        reg_lines.append('')
+        settings = mod.get("settings", {})
+        if isinstance(settings, dict) and settings:
+            settings_path = rf"{mod_path}\Settings"
+            reg_lines.append(f'[{settings_path}]')
+            for sk, sv in settings.items():
+                reg_lines.append(_reg_format_value(sk, sv))
+            reg_lines.append('')
+
+    reg_content = '\r\n'.join(reg_lines) + '\r\n'
+    td = _tempfile.gettempdir()
+    reg_file = os.path.join(td, 'kalam_windhawk.reg')
+    bat_file = os.path.join(td, 'Kalam_Update_Windhawk_Settings.bat')
+    try:
+        with open(reg_file, 'w', encoding='utf-16le') as f:
+            f.write('\ufeff' + reg_content)
+        with open(bat_file, 'w') as f:
+            f.write(f'@reg import "{reg_file}"\n')
+            f.write('@net stop WindhawkEngine\n')
+            f.write('@net start WindhawkEngine\n')
+
+        if not _run_elevated(bat_file, ''):
+            raise PermissionError("User cancelled or failed to elevate")
+    finally:
+        for p in [reg_file, bat_file]:
+            try:
+                os.remove(p)
+            except OSError:
+                pass
+
+
+def apply_windhawk_profile(profile, user_settings, folder_path):
+    profile_mods = profile.get("Windhawk-Mods", [])
+    profile_ids = {m["id"] for m in profile_mods}
+
+    manifest_path = os.path.join(folder_path, "windhawkManifest.json")
+    installed_ids = []
+    try:
+        with open(manifest_path) as f:
+            installed_ids = [m["id"] for m in json.load(f).get("installedMods", [])]
+    except (FileNotFoundError, json.JSONDecodeError, KeyError):
+        pass
+
+    mods = list(profile_mods)
+    for iid in installed_ids:
+        if iid not in profile_ids:
+            mods.append({"id": iid, "enabled": 0, "settings": {}})
+
+    if not mods:
+        return
+
+    wh_type = user_settings.get("Windhawk-Type", "Installed")
+
+    if wh_type == "Installed":
+        try:
+            _apply_windhawk_hklm(mods)
+        except PermissionError:
+            print("WARNING: Admin privileges required for Windhawk changes (HKLM)")
+            return
+        except Exception as e:
+            print(f"WARNING: Failed to apply Windhawk profile: {e}")
+            return
+    else:
+        try:
+            parent_key = winreg.CreateKey(winreg.HKEY_CURRENT_USER, r"SOFTWARE\Windhawk\Engine\Mods")
+            for mod in mods:
+                mod_id = mod.get("id", "")
+                enabled = mod.get("enabled", 0)
+                mod_key = winreg.CreateKey(parent_key, mod_id)
+                disabled_val = 0 if enabled else 1
+                winreg.SetValueEx(mod_key, "Disabled", 0, winreg.REG_DWORD, disabled_val)
+                settings = mod.get("settings", {})
+                if isinstance(settings, dict) and settings:
+                    settings_key = winreg.CreateKey(mod_key, "Settings")
+                    for sk, sv in settings.items():
+                        if isinstance(sv, bool):
+                            winreg.SetValueEx(settings_key, sk, 0, winreg.REG_DWORD, int(sv))
+                        elif isinstance(sv, int):
+                            winreg.SetValueEx(settings_key, sk, 0, winreg.REG_DWORD, sv)
+                        else:
+                            winreg.SetValueEx(settings_key, sk, 0, winreg.REG_SZ, str(sv))
+                    winreg.CloseKey(settings_key)
+                    winreg.SetValueEx(mod_key, "SettingsChangeTime", 0, winreg.REG_QWORD, int(time.time()))
+                winreg.CloseKey(mod_key)
+            winreg.CloseKey(parent_key)
+        except Exception as e:
+            print(f"WARNING: Failed to write portable Windhawk settings: {e}")
+            return
+        wh_path = user_settings.get("Windhawk-Path", "")
+        if wh_path:
+            kill_process("windhawk.exe")
+            subprocess.Popen([wh_path], creationflags=_NO_WINDOW)
+        else:
+            print("WARNING: Windhawk path not configured for portable mode")
+
+
 if __name__ == "__main__":
     try:
         folder_path = sys.argv[1]
-        target_profile_id = int(sys.argv[2])
+        target_arg = sys.argv[2]
+
+        if target_arg == "scan":
+            scan_windhawk_registry(folder_path)
+            sys.exit(0)
+
+        target_profile_id = int(target_arg)
 
         profiles_path = os.path.join(folder_path, "userProfiles.json")
         settings_path = os.path.join(folder_path, "userSettings.json")
@@ -139,6 +364,10 @@ if __name__ == "__main__":
             has_yasb_css = "Yasb-CSS" in profile and profile["Yasb-CSS"]
             yasb_running = is_process_running("yasb.exe")
             if (has_yasb_yaml and has_yasb_css and not yasb_running) or ((not has_yasb_yaml or not has_yasb_css) and yasb_running):
+                needs_apply = True
+
+            has_windhawk = "Windhawk-Mods" in profile and profile["Windhawk-Mods"]
+            if has_windhawk:
                 needs_apply = True
 
             if not needs_apply:
@@ -189,6 +418,8 @@ if __name__ == "__main__":
                 print("WARNING: Zebar config path not configured in settings")
         else:
             kill_process("zebar.exe")
+
+        apply_windhawk_profile(profile, user_settings, folder_path)
 
         user_settings["activeProfile"] = target_profile_id
         with open(settings_path, 'w') as f:

@@ -8,6 +8,8 @@ function Settings() {
     const [yasbPath, setYasbPath] = useState('');
     const [glazePath, setGlazePath] = useState('');
     const [zebarPath, setZebarPath] = useState('');
+    const [windhawkType, setWindhawkType] = useState('Installed');
+    const [windhawkPath, setWindhawkPath] = useState('');
     const [saved, setSaved] = useState(false);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
@@ -23,6 +25,8 @@ function Settings() {
                 setYasbPath(data["Yasb-Config-Path"] || "");
                 setGlazePath(data["GlazeWM-Config-Path"] || "");
                 setZebarPath(data["Zebar-Config-Path"] || "");
+                setWindhawkType(data["Windhawk-Type"] || "Installed");
+                setWindhawkPath(data["Windhawk-Path"] || "");
             }
         } catch (e) {
             setError("Failed to load settings");
@@ -42,7 +46,9 @@ function Settings() {
             "Yasb-Config-Path": yasbPath,
             "Yasb-Exe-Path": yasbExe,
             "GlazeWM-Config-Path": glazePath,
-            "Zebar-Config-Path": zebarPath
+            "Zebar-Config-Path": zebarPath,
+            "Windhawk-Type": windhawkType,
+            "Windhawk-Path": windhawkPath
         }
         try {
             await editData("userSettings.json", data);
@@ -125,6 +131,39 @@ function Settings() {
                         value={zebarPath} 
                         onChange={(e) => setZebarPath(e.target.value)} 
                         placeholder="C:\Users\Name\AppData\Roaming\zebar"
+                    />
+                </div>
+
+                <div className="form-group">
+                    <label>Windhawk Type</label>
+                    <select 
+                        value={windhawkType} 
+                        onChange={(e) => setWindhawkType(e.target.value)}
+                        style={{
+                            background: "var(--bg-card)",
+                            border: "1px solid var(--border-light)",
+                            borderRadius: "10px",
+                            padding: "12px 16px",
+                            color: "var(--text-main)",
+                            fontFamily: "inherit",
+                            fontSize: "0.95rem",
+                            outline: "none",
+                            width: "100%",
+                            boxSizing: "border-box"
+                        }}
+                    >
+                        <option value="Installed">Installed (Service)</option>
+                        <option value="Portable">Portable (File-based)</option>
+                    </select>
+                </div>
+
+                <div className="form-group">
+                    <label>Windhawk Path</label>
+                    <input 
+                        type="text" 
+                        value={windhawkPath} 
+                        onChange={(e) => setWindhawkPath(e.target.value)} 
+                        placeholder="C:\Path\To\windhawk.exe"
                     />
                 </div>
 

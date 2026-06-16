@@ -101,3 +101,79 @@ textarea:focus {
     transform: translateY(-2px);
     box-shadow: 0 4px 20px var(--accent-glow);
 }
+
+/* App Checklist Grid */
+.checkbox-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    width: 100%;
+    grid-column: 2;
+}
+
+.checkbox-card {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-light);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: var(--trans-smooth);
+    user-select: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.checkbox-card:hover {
+    border-color: var(--accent);
+    background: rgba(30, 184, 165, 0.05);
+}
+
+.checkbox-card input[type="checkbox"] {
+    accent-color: var(--accent);
+    cursor: pointer;
+}
+
+/* Windhawk UI */
+.windhawk-mods-container {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+    grid-column: 2;
+}
+
+.windhawk-mod-item {
+    background: rgba(255, 255, 255, 0.01);
+    border: 1px solid var(--border-light);
+    border-radius: 10px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.windhawk-mod-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.windhawk-mod-title {
+    font-weight: 500;
+    font-size: 0.95rem;
+    color: var(--text-main);
+}
+
+.windhawk-mod-settings {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.windhawk-mod-settings label {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}

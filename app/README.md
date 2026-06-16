@@ -1,7 +1,21 @@
-# Tauri + React
+# Kalam
 
-This template should help get you started developing with Tauri and React in Vite.
+Profile-based desktop environment manager for Windows.
 
-## Recommended IDE Setup
+Bundles configurations for Rainmeter, YASB, GlazeWM, Zebar, Wallpaper, and Windhawk into profiles. Apply any profile with one click.
 
-- [VS Code](https://code.visualstudio.com/) + [Tauri](https://marketplace.visualstudio.com/items?itemName=tauri-apps.tauri-vscode) + [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer)
+## Tech Stack
+- **Frontend:** Tauri v2 + React 19 + Vite
+- **System logic:** Python 3 sidecar (compiled to .exe)
+- **Storage:** JSON files in `%APPDATA%/Kalam/`
+
+## Getting Started
+```powershell
+cd app
+npm install
+npm run tauri dev
+```
+
+## Documentation
+- [Developer Docs](../DEVELOPER.md) — architecture, schema, Windhawk details, build guide
+- [AI Context](../GEMINI.md) — project structure overview for AI assistants
