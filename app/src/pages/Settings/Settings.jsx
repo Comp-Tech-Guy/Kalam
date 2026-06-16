@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import "../Dashboard/Dashboard.css"
 import { editData, getData } from "../../services/storage";
+import { autoDetectPaths as detectSidecarPaths } from "../../services/sidecar";
 
 function Settings() {
     const [rainPath, setRainPath] = useState('');
@@ -10,6 +11,7 @@ function Settings() {
     const [zebarPath, setZebarPath] = useState('');
     const [windhawkType, setWindhawkType] = useState('Installed');
     const [windhawkPath, setWindhawkPath] = useState('');
+    const [detecting, setDetecting] = useState(false);
     const [saved, setSaved] = useState(false);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
@@ -38,6 +40,28 @@ function Settings() {
     useEffect(() => {
         loadData();
     }, [])
+
+    const autoDetectPaths = async () => {
+        setDetecting(true);
+        setError('');
+        try {
+            const found = await detectSidecarPaths();
+
+            if (found['rainmeter-Path']) setRainPath(found['rainmeter-Path']);
+            if (found['Yasb-Config-Path']) setYasbPath(found['Yasb-Config-Path']);
+            if (found['GlazeWM-Config-Path']) setGlazePath(found['GlazeWM-Config-Path']);
+            if (found['Zebar-Config-Path']) setZebarPath(found['Zebar-Config-Path']);
+            if (found['Windhawk-Path']) setWindhawkPath(found['Windhawk-Path']);
+
+            if (Object.keys(found).length === 0) {
+                setError("No tool installations detected. Please set paths manually.");
+            }
+        } catch (e) {
+            setError("Failed to auto-detect paths: " + (e.message || e));
+        } finally {
+            setDetecting(false);
+        }
+    };
 
     const storeData = async () => {
         setError('');
@@ -168,6 +192,14 @@ function Settings() {
                 </div>
 
                 <div className="form-actions">
+                    <button
+                        className="btn-detect"
+                        onClick={autoDetectPaths}
+                        disabled={detecting}
+                        style={{ marginRight: "auto" }}
+                    >
+                        {detecting ? "Scanning..." : "Auto Detect Paths"}
+                    </button>
                     <button className="btn-submit" onClick={storeData} disabled={saved}>
                         {saved ? "Settings Saved!" : "Save Changes"}
                     </button>

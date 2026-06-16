@@ -317,6 +317,47 @@ def apply_windhawk_profile(profile, user_settings, folder_path):
             print("WARNING: Windhawk path not configured for portable mode")
 
 
+def autodetect_paths():
+    paths = {}
+
+    rainmeter_checks = [
+        r"C:\Program Files\Rainmeter\Rainmeter.exe",
+        r"C:\Program Files (x86)\Rainmeter\Rainmeter.exe",
+    ]
+    for p in rainmeter_checks:
+        if os.path.exists(p):
+            paths["rainmeter-Path"] = p
+            break
+
+    windhawk_checks = [
+        r"C:\Program Files\Windhawk\Windhawk.exe",
+        r"C:\Program Files (x86)\Windhawk\Windhawk.exe",
+    ]
+    for p in windhawk_checks:
+        if os.path.exists(p):
+            paths["Windhawk-Path"] = p
+            break
+
+    user_home = os.path.expanduser("~")
+    yasb_config = os.path.join(user_home, ".yasb")
+    if os.path.isdir(yasb_config):
+        paths["Yasb-Config-Path"] = yasb_config
+
+    glaze_config = os.path.join(user_home, ".glazewm")
+    if os.path.isdir(glaze_config):
+        paths["GlazeWM-Config-Path"] = glaze_config
+
+    zebar_config = os.path.join(user_home, "AppData", "Roaming", "zebar")
+    if os.path.isdir(zebar_config):
+        paths["Zebar-Config-Path"] = zebar_config
+    else:
+        zebar_config2 = os.path.join(user_home, ".zebar")
+        if os.path.isdir(zebar_config2):
+            paths["Zebar-Config-Path"] = zebar_config2
+
+    return paths
+
+
 if __name__ == "__main__":
     try:
         folder_path = sys.argv[1]
@@ -324,6 +365,11 @@ if __name__ == "__main__":
 
         if target_arg == "scan":
             scan_windhawk_registry(folder_path)
+            sys.exit(0)
+
+        if target_arg == "autodetect":
+            result = autodetect_paths()
+            print(json.dumps(result))
             sys.exit(0)
 
         target_profile_id = int(target_arg)

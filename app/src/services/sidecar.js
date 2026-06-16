@@ -11,4 +11,14 @@ async function SideCar(profileId) {
     return output.stdout;
 }
 
+export async function autoDetectPaths() {
+    const folder = await appDataDir();
+    const command = Command.sidecar('binaries/my-sidecar/kalam-Sidecar', [folder, 'autodetect']);
+    const output = await command.execute();
+    if (output.code !== 0) {
+        throw new Error(output.stderr || output.stdout || `Sidecar exited with code ${output.code}`);
+    }
+    return JSON.parse(output.stdout);
+}
+
 export default SideCar;
