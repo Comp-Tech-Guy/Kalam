@@ -2,9 +2,11 @@ import "./Dashboard.css"
 import { getData } from "../../services/storage";
 import { useEffect, useState, useCallback } from "react";
 import ProfileCard from "../../components/ProfileCard/ProfileCard";
+import { stopAll } from "../../services/sidecar";
 
 function Dashboard() {
     const [data, setData] = useState(null);
+    const [stopping, setStopping] = useState(false);
     
     const dataRecieve = useCallback(async (forceRefresh) => {
         const json = await getData("userProfiles.json", forceRefresh);
@@ -18,6 +20,17 @@ function Dashboard() {
     const refresh = () => dataRecieve(true);
 
     const hasProfiles = data && data.profiles && data.profiles.length > 0;
+
+    const handleStopAll = async () => {
+        setStopping(true);
+        try {
+            await stopAll();
+        } catch (e) {
+            console.error("Stop all failed:", e);
+        } finally {
+            setStopping(false);
+        }
+    };
 
     return (
         <main className="AppPg">
@@ -47,6 +60,10 @@ function Dashboard() {
                     </div>
                 )}
             </div>
+
+            <button className="btn-stop-all" onClick={handleStopAll} disabled={stopping}>
+                {stopping ? "Stopping..." : "Stop All"}
+            </button>
         </main>
     );
 }

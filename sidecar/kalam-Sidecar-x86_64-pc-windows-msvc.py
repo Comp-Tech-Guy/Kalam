@@ -437,6 +437,32 @@ if __name__ == "__main__":
             print(json.dumps(result))
             sys.exit(0)
 
+        if target_arg == "stop-all":
+            stopped = []
+            names = get_running_processes()
+            for exe in ["Rainmeter.exe", "yasb.exe", "glazewm.exe", "zebar.exe"]:
+                if exe.lower() in names:
+                    kill_process(exe)
+                    stopped.append(exe)
+
+            manifest_path = os.path.join(folder_path, "windhawkManifest.json")
+            try:
+                with open(manifest_path) as f:
+                    manifest = json.load(f)
+                installed_mods = manifest.get("installedMods", [])
+                if installed_mods:
+                    mods = [{"id": m["id"], "enabled": 0, "settings": {}} for m in installed_mods]
+                    _apply_windhawk_hklm(mods)
+                    stopped.append("Windhawk-mods")
+            except (FileNotFoundError, json.JSONDecodeError, KeyError):
+                pass
+
+            if stopped:
+                print(f"Stopped: {', '.join(stopped)}")
+            else:
+                print("Nothing to stop")
+            sys.exit(0)
+
         target_profile_id = int(target_arg)
 
         profiles_path = os.path.join(folder_path, "userProfiles.json")

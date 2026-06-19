@@ -1,5 +1,36 @@
 @import "../../index.css";
 
+/* Stop All Button */
+.btn-stop-all {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: var(--danger);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: var(--trans-smooth);
+    z-index: 5;
+    font-family: inherit;
+}
+
+.btn-stop-all:hover {
+    background: #dc2626;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(239, 68, 68, 0.3);
+}
+
+.btn-stop-all:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
 .AppPg {
     padding: 40px;
 }

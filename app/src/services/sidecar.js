@@ -21,4 +21,14 @@ export async function autoDetectPaths() {
     return JSON.parse(output.stdout);
 }
 
+export async function stopAll() {
+    const folder = await appDataDir();
+    const command = Command.sidecar('binaries/my-sidecar/kalam-Sidecar', [folder, 'stop-all']);
+    const output = await command.execute();
+    if (output.code !== 0) {
+        throw new Error(output.stderr || output.stdout || `Sidecar exited with code ${output.code}`);
+    }
+    return output.stdout;
+}
+
 export default SideCar;
