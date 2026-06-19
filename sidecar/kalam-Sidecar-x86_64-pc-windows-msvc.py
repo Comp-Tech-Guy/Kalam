@@ -11,6 +11,17 @@ import winreg
 _NO_WINDOW = subprocess.CREATE_NO_WINDOW
 
 
+def get_running_processes():
+    names = set()
+    for process in psutil.process_iter(['name']):
+        try:
+            if process.info['name']:
+                names.add(process.info['name'].lower())
+        except (psutil.NoSuchProcess, psutil.AccessDenied):
+            pass
+    return names
+
+
 def is_process_running(exe_name: str) -> bool:
     target_lower = exe_name.lower()
     for process in psutil.process_iter(['name']):
@@ -25,36 +36,34 @@ def is_process_running(exe_name: str) -> bool:
 def kill_process(exe_name: str):
     target_lower = exe_name.lower()
 
-    # Try graceful exit first for apps that support it
     if target_lower == "glazewm.exe":
         subprocess.run(["glazewm.exe", "exit"],
                        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
                        creationflags=_NO_WINDOW)
-        time.sleep(1)
+        time.sleep(0.5)
 
-    # Try psutil terminate/kill for any remaining instances
+    found = False
     for process in psutil.process_iter(['name', 'pid']):
         try:
             if process.info['name'] and process.info['name'].lower() == target_lower:
+                found = True
                 process.terminate()
                 try:
                     process.wait(timeout=2)
                 except psutil.TimeoutExpired:
                     process.kill()
-                    process.wait(timeout=2)
+                    process.wait(timeout=1)
         except (psutil.NoSuchProcess, psutil.AccessDenied):
             pass
 
-    time.sleep(0.5)
+    if found:
+        time.sleep(0.3)
 
 
 def set_wallpaper_all_desktops(image_path):
-    SPI_SETDESKWALLPAPER = 20
-    SPIF_UPDATE_INI_FILE = 0x01
-    SPIF_SENDCHANGE = 0x02
-    ctypes.windll.user32.SystemParametersInfoW(
-        SPI_SETDESKWALLPAPER, 0, image_path, SPIF_UPDATE_INI_FILE | SPIF_SENDCHANGE
-    )
+    from pyvda import get_virtual_desktops
+    for d in get_virtual_desktops():
+        d.set_wallpaper(image_path)
 
 
 def rainmeter(path, layout):
@@ -292,9 +301,13 @@ def _apply_windhawk_hklm(mods):
         with open(reg_file, 'w', encoding='utf-16le') as f:
             f.write('\ufeff' + reg_content)
         with open(bat_file, 'w') as f:
-            f.write(f'@reg import "{reg_file}"\n')
-            f.write('@net stop WindhawkEngine\n')
-            f.write('@net start WindhawkEngine\n')
+            f.write(f'@reg import "{reg_file}" >nul 2>&1\n')
+            f.write('@sc query WindhawkEngine | find "RUNNING" >nul 2>&1\n')
+            f.write('@if not errorlevel 1 (\n')
+            f.write('    net stop WindhawkEngine >nul 2>&1\n')
+            f.write('    net start WindhawkEngine >nul 2>&1\n')
+            f.write(')\n')
+            f.write('@exit /b 0\n')
 
         _run_elevated(bat_file, '')
     finally:
@@ -444,6 +457,8 @@ if __name__ == "__main__":
             print(f"ERROR: Profile with id {target_profile_id} not found")
             sys.exit(1)
 
+        running_names = get_running_processes()
+
         active_profile_id = user_settings.get("activeProfile")
         if active_profile_id == target_profile_id:
             needs_apply = False
@@ -454,13 +469,13 @@ if __name__ == "__main__":
                 ("Zebar-Config", "zebar.exe"),
             ]:
                 has_it = field in profile and profile[field]
-                running = is_process_running(exe)
+                running = exe.lower() in running_names
                 if (has_it and not running) or (not has_it and running):
                     needs_apply = True
 
             has_yasb_yaml = "Yasb-Yaml" in profile and profile["Yasb-Yaml"]
             has_yasb_css = "Yasb-CSS" in profile and profile["Yasb-CSS"]
-            yasb_running = is_process_running("yasb.exe")
+            yasb_running = "yasb.exe" in running_names
             if (has_yasb_yaml and has_yasb_css and not yasb_running) or ((not has_yasb_yaml or not has_yasb_css) and yasb_running):
                 needs_apply = True
 
@@ -478,7 +493,7 @@ if __name__ == "__main__":
                 rainmeter(rain_path, rainmeter_layout)
             else:
                 print("WARNING: Rainmeter path not configured in settings")
-        else:
+        elif "Rainmeter.exe" in running_names:
             kill_process("Rainmeter.exe")
 
         wallpaper_path = profile.get("Wallpaper-Path", "")
@@ -494,7 +509,7 @@ if __name__ == "__main__":
                 yasb_code_inject(yasb_yaml, yasb_css, yasb_config_path, yasb_exe_path)
             else:
                 print("WARNING: YASB paths not configured in settings")
-        else:
+        elif "yasb.exe" in running_names:
             kill_process("yasb.exe")
 
         glaze_wm_config = profile.get("GlazeWM-Config", "")
@@ -504,7 +519,7 @@ if __name__ == "__main__":
                 glaze_wm_apply(glaze_wm_config, glaze_path)
             else:
                 print("WARNING: GlazeWM config path not configured in settings")
-        else:
+        elif "glazewm.exe" in running_names:
             kill_process("glazewm.exe")
 
         zebar_config = profile.get("Zebar-Config", "")
@@ -514,7 +529,7 @@ if __name__ == "__main__":
                 zebar_apply(zebar_config, zebar_path)
             else:
                 print("WARNING: Zebar config path not configured in settings")
-        else:
+        elif "zebar.exe" in running_names:
             kill_process("zebar.exe")
 
         apply_windhawk_profile(profile, user_settings, folder_path)

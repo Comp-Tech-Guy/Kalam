@@ -49,7 +49,7 @@ Kalam is a desktop **profile manager** for Windows customization tools. Users cr
 │  1. Read userProfiles.json + userSettings.json               │
 │  2. Apply or kill each app based on profile config:          │
 │     • Rainmeter — load layout / kill                         │
-│     • Wallpaper — set via Win32 API                          │
+│     • Wallpaper — set via pyvda (per-virtual-desktop)        │
 │     • YASB — inject config.yaml + styles.css / kill          │
 │     • GlazeWM — write config.yaml, restart / kill            │
 │     • Zebar — write settings.json, restart / kill            │
@@ -192,7 +192,7 @@ The sidecar binary path is configured in `tauri.conf.json` via `externalBin` and
 
 ## Sidecar — Python Backend
 
-File: `sidecar/kalam-Sidecar-x86_64-pc-windows-msvc.py` (537 lines, all logic in one file).
+File: `sidecar/kalam-Sidecar-x86_64-pc-windows-msvc.py` (~465 lines, all logic in one file).
 
 ### Entry Point
 
@@ -206,7 +206,7 @@ Receives two CLI args: `[appDataPath] [profileId]`. Reads `userSettings.json` fo
 | `yasb_code_inject(...)` | YASB | Writes config.yaml + styles.css, starts process |
 | `glaze_wm_apply(config, path)` | GlazeWM | Writes config.yaml, exits and restarts process |
 | `zebar_apply(config, path)` | Zebar | Writes settings.json, kills and restarts process |
-| `set_wallpaper_all_desktops(path)` | Wallpaper | Win32 `SystemParametersInfoW` API |
+| `set_wallpaper_all_desktops(path)` | Wallpaper | pyvda: iterates `get_virtual_desktops()`, calls `d.set_wallpaper()` per desktop |
 | `apply_windhawk_profile(...)` | Windhawk | Generates .reg file, elevates via .bat |
 
 ### Windhawk Registry Integration
@@ -217,11 +217,14 @@ Windhawk stores mod state in `HKLM\SOFTWARE\Windhawk\Engine\Mods\{ModID}`. The s
 
 Supports both Installed (HKLM registry) and Portable (file-based, limited) modes.
 
-### Process Management
+### Process Management (Optimized)
 
 Uses `psutil` for process discovery and lifecycle:
-- `is_process_running(exe_name)` — iterates `psutil.process_iter`
-- `kill_process(exe_name)` — graceful exit, terminate, kill fallback
+- `get_running_processes()` — single pass, returns `set[str]` of lowercase exe names (call once, cache the result)
+- `is_process_running(exe_name)` — iterates `psutil.process_iter` (use cached set instead when possible)
+- `kill_process(exe_name)` — graceful exit, terminate, kill fallback; only sleeps if it found a process to kill
+
+**Performance rule:** Never call `psutil.process_iter` more than once per sidecar invocation. The main apply flow calls `get_running_processes()` once at the top and uses O(1) set lookups for all running-checks. Tools not mentioned in the profile skip all process iteration entirely.
 
 ---
 
@@ -339,7 +342,8 @@ See `sidecar/kalam-Sidecar-x86_64-pc-windows-msvc.py` for full implementation.
 ### Installed Mode (HKLM Registry)
 
 - `scan_windhawk_registry()`: Reads `HKLM\SOFTWARE\Windhawk\Engine\Mods` → writes `windhawkManifest.json`
-- `apply_windhawk_profile()`: Generates `.reg` file → wraps in `.bat` → `reg import` + `net stop/start WindhawkEngine` → elevates via `ShellExecuteExW(runas)`
+- `apply_windhawk_profile()`: Generates `.reg` file → wraps in `.bat` → `reg import` → `sc query` check → conditional `net stop/start` (only if service is RUNNING) → elevates via `ShellExecuteExW(runas)`
+- **Optimization:** The batch skips the slow `net stop/start` (~3-4s) when the service isn't running, and suppresses all stdout/stderr to avoid false exit code errors
 
 ### Registry Layout
 
@@ -394,8 +398,9 @@ npm run tauri build  # Production
 
 ```powershell
 cd sidecar
-python -m PyInstaller kalam-Sidecar-x86_64-pc-windows-msvc.spec
+python -m PyInstaller kalam-Sidecar-x86_64-pc-windows-msvc.spec --noconfirm
 Copy-Item dist/kalam-Sidecar-x86_64-pc-windows-msvc.exe app/src-tauri/binaries/my-sidecar/ -Force
+Copy-Item dist/kalam-Sidecar-x86_64-pc-windows-msvc.exe app/src-tauri/target/debug/kalam-Sidecar.exe -Force
 ```
 
 ---
@@ -434,6 +439,40 @@ The in-memory cache (`const cache = {}`) is session-scoped. The async flow is:
 3. Next read → cache miss → read file → `cache[file] = freshData`
 
 Step 2's `await` is critical. Without it, step 3 reads the old file and re-caches stale data. This race condition affected all three write operations.
+
+### Wallpaper Only Applied to Current Desktop (Fixed)
+
+**Symptoms:** Wallpaper only appeared on the current virtual desktop. Switching desktops showed the old wallpaper.
+
+**Root cause:** Used Win32 `SystemParametersInfoW(SPI_SETDESKWALLPAPER)` which only affects the current desktop. Windows stores per-desktop wallpaper in registry at `...\VirtualDesktops\Desktops\{GUID}\Wallpaper`. Each desktop is independent.
+
+**Fix:** Replaced with `pyvda.get_virtual_desktops()` + per-desktop `d.set_wallpaper()`. Removed the SPU call that clobbered per-desktop registry state.
+
+### Profile Apply Too Slow (Optimized)
+
+**Symptoms:** Applying a wallpaper + Windhawk-only profile took 8-10 seconds.
+
+**Root causes & fixes:**
+1. **4 redundant process iterations** — `kill_process` called for Rainmeter, YASB, GlazeWM, Zebar even when not in profile, each calling `psutil.process_iter` independently. **Fix:** Single `get_running_processes()` call caches all process names in a set for O(1) lookups. Tools not in the profile skip process iteration entirely.
+2. **Unconditional Windhawk service restart** — `net stop/start` ran every time (~3-4s). **Fix:** Batch checks `sc query WindhawkEngine | find "RUNNING"` first; only restarts if the service is currently running.
+3. **Unconditional sleep in kill_process** — `time.sleep(0.5)` ran even when nothing was killed. **Fix:** Sleep only when `found == True`, reduced to 0.3s.
+4. **GlazeWM 1s sleep** — Reduced to 0.5s.
+
+### Windhawk "Exit code 2" Error (Fixed)
+
+**Symptoms:** ProfileCard displayed "Elevated script failed with exit code 2".
+
+**Root cause:** `net stop WindhawkEngine` / `net start WindhawkEngine` returns exit code 2 when service is already stopped/started. The `.bat` propagated this exit code to `_run_elevated`, which treated non-zero as failure.
+
+**Fix:** Added `>nul 2>&1` to suppress net.exe stderr/stdout. Forced `@exit /b 0` at end of batch so exit code is always 0 regardless of net.exe behavior.
+
+### PyInstaller "Failed to load Python DLL" (Fixed)
+
+**Symptoms:** Sidecar crashed immediately when launched by Tauri.
+
+**Root cause:** The spec used onedir mode (COLLECT) which outputs as a folder `_internal/`. Tauri's sidecar expects a single `.exe` file; the folder wasn't resolved.
+
+**Fix:** Switched to onefile mode (EXE without COLLECT). Added pyvda submodules to `hiddenimports`. Sidecar binary is now copied to both `binaries/my-sidecar/` (Tauri resolution) and `target/debug/` (dev builds).
 
 ---
 
