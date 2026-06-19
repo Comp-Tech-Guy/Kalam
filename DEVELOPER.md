@@ -55,7 +55,8 @@ Kalam is a desktop **profile manager** for Windows customization tools. Users cr
 │     • Zebar — write settings.json, restart / kill            │
 │     • Windhawk — Registry injection (.reg file + elevation)  │
 │  3. "stop-all": Kills all managed apps (Rainmeter, YASB,      │
-│     GlazeWM, Zebar). Wallpaper unchanged. Windhawk skipped.  │
+│     GlazeWM, Zebar) + disables all Windhawk mods via HKLM.   │
+│     Wallpaper unchanged.                                      │
 │  4. Write activeProfile to settings                          │
 └──────────────────────────────────────────────────────────────┘
 ```
@@ -187,7 +188,7 @@ const output = await command.execute();
 Exports three functions:
 - **default `SideCar(profileId)`** — Applies a profile by ID (or `"scan"` for Windhawk registry scan)
 - **`autoDetectPaths()`** — Discovers installed tool paths on the system
-- **`stopAll()`** — Kills all managed apps (Rainmeter, YASB, GlazeWM, Zebar), wallpaper untouched
+- **`stopAll()`** — Kills all managed apps (Rainmeter, YASB, GlazeWM, Zebar) + disables all Windhawk mods via HKLM, wallpaper untouched
 
 The sidecar binary path is configured in `tauri.conf.json` via `externalBin` and allowed in `capabilities/default.json` via `shell:allow-execute`.
 
@@ -201,7 +202,7 @@ File: `sidecar/kalam-Sidecar-x86_64-pc-windows-msvc.py` (~465 lines, all logic i
 
 Receives two CLI args: `[appDataPath] [profileId]`. Reads `userSettings.json` for global paths, `userProfiles.json` for the requested profile, then runs each tool's apply function based on which fields are non-empty in the profile.
 
-Special commands (instead of profileId): `"scan"` (Windhawk registry scan), `"autodetect"` (auto-detect tool paths), `"stop-all"` (kill all managed apps without changing wallpaper).
+Special commands (instead of profileId): `"scan"` (Windhawk registry scan), `"autodetect"` (auto-detect tool paths), `"stop-all"` (kill all managed apps + disable all Windhawk mods, wallpaper unchanged).
 
 ### Tool Apply Functions
 
@@ -212,7 +213,7 @@ Special commands (instead of profileId): `"scan"` (Windhawk registry scan), `"au
 | `glaze_wm_apply(config, path)` | GlazeWM | Writes config.yaml, exits and restarts process |
 | `zebar_apply(config, path)` | Zebar | Writes settings.json, kills and restarts process |
 | `set_wallpaper_all_desktops(path)` | Wallpaper | pyvda: iterates `get_virtual_desktops()`, calls `d.set_wallpaper()` per desktop |
-| `stop-all` (CLI command) | All | `get_running_processes()` → cached set → `kill_process` for each managed exe |
+| `stop-all` (CLI command) | All | `get_running_processes()` → cached set → `kill_process` for each exe + disable all Windhawk mods via `_apply_windhawk_hklm` |
 | `apply_windhawk_profile(...)` | Windhawk | Generates .reg file, elevates via .bat |
 
 ### Windhawk Registry Integration
