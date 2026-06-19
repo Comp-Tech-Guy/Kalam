@@ -17,48 +17,48 @@ Kalam is a desktop **profile manager** for Windows customization tools. Users cr
 ```
 ┌───────────────────────────────────────────────────────────────┐
 │                    Tauri App (WebView)                        │
-│  ┌─────────────────────────────────────────────────────────┐ │
-│  │  React Frontend                                         │ │
-│  │                                                         │ │
-│  │  main.jsx (entry)                                       │ │
-│  │    └── <BrowserRouter>                                  │ │
-│  │          └── <Routes>                                   │ │
-│  │                └── <AppLayout> (shell)                  │ │
-│  │                      ├── Titlebar (min/max/close)       │ │
-│  │                      ├── Sidebar (nav links)            │ │
-│  │                      ├── <Outlet /> (page content)      │ │
-│  │                      │    ├── Dashboard (profile list)  │ │
-│  │                      │    ├── CreateProfile (add/edit)  │ │
-│  │                      │    └── Settings (global paths)   │ │
-│  │                      └── <Onboarding /> (conditional)   │ │
-│  │                                                         │ │
-│  │  ┌──────────────────────────────────────────────────┐   │ │
-│  │  │  Services Layer                                  │   │ │
-│  │  │  ┌───────────────────┐  ┌──────────────────┐     │   │ │
-│  │  │  │  storage.js       │  │  sidecar.js       │     │   │ │
-│  │  │  │  - CRUD + cache   │  │  - Command.sidecar│     │   │ │
-│  │  │  │  - initializeFS   │  │  - autoDetectPaths│     │   │ │
-│  │  │  └───────────────────┘  └────────┬─────────┘     │   │ │
-│  │  └──────────────────────────────────┼───────────────┘   │ │
-│  └─────────────────────────────────────┼───────────────────┘ │
-└────────────────────────────────────────┼─────────────────────┘
+│  ┌─────────────────────────────────────────────────────────┐  │
+│  │  React Frontend                                         │  │
+│  │                                                         │  │
+│  │  main.jsx (entry)                                       │  │
+│  │    └── <BrowserRouter>                                  │  │
+│  │          └── <Routes>                                   │  │
+│  │                └── <AppLayout> (shell)                  │  │
+│  │                      ├── Titlebar (min/max/close)       │  │
+│  │                      ├── Sidebar (nav links)            │  │
+│  │                      ├── <Outlet /> (page content)      │  │
+│  │                      │    ├── Dashboard (profile list)  │  │
+│  │                      │    ├── CreateProfile (add/edit)  │  │
+│  │                      │    └── Settings (global paths)   │  │
+│  │                      └── <Onboarding /> (conditional)   │  │
+│  │                                                         │  │
+│  │  ┌──────────────────────────────────────────────────┐   │  │
+│  │  │  Services Layer                                  │   │  │
+│  │  │  ┌───────────────────┐  ┌────────────────────┐   │   │  │
+│  │  │  │  storage.js       │  │  sidecar.js        │   │   │  │
+│  │  │  │  - CRUD + cache   │  │  - Command.sidecar │   │   │  │
+│  │  │  │  - initializeFS   │  │  - autoDetectPaths │   │   │  │
+│  │  │  └───────────────────┘  └────────┬───────────┘   │   │  │
+│  │  └──────────────────────────────────┼───────────────┘   │  │
+│  └─────────────────────────────────────┼───────────────────┘  │
+└────────────────────────────────────────┼──────────────────────┘
                                          │ Tauri shell plugin
-┌────────────────────────────────────────┼─────────────────────┐
-│  Python Sidecar (kalam-Sidecar.exe)    │                     │
-│                                        ▼                     │
-│  1. Read userProfiles.json + userSettings.json               │
-│  2. Apply or kill each app based on profile config:          │
-│     • Rainmeter — load layout / kill                         │
-│     • Wallpaper — set via pyvda (per-virtual-desktop)        │
-│     • YASB — inject config.yaml + styles.css / kill          │
-│     • GlazeWM — write config.yaml, restart / kill            │
-│     • Zebar — write settings.json, restart / kill            │
-│     • Windhawk — Registry injection (.reg file + elevation)  │
+┌────────────────────────────────────────┼──────────────────────┐
+│  Python Sidecar (kalam-Sidecar.exe)    │                      │
+│                                        ▼                      │
+│  1. Read userProfiles.json + userSettings.json                │
+│  2. Apply or kill each app based on profile config:           │
+│     • Rainmeter — load layout / kill                          │
+│     • Wallpaper — set via pyvda (per-virtual-desktop)         │
+│     • YASB — inject config.yaml + styles.css / kill           │
+│     • GlazeWM — write config.yaml, restart / kill             │
+│     • Zebar — write settings.json, restart / kill             │
+│     • Windhawk — Registry injection (.reg file + elevation)   │
 │  3. "stop-all": Kills all managed apps (Rainmeter, YASB,      │
 │     GlazeWM, Zebar). Windhawk: Installed → disables mods via  │
 │     HKLM; Portable → kills windhawk.exe. Wallpaper unchanged. │
-│  4. Write activeProfile to settings                          │
-└──────────────────────────────────────────────────────────────┘
+│  4. Write activeProfile to settings                           │
+└───────────────────────────────────────────────────────────────┘
 ```
 
 ---
