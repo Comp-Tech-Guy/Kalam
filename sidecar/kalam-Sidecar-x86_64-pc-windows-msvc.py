@@ -445,15 +445,30 @@ if __name__ == "__main__":
                     kill_process(exe)
                     stopped.append(exe)
 
+            settings_path = os.path.join(folder_path, "userSettings.json")
+            wh_type = "Installed"
+            wh_path = ""
+            try:
+                with open(settings_path) as f:
+                    s = json.load(f)
+                wh_type = s.get("Windhawk-Type", "Installed")
+                wh_path = s.get("Windhawk-Path", "")
+            except (FileNotFoundError, json.JSONDecodeError):
+                pass
+
             manifest_path = os.path.join(folder_path, "windhawkManifest.json")
             try:
                 with open(manifest_path) as f:
                     manifest = json.load(f)
                 installed_mods = manifest.get("installedMods", [])
                 if installed_mods:
-                    mods = [{"id": m["id"], "enabled": 0, "settings": {}} for m in installed_mods]
-                    _apply_windhawk_hklm(mods)
-                    stopped.append("Windhawk-mods")
+                    if wh_type == "Installed":
+                        mods = [{"id": m["id"], "enabled": 0, "settings": {}} for m in installed_mods]
+                        _apply_windhawk_hklm(mods)
+                        stopped.append("Windhawk-mods")
+                    elif wh_path and os.path.exists(wh_path):
+                        kill_process("windhawk.exe")
+                        stopped.append("Windhawk")
             except (FileNotFoundError, json.JSONDecodeError, KeyError):
                 pass
 
