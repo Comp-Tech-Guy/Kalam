@@ -92,7 +92,7 @@ export async function addData(fileName, newData){
                 newData
             ]
         };
-        await update(fileName, updatedData);
+        update(fileName, updatedData);
         bustCache(fileName);
     }catch(error){
         console.log(error);
@@ -106,12 +106,12 @@ export async function removeData(fileName, target_id){
             const updatedData = {
                 profiles: currentData.profiles.filter(p => p.id != target_id)
             }
-            await update(fileName, updatedData);
+            update(fileName, updatedData);
         }else{
             const currentData = await getData(fileName, true);
             if(currentData.hasOwnProperty(target_id) && currentData[target_id] != ""){
                 currentData[target_id] = "";
-                await update(fileName, currentData);
+                update(fileName, currentData);
             }
         }
         bustCache(fileName);
@@ -132,11 +132,11 @@ export async function editData(fileName, targetedData){
                     return p;
                 })
             }
-            await update(fileName, updatedData);
+            update(fileName, updatedData);
         }else{
             const currentData = await getData(fileName, true);
             const merged = { ...currentData, ...targetedData };
-            await update(fileName, merged);
+            update(fileName, merged);
         }
         bustCache(fileName);
     }catch(error){

@@ -171,18 +171,6 @@ function Settings() {
                     <select 
                         value={windhawkType} 
                         onChange={(e) => setWindhawkType(e.target.value)}
-                        style={{
-                            background: "var(--bg-card)",
-                            border: "1px solid var(--border-light)",
-                            borderRadius: "10px",
-                            padding: "12px 16px",
-                            color: "var(--text-main)",
-                            fontFamily: "inherit",
-                            fontSize: "0.95rem",
-                            outline: "none",
-                            width: "100%",
-                            boxSizing: "border-box"
-                        }}
                     >
                         <option value="Installed">Installed (Service)</option>
                         <option value="Portable">Portable (File-based)</option>
@@ -204,16 +192,14 @@ function Settings() {
                         className="btn-detect"
                         onClick={autoDetectPaths}
                         disabled={detecting}
-                        style={{ marginRight: "auto" }}
                     >
                         {detecting ? "Scanning..." : "Auto Detect Paths"}
                     </button>
                     <button
                         id="settings-reset-onboarding"
-                        className="btn-detect"
+                        className="btn-detect btn-onboarding-reset"
                         onClick={resetOnboarding}
                         disabled={onboardingReset}
-                        style={{ opacity: 0.75 }}
                         title="Reset the onboarding wizard — it will show again on next app launch"
                     >
                         {onboardingReset ? "Onboarding Reset ✓" : "Show Onboarding Again"}

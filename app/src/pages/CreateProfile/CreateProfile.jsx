@@ -253,7 +253,7 @@ function CreateProfile() {
 
         <div className="form-group">
           <label>Wallpaper Image</label>
-          <div style={{ display: "flex", gap: "10px", width: "100%" }}>
+          <div className="input-row">
             <input
               type="text"
               value={imagePath}
@@ -262,7 +262,6 @@ function CreateProfile() {
             />
             <button
               className="btn-refresh"
-              style={{ margin: 0, whiteSpace: "nowrap" }}
               onClick={selectFile}
             >
               {imagePath ? "Change File" : "Select File"}
@@ -388,7 +387,7 @@ function CreateProfile() {
                     <div key={mod.id} className="windhawk-mod-item">
                       <div className="windhawk-mod-header">
                         <span className="windhawk-mod-title">{mod.name}</span>
-                        <label className="checkbox-card" style={{ padding: "4px 8px", margin: 0 }}>
+                        <label className="checkbox-card mod-toggle-badge">
                           <input
                             type="checkbox"
                             checked={isChecked}
@@ -404,8 +403,8 @@ function CreateProfile() {
                             value={getModSettingsString(mod.id)}
                             rows={4}
                             onChange={(e) => handleModSettingsChange(mod.id, e.target.value)}
-                            placeholder="e.g. { &quot;show-labels&quot;: true }"
-                            style={{ fontFamily: "monospace", fontSize: "0.85rem" }}
+                            placeholder='e.g. { "show-labels": true }'
+                            className="textarea-mono"
                           />
                         </div>
                       )}
@@ -413,7 +412,7 @@ function CreateProfile() {
                   );
                 })
               ) : (
-                <div style={{ color: "var(--text-muted)", fontSize: "0.9rem", padding: "12px", border: "1px dashed var(--border-light)", borderRadius: "8px" }}>
+                <div className="empty-mods-placeholder">
                   No installed Windhawk mods found. Make sure Windhawk is running and path is correct.
                 </div>
               )}
