@@ -186,9 +186,17 @@ const output = await command.execute();
 ```
 
 Exports three functions:
-- **default `SideCar(profileId)`** — Applies a profile by ID (or `"scan"` for Windhawk registry scan)
+- **default `SideCar(profileId)`** — Applies a profile by ID (or `"scan"` for Windhawk registry scan, or `"stop-all"` to kill all managed apps)
 - **`autoDetectPaths()`** — Discovers installed tool paths on the system
-- **`stopAll()`** — Kills all managed apps (Rainmeter, YASB, GlazeWM, Zebar). Windhawk: Installed → disables all mods via HKLM; Portable → kills windhawk.exe. Wallpaper untouched.
+- **`stopAll()`** — Kills all managed apps. Delegates to `SideCar('stop-all')`:
+
+  ```js
+  export async function stopAll() {
+      return SideCar('stop-all');
+  }
+  ```
+
+Implementation detail: `SideCar` passes `profileId.toString()` as the second CLI arg. When called with `'stop-all'`, the Python sidecar receives `['folder', 'stop-all']` and matches `target_arg == "stop-all"`.
 
 The sidecar binary path is configured in `tauri.conf.json` via `externalBin` and allowed in `capabilities/default.json` via `shell:allow-execute`.
 
@@ -497,6 +505,31 @@ Step 2's `await` is critical. Without it, step 3 reads the old file and re-cache
 **Root cause:** The spec used onedir mode (COLLECT) which outputs as a folder `_internal/`. Tauri's sidecar expects a single `.exe` file; the folder wasn't resolved.
 
 **Fix:** Switched to onefile mode (EXE without COLLECT). Added pyvda submodules to `hiddenimports`. Sidecar binary is now copied to both `binaries/my-sidecar/` (Tauri resolution) and `target/debug/` (dev builds).
+
+### Stop All: Missing Export + Stale Binary (Fixed)
+
+**Symptoms:** Two separate issues:
+1. `Uncaught SyntaxError: The requested module '/src/services/sidecar.js' does not provide an export named 'stopAll'` — app fails to load.
+2. After adding the export, runtime error: `ERROR: invalid literal for int() with base 10: 'stop-all'` — button clicks fail silently.
+
+**Root cause:**
+1. `Dashboard.jsx` imported `{ stopAll }` from `sidecar.js`, but no `stopAll` export was defined.
+2. The compiled sidecar binary (`app/src-tauri/binaries/my-sidecar/kalam-Sidecar-x86_64-pc-windows-msvc.exe`) was built from an older Python source that predated the `stop-all` handler. The old binary fell through to `int(target_arg)` which threw `ValueError`.
+
+**Fix:**
+1. Added the `stopAll` named export to `sidecar.js`:
+   ```js
+   export async function stopAll() {
+       return SideCar('stop-all');
+   }
+   ```
+2. Rebuilt the sidecar from current source using PyInstaller:
+   ```powershell
+   cd sidecar
+   python -m PyInstaller kalam-Sidecar-x86_64-pc-windows-msvc.spec --noconfirm
+   Copy-Item dist/kalam-Sidecar-x86_64-pc-windows-msvc.exe app/src-tauri/binaries/my-sidecar/ -Force
+   Copy-Item dist/kalam-Sidecar-x86_64-pc-windows-msvc.exe app/src-tauri/target/debug/kalam-Sidecar.exe -Force
+   ```
 
 ---
 
