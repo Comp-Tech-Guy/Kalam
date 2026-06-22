@@ -415,6 +415,78 @@ Required permissions:
 
 ---
 
+## Responsive Layout System
+
+### Layout Structure
+
+```
+┌──────────────────────────────────────────┐
+│  Titlebar (40px, sticky, z-index 10)     │
+├──────────┬───────────────────────────────┤
+│ Nav      │  PageContainer (flex: 1)      │
+│ 200px    │  ┌─────────────────────────┐  │
+│ (56px    │  │  <AppPg>                │  │
+│  narrow) │  │  padding: 32px 40px     │  │
+│          │  │  ↓ responsive ↓         │  │
+│          │  │  24px 20px @800px       │  │
+│          │  │  16px 12px @500px       │  │
+│          │  └─────────────────────────┘  │
+├──────────┴───────────────────────────────┤
+│  height: calc(100vh - 40px)              │
+└──────────────────────────────────────────┘
+```
+
+### Nav Sidebar Responsive Behavior
+
+**Breakpoint:** `800px` window width.
+
+| Property | Wide (≥800px) | Narrow (<800px) |
+|----------|---------------|-----------------|
+| Nav width | `200px` | `56px` |
+| Nav padding | `16px 10px` | `16px 10px` |
+| Link padding | `0 10px` | `0 0 0 10px` |
+| Icon position | **20px** from left edge | **20px** from left edge |
+
+**Key invariant:** The icon sits at exactly `20px` from the nav's left edge in both modes (nav `padding-left: 10px` + link `padding-left: 10px`). This prevents the icon from appearing to jump when the nav collapses.
+
+**Text hiding:** `<span>` labels hide via `max-width: 0; opacity: 0; overflow: hidden; white-space: nowrap` with CSS transitions — visual-only, no layout reflow.
+
+**Anti-jitter principle:** No CSS transitions on layout properties (width, padding) that trigger reflow during live window resize. Layout snaps instantly; only visual properties (opacity, max-width) animate. This prevents the feedback loop where a transitioning layout property constantly changes target while the user drags.
+
+### Stop-All Button Positioning
+
+The "Stop All" button on the Dashboard header is absolutely positioned to stay at the top-right corner on all window sizes:
+
+- `.dashboard-header` → `position: relative`
+- `.btn-stop-all` → `position: absolute; top: 0; right: 0`
+- `.dashboard-header-text` → `padding-right: 130px` prevents text overlap
+
+No responsive overrides needed — works at every width.
+
+### Content Padding
+
+`.AppPg` (used by Dashboard, CreateProfile, Settings) has stepped padding:
+- Default: `32px 40px`
+- `<800px`: `24px 20px`
+- `<500px`: `16px 12px`
+
+No transition on padding (anti-jitter rule).
+
+### Tauri Window Config
+
+```json
+{
+  "width": 1000,
+  "height": 800,
+  "minWidth": 700,
+  "minHeight": 500,
+  "resizable": true,
+  "decorations": false
+}
+```
+
+---
+
 ## Build & Deploy
 
 ### Frontend
