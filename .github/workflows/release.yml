@@ -45,6 +45,13 @@ jobs:
             echo "TAG_NAME=$env:GITHUB_REF_NAME" >> $env:GITHUB_OUTPUT
           }
 
+      - name: Set version in tauri.conf.json
+        shell: pwsh
+        run: |
+          $config = Get-Content app/src-tauri/tauri.conf.json -Raw | ConvertFrom-Json
+          $config.version = "${{ steps.version.outputs.VERSION }}"
+          $config | ConvertTo-Json -Depth 10 | Set-Content app/src-tauri/tauri.conf.json
+
       - name: Build Tauri app
         run: npm run tauri build
         working-directory: app
