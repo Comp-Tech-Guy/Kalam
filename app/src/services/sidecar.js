@@ -21,4 +21,8 @@ export async function autoDetectPaths() {
     return JSON.parse(output.stdout);
 }
 
+export async function stopAll() {
+    return SideCar('stop-all');
+}
+
 export default SideCar;
