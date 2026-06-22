@@ -68,8 +68,8 @@ jobs:
       - name: Create Release
         shell: pwsh
         run: |
-          gh release create "${{ github.ref_name }}" `
-            --title "${{ github.ref_name }}" `
+          gh release create "${{ steps.version.outputs.TAG_NAME }}" `
+            --title "${{ steps.version.outputs.TAG_NAME }}" `
             --generate-notes
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -77,7 +77,7 @@ jobs:
       - name: Upload MSI to Release
         shell: pwsh
         run: |
-          gh release upload "${{ github.ref_name }}" `
+          gh release upload "${{ steps.version.outputs.TAG_NAME }}" `
             "app/src-tauri/target/release/bundle/msi/Kalam_${{ steps.version.outputs.VERSION }}_x64_en-US.msi"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -87,10 +87,10 @@ jobs:
         run: |
           $json = Get-Content update.json -Raw | ConvertFrom-Json
           $json.version = "${{ steps.version.outputs.VERSION }}"
-          $json.notes = "See https://github.com/Comp-Tech-Guy/Kalam/releases/tag/${{ github.ref_name }}"
+          $json.notes = "See https://github.com/Comp-Tech-Guy/Kalam/releases/tag/${{ steps.version.outputs.TAG_NAME }}"
           $json.pub_date = (Get-Date -Format "yyyy-MM-ddTHH:mm:ssZ")
           $json.platforms.'windows-x86_64'.signature = "${{ steps.sign.outputs.SIGNATURE }}"
-          $json.platforms.'windows-x86_64'.url = "https://github.com/Comp-Tech-Guy/Kalam/releases/download/${{ github.ref_name }}/Kalam_${{ steps.version.outputs.VERSION }}_x64_en-US.msi"
+          $json.platforms.'windows-x86_64'.url = "https://github.com/Comp-Tech-Guy/Kalam/releases/download/${{ steps.version.outputs.TAG_NAME }}/Kalam_${{ steps.version.outputs.VERSION }}_x64_en-US.msi"
           $json | ConvertTo-Json -Depth 10 | Set-Content update.json
 
       - name: Commit update.json
