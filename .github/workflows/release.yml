@@ -65,11 +65,12 @@ jobs:
 
       - name: Sign MSI and capture signature
         id: sign
+        working-directory: app
         shell: pwsh
         run: |
-          $msi = "app/src-tauri/target/release/bundle/msi/Kalam_${{ steps.version.outputs.VERSION }}_x64_en-US.msi"
+          $msi = "src-tauri/target/release/bundle/msi/Kalam_${{ steps.version.outputs.VERSION }}_x64_en-US.msi"
           if (-not (Test-Path $msi)) { throw "MSI not found: $msi" }
-          $sig = npx tauri signer sign -k "$env:TEMP\kalam.key" $msi
+          $sig = npx --yes tauri signer sign -k "$env:TEMP\kalam.key" $msi
           echo "SIGNATURE=$sig" >> $env:GITHUB_OUTPUT
 
       - name: Create Release
