@@ -61,7 +61,7 @@ jobs:
         run: |
           $key = "${{ secrets.TAURI_PRIVATE_KEY }}"
           if ([string]::IsNullOrEmpty($key)) { throw "TAURI_PRIVATE_KEY secret not set" }
-          [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($key)) | Set-Content -Path "$env:TEMP\kalam.key" -NoNewline
+          Set-Content -Path "$env:TEMP\kalam.key" -NoNewline -Value $key
 
       - name: Sign MSI and capture signature
         id: sign
