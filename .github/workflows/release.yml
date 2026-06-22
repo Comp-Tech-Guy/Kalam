@@ -1,0 +1,103 @@
+name: Release
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release (e.g. 0.1.0)'
+        required: true
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    runs-on: windows-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: app/package-lock.json
+
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          target: x86_64-pc-windows-msvc
+
+      - name: Install frontend deps
+        run: npm ci
+        working-directory: app
+
+      - name: Get version
+        id: version
+        shell: pwsh
+        run: |
+          if ("${{ github.event_name }}" -eq "workflow_dispatch") {
+            echo "VERSION=${{ github.event.inputs.version }}" >> $env:GITHUB_OUTPUT
+            echo "TAG_NAME=v${{ github.event.inputs.version }}" >> $env:GITHUB_OUTPUT
+          } else {
+            $ver = "$env:GITHUB_REF_NAME" -replace '^v',''
+            echo "VERSION=$ver" >> $env:GITHUB_OUTPUT
+            echo "TAG_NAME=$env:GITHUB_REF_NAME" >> $env:GITHUB_OUTPUT
+          }
+
+      - name: Build Tauri app
+        run: npm run tauri build
+        working-directory: app
+
+      - name: Write signing key to temp file
+        shell: pwsh
+        run: |
+          $key = "${{ secrets.TAURI_PRIVATE_KEY }}"
+          if ([string]::IsNullOrEmpty($key)) { throw "TAURI_PRIVATE_KEY secret not set" }
+          [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($key)) | Set-Content -Path "$env:TEMP\kalam.key" -NoNewline
+
+      - name: Sign MSI and capture signature
+        id: sign
+        shell: pwsh
+        run: |
+          $msi = "app/src-tauri/target/release/bundle/msi/Kalam_${{ steps.version.outputs.VERSION }}_x64_en-US.msi"
+          if (-not (Test-Path $msi)) { throw "MSI not found: $msi" }
+          $sig = npx tauri signer sign -k "$env:TEMP\kalam.key" $msi
+          echo "SIGNATURE=$sig" >> $env:GITHUB_OUTPUT
+
+      - name: Create Release
+        shell: pwsh
+        run: |
+          gh release create "${{ github.ref_name }}" `
+            --title "${{ github.ref_name }}" `
+            --generate-notes
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload MSI to Release
+        shell: pwsh
+        run: |
+          gh release upload "${{ github.ref_name }}" `
+            "app/src-tauri/target/release/bundle/msi/Kalam_${{ steps.version.outputs.VERSION }}_x64_en-US.msi"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Update update.json
+        shell: pwsh
+        run: |
+          $json = Get-Content update.json -Raw | ConvertFrom-Json
+          $json.version = "${{ steps.version.outputs.VERSION }}"
+          $json.notes = "See https://github.com/Comp-Tech-Guy/Kalam/releases/tag/${{ github.ref_name }}"
+          $json.pub_date = (Get-Date -Format "yyyy-MM-ddTHH:mm:ssZ")
+          $json.platforms.'windows-x86_64'.signature = "${{ steps.sign.outputs.SIGNATURE }}"
+          $json.platforms.'windows-x86_64'.url = "https://github.com/Comp-Tech-Guy/Kalam/releases/download/${{ github.ref_name }}/Kalam_${{ steps.version.outputs.VERSION }}_x64_en-US.msi"
+          $json | ConvertTo-Json -Depth 10 | Set-Content update.json
+
+      - name: Commit update.json
+        shell: pwsh
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add update.json
+          git commit -m "chore: update update.json to v${{ steps.version.outputs.VERSION }}"
+          git push

@@ -4,6 +4,7 @@ import { getCurrentWindow } from '@tauri-apps/api/window';
 import { initializeFS, getData } from '../services/storage';
 import { NavLink, Outlet } from "react-router-dom";
 import Onboarding from '../pages/Onboarding/Onboarding';
+import UpdateBanner from '../components/UpdateBanner/UpdateBanner';
 
 function AppLayout() {
   const [isMaximized, setIsMaximized] = useState(false);
@@ -108,6 +109,7 @@ function AppLayout() {
           <Outlet />
         </div>
       </main>
+      <UpdateBanner />
     </main>
   );
 }

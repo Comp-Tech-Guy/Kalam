@@ -487,6 +487,77 @@ No transition on padding (anti-jitter rule).
 
 ---
 
+## Auto-Update System
+
+Built with `@tauri-apps/plugin-updater`. Checks for updates on app start and via manual trigger in Settings.
+
+### Architecture
+
+```
+update.json (GitHub raw)  →  updater (Rust plugin)  →  useUpdateChecker (JS hook)  →  UpdateBanner (React component)
+```
+
+### Key Files
+
+| File | Role |
+|------|------|
+| `app/src-tauri/tauri.conf.json` | `plugins.updater` config (endpoint URL, pubkey) |
+| `app/src-tauri/src/lib.rs` | `tauri_plugin_updater::Builder::new().build()` registration |
+| `app/src-tauri/capabilities/default.json` | `updater:default`, `updater:allow-check`, `updater:allow-download-and-install` |
+| `app/src/services/useUpdateChecker.js` | React hook wrapping `check()`, `download()`, `install()` |
+| `app/src/components/UpdateBanner/` | Custom toast UI (no default dialog) |
+| `app/src/layouts/AppLayout.jsx` | Renders `<UpdateBanner />` persistently |
+| `app/src/pages/Settings/Settings.jsx` | "Check for Updates" button triggers `requestManualCheck()` |
+| `update.json` (root) | Update manifest served via raw GitHub |
+
+### GitHub Actions Workflow
+
+File: `.github/workflows/release.yml`
+
+Triggers on tag push `v*`. Automates:
+1. Build Tauri app (Windows)
+2. Sign MSI with your private key (from secret)
+3. Create GitHub Release with auto-generated notes
+4. Upload MSI to release
+5. Update `update.json` with new version, signature, URL
+6. Commit and push `update.json` to `main`
+
+### GitHub Secrets Setup
+
+In repo **Settings → Secrets and variables → Actions**, add:
+
+| Secret | Value |
+|--------|-------|
+| `TAURI_PRIVATE_KEY` | Base64-encoded private key |
+
+To get the value:
+```powershell
+[Convert]::ToBase64String([IO.File]::ReadAllBytes("$env:USERPROFILE\.tauri\kalam.key"))
+```
+
+The private key is decoded only at build time inside the runner — never exposed or committed.
+
+### Release Process
+
+1. Update version in `app/src-tauri/tauri.conf.json` and `app/package.json`
+2. `git commit -m "v0.2.0"`
+3. `git tag v0.2.0 && git push origin v0.2.0`
+4. GitHub Actions handles everything
+5. Users see the update banner on next app start
+
+### Custom UI vs Default Dialog
+
+`"dialog": false` in `tauri.conf.json` disables Tauri's built-in update dialog. The `UpdateBanner` component handles all UI states:
+
+- **Available** → Download / Later buttons, version + notes
+- **Downloading** → Progress bar with percentage
+- **Downloaded** → Restart & Install / Later buttons
+- **Dismissed** → Hidden until next check (auto start or manual)
+
+The banner is `position: fixed; bottom: 24px; right: 24px` and never overlaps the layout.
+
+---
+
 ## Build & Deploy
 
 ### Frontend

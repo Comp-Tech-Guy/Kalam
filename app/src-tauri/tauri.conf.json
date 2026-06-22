@@ -9,6 +9,16 @@
     "beforeBuildCommand": "npm run build",
     "frontendDist": "../dist"
   },
+  "plugins": {
+    "updater": {
+      "active": true,
+      "endpoints": [
+        "https://raw.githubusercontent.com/Comp-Tech-Guy/Kalam/main/update.json"
+      ],
+      "dialog": false,
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEJBMzFCMTkwOTYzQUIyQTUKUldTbHNqcVdrTEV4dWdRYUFRTitkY1dSZVBNODU5MWZRWGR4YldYVU45UHNTNDI2V0hqYWtWNmIK"
+    }
+  },
   "app": {
     "windows": [
       {
