@@ -22,6 +22,8 @@
         "closable": true,
         "decorations": false,
         "center": true,
+        "minWidth": 700,
+        "minHeight": 500,
         "backgroundColor": "#0D0F12"
       }
     ],

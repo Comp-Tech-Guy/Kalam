@@ -2,10 +2,15 @@
 
 /* Dashboard Header */
 .dashboard-header {
+    position: relative;
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
     margin-bottom: 32px;
+}
+
+.dashboard-header-text {
+    padding-right: 130px;
 }
 
 .dashboard-header-text h1 {
@@ -22,6 +27,9 @@
 
 /* Stop All Button */
 .btn-stop-all {
+    position: absolute;
+    top: 0;
+    right: 0;
     display: inline-flex;
     align-items: center;
     gap: 8px;
@@ -305,15 +313,6 @@ input[readonly]:focus {
 @media (max-width: 800px) {
   .AppPg {
     padding: 24px 20px;
-  }
-
-  .dashboard-header {
-    flex-direction: column;
-    gap: 12px;
-  }
-
-  .btn-stop-all {
-    align-self: flex-start;
   }
 
   .profileCont,
