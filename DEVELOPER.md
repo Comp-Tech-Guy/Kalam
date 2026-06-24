@@ -75,6 +75,7 @@ Release is created as a **draft** — review and publish on GitHub Releases page
 - MSI version mismatch — added `tauri.conf.json` version update step in workflow
 - `base64:` prefix crash — switched from temp file to env var (raw key content only)
 - Missing `createUpdaterArtifacts` — added `bundle.createUpdaterArtifacts: true` in `tauri.conf.json`
+- **"failed to decode secret key" / "Missing comment in secret key"** — Tauri CLI expects env var `TAURI_SIGNING_PRIVATE_KEY` to be raw PEM, but GitHub YAML strips newlines when expanding `${{ secrets.X }}` in the `env:` block. *Fix:* Store the key as base64 in the secret, decode to a temp file in a workflow step, and set `TAURI_SIGNING_PRIVATE_KEY` to the file path.
 
 ### Common Pitfalls
 
@@ -82,6 +83,29 @@ Release is created as a **draft** — review and publish on GitHub Releases page
 - **Signature rejected by updater**: Public key in `tauri.conf.json` doesn't match the private key used to sign
 - **Update not detected**: Endpoint URL mismatch — must point to `https://github.com/Comp-Tech-Guy/Kalam/releases/latest/download/latest.json`
 - **Lost private key**: All existing installs will never accept another update. Store it in a password manager.
+- **Private repo**: The `latest/download/latest.json` URL requires authentication for private repos. Make the repo public or host `latest.json` on a public HTTPS server.
+- **Known Tauri bug**: `TAURI_SIGNING_PRIVATE_KEY_PASSWORD` env var is sometimes ignored. Add old env var names (`TAURI_PRIVATE_KEY`, `TAURI_KEY_PASSWORD`) as fallbacks if the password keeps failing.
+
+## Testing the Update UI Locally
+
+To see the update banner in dev mode without a real release:
+
+1. Create a `latest.json` and serve it locally:
+```powershell
+# Start HTTP server in a directory containing latest.json
+Start-Process -NoNewWindow -FilePath "python" -ArgumentList "-m http.server 8765" -WorkingDirectory "path\to\dir"
+```
+
+2. Temporarily change the endpoint in `tauri.conf.json`:
+```json
+"endpoints": ["http://localhost:8765/latest.json"]
+```
+
+3. Bump the version in `latest.json` above the local `tauri.conf.json` version.
+
+4. Run `npm run tauri dev` — the UpdateBanner should appear when the app starts.
+
+**Note:** HTTP is only allowed in dev mode. Release builds require HTTPS unless `dangerousInsecureTransportProtocol: true` is set.
 
 ## Building the Sidecar
 
