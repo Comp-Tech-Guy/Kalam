@@ -43,7 +43,8 @@ function CreateProfile() {
         await sidecar("scan");
         const manifest = await getData("windhawkManifest.json", true);
         if (manifest && manifest.installedMods) {
-          setInstalledMods(manifest.installedMods);
+          const mods = manifest.installedMods;
+          setInstalledMods(mods);
         }
       } catch (e) {
         console.error("Failed to scan Windhawk mods:", e);
@@ -51,6 +52,19 @@ function CreateProfile() {
     };
     scanAndLoadMods();
   }, []);
+
+  // Auto-populate Windhawk mods from scan only when creating a new profile
+  useEffect(() => {
+    if (!isEditing && installedMods.length > 0) {
+      const allMods = installedMods.map(mod => ({
+        id: mod.id,
+        enabled: mod.enabled ?? 1,
+        settings: mod.settings || {}
+      }));
+      setWindhawkMods(allMods);
+      setEnabledApps(prev => ({ ...prev, windhawk: true }));
+    }
+  }, [installedMods, isEditing]);
 
   useEffect(() => {
     if (location.state && location.state.profile) {
