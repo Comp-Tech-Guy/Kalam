@@ -40,11 +40,17 @@ This generates `.msi.sig` files alongside the installers. The `.sig` content goe
 
 | Secret | Value |
 |--------|-------|
-| `TAURI_SIGNING_PRIVATE_KEY` | **Raw content** of `$HOME\.tauri\kalam.key` (the entire file, including header/footer lines) |
+| `TAURI_SIGNING_PRIVATE_KEY` | **Base64-encoded** content of `$HOME\.tauri\kalam.key` |
 | `TAURI_SIGNING_PRIVATE_KEY_PASSWORD` | The password you set during key generation |
 | `GITHUB_TOKEN` | Auto-provided by GitHub Actions |
 
-**Important:** The secret value is the **raw file content**, not base64-encoded and without any `base64:` prefix.
+To generate the base64 value:
+
+```powershell
+[Convert]::ToBase64String([IO.File]::ReadAllBytes("$HOME\.tauri\kalam.key"))
+```
+
+Copy the output and paste it into the GitHub secret value. Do **not** add any extra whitespace or newlines.
 
 ## Release Workflow (.github/workflows/release.yml)
 

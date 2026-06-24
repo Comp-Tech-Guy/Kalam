@@ -16,11 +16,18 @@ jobs:
       contents: write
     runs-on: windows-latest
     env:
-      TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
       TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
 
     steps:
       - uses: actions/checkout@v4
+
+      - name: Decode signing key
+        shell: pwsh
+        run: |
+          $bytes = [Convert]::FromBase64String("${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}")
+          $path = Join-Path $env:RUNNER_TEMP "kalam.key"
+          [IO.File]::WriteAllBytes($path, $bytes)
+          echo "TAURI_SIGNING_PRIVATE_KEY=$path" >> $env:GITHUB_ENV
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
