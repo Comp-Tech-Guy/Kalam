@@ -22,7 +22,7 @@ You'll be prompted for a password. Set one and store it securely.
 
 This creates two files:
 - `$HOME\.tauri\kalam.key` — **PRIVATE KEY**. Store in GitHub Secrets. Never commit.
-- `$HOME\.tauri\kalam.key.pub` — **PUBLIC KEY**. Already embedded in `tauri.conf.json` `plugins.updater.pubkey`.
+- `$HOME\.tauri\kalam.key.pub` — **PUBLIC KEY**. Embedded in `tauri.conf.json` `plugins.updater.pubkey`.
 
 ### Building with Signing (Local)
 
