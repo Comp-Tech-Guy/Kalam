@@ -1,17 +1,51 @@
 @import "../../index.css";
 
-.update-banner {
+.update-banner-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
   position: fixed;
   bottom: 24px;
   right: 24px;
   z-index: 100;
+}
+
+.update-banner {
   background: var(--bg-sidebar);
   border: 1px solid var(--border-light);
   border-radius: 10px;
   padding: 14px 18px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-  animation: bannerIn 0.3s ease-out;
   max-width: 420px;
+  transition: transform 0.25s ease, opacity 0.25s ease;
+}
+
+.update-banner--exit {
+  transform: translateX(30px);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.update-banner-close {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  appearance: none;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 2px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--trans-smooth);
+}
+
+.update-banner-close:hover {
+  color: var(--text-main);
+  background: var(--bg-card);
 }
 
 @keyframes bannerIn {
@@ -21,6 +55,7 @@
 
 .update-banner-content {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 10px;
 }
@@ -86,13 +121,12 @@
 }
 
 .update-progress-bar {
-  width: 100%;
+  flex: 0 0 100%;
   height: 4px;
   background: var(--border-light);
   border-radius: 2px;
   overflow: hidden;
-  margin-top: 4px;
-  grid-column: 1 / -1;
+  margin-top: 2px;
 }
 
 .update-progress-fill {

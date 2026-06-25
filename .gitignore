@@ -25,4 +25,4 @@ dist-ssr
 *.txt
 
 # Ignore Gemini specific files
-GEMINI.md
+opencode.md

@@ -107,6 +107,38 @@ Start-Process -NoNewWindow -FilePath "python" -ArgumentList "-m http.server 8765
 
 **Note:** HTTP is only allowed in dev mode. Release builds require HTTPS unless `dangerousInsecureTransportProtocol: true` is set.
 
+## UpdateBanner UI Behavior
+
+The `UpdateBanner` component (`app/src/components/UpdateBanner/`) renders a floating toast at bottom-right with three mutually exclusive states driven by `useUpdateChecker`:
+
+| Status | Shows |
+|--------|-------|
+| `available` | "Update available" with version + release notes, Download / Later buttons |
+| `downloading` | "Downloading update..." with percentage + progress bar |
+| `downloaded` | "Download complete" with Restart & Install / Later buttons |
+
+### Close (Dismiss)
+
+Every banner has an X button at top-right. Clicking it:
+1. Adds `update-banner--exit` class → triggers CSS transition
+2. Banner slides right 30px and fades out over 250ms (GPU-composited `transform` + `opacity` only — no layout jank)
+3. On `transitionEnd`, calls the hook's `dismiss()` and removes from DOM
+
+The "Later" button in `available` / `downloaded` states also triggers this same dismiss flow.
+
+### Progress Bar
+
+In the `downloading` state, the progress bar sits on its own line below the text (not inline). The container uses `flex-wrap: wrap` and the bar has `flex: 0 0 100%` to force it to a new row. Only `width` is animated on the fill element.
+
+### CSS Structure
+
+| Class | Purpose |
+|-------|---------|
+| `.update-banner-stack` | Fixed-position flex column container at bottom-right |
+| `.update-banner` | Card background, border, shadow, `max-width: 420px` |
+| `.update-banner--exit` | `transform: translateX(30px); opacity: 0; pointer-events: none` |
+| `.update-banner-close` | Absolute-positioned X button at top-right corner |
+
 ## Building the Sidecar
 
 ```powershell
