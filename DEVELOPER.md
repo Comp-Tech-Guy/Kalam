@@ -59,7 +59,8 @@ Triggers: `workflow_dispatch` (manual with version input) or push tag `v*`. Uses
 ### What the workflow does:
 1. Extract version from tag / manual input
 2. Write version into `tauri.conf.json`
-3. **Single step** (`tauri-action`): builds with signing, creates GitHub Release, uploads MSI + `.sig`, generates `latest.json` with correct signature and URL
+3. **Rust dependency cache** (`Swatinem/rust-cache@v2`): caches `~/.cargo` and `app/src-tauri/target` keyed by `Cargo.lock` hash + `rustc` version. Cuts Rust compile from ~20 min to ~2-3 min on cache hit.
+4. **Single step** (`tauri-action`): builds with signing, creates GitHub Release, uploads MSI + `.sig`, generates `latest.json` with correct signature and URL
 
 ### Release Process
 
