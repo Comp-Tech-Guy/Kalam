@@ -1,8 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { open } from "@tauri-apps/plugin-dialog";
 import { addData, editData, getData } from "../../services/storage";
 import sidecar from "../../services/sidecar";
+import SelectMenu from "../../components/SelectMenu/SelectMenu";
+import ResizableTextarea from "../../components/ResizableTextarea/ResizableTextarea";
 import "../Dashboard/Dashboard.css";
 
 function CreateProfile() {
@@ -32,39 +34,73 @@ function CreateProfile() {
   const [glazeWm, setGlazeWm] = useState("");
   const [zebar, setZebar] = useState("");
 
-  // Windhawk specific states
+  // Tool scan states
   const [installedMods, setInstalledMods] = useState([]);
   const [windhawkMods, setWindhawkMods] = useState([]);
+  const [availableRainmeterLayouts, setAvailableRainmeterLayouts] = useState([]);
+  const hasAutoPopulated = useRef(false);
 
-  // Load installed mods from registry via sidecar scan
-  useEffect(() => {
-    const scanAndLoadMods = async () => {
-      try {
-        await sidecar("scan");
-        const manifest = await getData("windhawkManifest.json", true);
-        if (manifest && manifest.installedMods) {
-          const mods = manifest.installedMods;
-          setInstalledMods(mods);
-        }
-      } catch (e) {
-        console.error("Failed to scan Windhawk mods:", e);
-      }
-    };
-    scanAndLoadMods();
-  }, []);
-
-  // Auto-populate Windhawk mods from scan only when creating a new profile
-  useEffect(() => {
-    if (!isEditing && installedMods.length > 0) {
-      const allMods = installedMods.map(mod => ({
-        id: mod.id,
-        enabled: mod.enabled ?? 1,
-        settings: mod.settings || {}
-      }));
-      setWindhawkMods(allMods);
-      setEnabledApps(prev => ({ ...prev, windhawk: true }));
+  async function loadManifest(fileName) {
+    try {
+      return await getData(fileName, true);
+    } catch {
+      return null;
     }
-  }, [installedMods, isEditing]);
+  }
+
+  // Scan all tools and pre-populate configs exactly once (never auto-check checkboxes)
+  useEffect(() => {
+    if (!isEditing && !hasAutoPopulated.current) {
+      const scanAndPrepopulate = async () => {
+        try {
+          await sidecar("scan");
+
+          const [rmManifest, yasbManifest, glazeManifest, zebarManifest, whManifest] = await Promise.all([
+            loadManifest("rainmeterManifest.json"),
+            loadManifest("yasbManifest.json"),
+            loadManifest("glazewmManifest.json"),
+            loadManifest("zebarManifest.json"),
+            loadManifest("windhawkManifest.json"),
+          ]);
+
+          if (rmManifest) {
+            setAvailableRainmeterLayouts(rmManifest.layouts || []);
+            if (rmManifest.currentLayout) {
+              setRainLayout(rmManifest.currentLayout);
+            }
+          }
+
+          if (yasbManifest) {
+            if (yasbManifest.yaml) setYasbYaml(yasbManifest.yaml);
+            if (yasbManifest.css) setYasbCSS(yasbManifest.css);
+          }
+
+          if (glazeManifest && glazeManifest.config) {
+            setGlazeWm(glazeManifest.config);
+          }
+
+          if (zebarManifest && zebarManifest.config) {
+            setZebar(zebarManifest.config);
+          }
+
+          if (whManifest && whManifest.installedMods) {
+            setInstalledMods(whManifest.installedMods);
+            const allMods = whManifest.installedMods.map(mod => ({
+              id: mod.id,
+              enabled: mod.enabled ?? 1,
+              settings: mod.settings || {}
+            }));
+            setWindhawkMods(allMods);
+          }
+        } catch (e) {
+          console.error("Failed to scan tool configs:", e);
+        }
+
+        hasAutoPopulated.current = true;
+      };
+      scanAndPrepopulate();
+    }
+  }, [isEditing]);
 
   useEffect(() => {
     if (location.state && location.state.profile) {
@@ -217,6 +253,7 @@ function CreateProfile() {
     setZebar("");
     setName("");
     setWindhawkMods([]);
+    setAvailableRainmeterLayouts([]);
     setEnabledApps({
       rainmeter: false,
       yasb: false,
@@ -224,6 +261,7 @@ function CreateProfile() {
       zebar: false,
       windhawk: false
     });
+    hasAutoPopulated.current = false;
   };
 
   async function selectFile() {
@@ -334,12 +372,21 @@ function CreateProfile() {
         {enabledApps.rainmeter && (
           <div className="form-group">
             <label>Rainmeter Layout</label>
-            <input
-              type="text"
-              value={rainLayout}
-              onChange={(e) => setRainLayout(e.target.value)}
-              placeholder="Layout name in Rainmeter"
-            />
+            {availableRainmeterLayouts.length > 0 ? (
+              <SelectMenu
+                value={rainLayout}
+                onChange={(e) => setRainLayout(e.target.value)}
+                options={availableRainmeterLayouts}
+                placeholder="Select a layout..."
+              />
+            ) : (
+              <input
+                type="text"
+                value={rainLayout}
+                onChange={(e) => setRainLayout(e.target.value)}
+                placeholder="No layouts detected — type manually"
+              />
+            )}
           </div>
         )}
 
@@ -347,7 +394,7 @@ function CreateProfile() {
           <>
             <div className="form-group">
               <label>YASB Yaml</label>
-              <textarea
+              <ResizableTextarea
                 value={yasbYaml}
                 rows={5}
                 onChange={(e) => setYasbYaml(e.target.value)}
@@ -356,7 +403,7 @@ function CreateProfile() {
             </div>
             <div className="form-group">
               <label>YASB CSS</label>
-              <textarea
+              <ResizableTextarea
                 value={yasbCSS}
                 rows={5}
                 onChange={(e) => setYasbCSS(e.target.value)}
@@ -369,7 +416,7 @@ function CreateProfile() {
         {enabledApps.glazewm && (
           <div className="form-group">
             <label>GlazeWM Config</label>
-            <textarea
+            <ResizableTextarea
               value={glazeWm}
               rows={5}
               onChange={(e) => setGlazeWm(e.target.value)}
@@ -381,7 +428,7 @@ function CreateProfile() {
         {enabledApps.zebar && (
           <div className="form-group">
             <label>Zebar Config</label>
-            <textarea
+            <ResizableTextarea
               value={zebar}
               rows={5}
               onChange={(e) => setZebar(e.target.value)}
@@ -413,7 +460,7 @@ function CreateProfile() {
                       {isChecked && (
                         <div className="windhawk-mod-settings">
                           <label>Mod Settings (JSON)</label>
-                          <textarea
+                          <ResizableTextarea
                             value={getModSettingsString(mod.id)}
                             rows={4}
                             onChange={(e) => handleModSettingsChange(mod.id, e.target.value)}

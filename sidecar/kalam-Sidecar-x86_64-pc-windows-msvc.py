@@ -364,6 +364,113 @@ def apply_windhawk_profile(profile, user_settings, folder_path):
             print("WARNING: Windhawk path not configured or not found for portable mode")
 
 
+def scan_rainmeter_layouts(folder_path):
+    manifest_path = os.path.join(folder_path, "rainmeterManifest.json")
+    layouts = []
+    current_layout = ""
+
+    appdata = os.environ.get('APPDATA', '')
+    rainmeter_appdata = os.path.join(appdata, 'Rainmeter')
+    layouts_dir = os.path.join(rainmeter_appdata, 'Layouts')
+
+    if os.path.isdir(layouts_dir):
+        for entry in sorted(os.listdir(layouts_dir)):
+            entry_path = os.path.join(layouts_dir, entry)
+            if os.path.isdir(entry_path) and not entry.startswith('@'):
+                layouts.append(entry)
+
+    rainmeter_ini = os.path.join(rainmeter_appdata, 'Rainmeter.ini')
+    if os.path.exists(rainmeter_ini):
+        try:
+            with open(rainmeter_ini, encoding='utf-16-le') as f:
+                for line in f:
+                    line = line.strip()
+                    if line.startswith('ActiveLayoutFile='):
+                        val = line.split('=', 1)[1].strip().strip('"')
+                        if val.endswith('.ini'):
+                            val = val[:-4]
+                        if '\\' in val:
+                            val = val.rsplit('\\', 1)[1]
+                        current_layout = val
+                        break
+        except (OSError, UnicodeDecodeError):
+            try:
+                with open(rainmeter_ini, encoding='utf-8') as f:
+                    for line in f:
+                        line = line.strip()
+                        if line.startswith('ActiveLayoutFile='):
+                            val = line.split('=', 1)[1].strip().strip('"')
+                            if val.endswith('.ini'):
+                                val = val[:-4]
+                            if '\\' in val:
+                                val = val.rsplit('\\', 1)[1]
+                            current_layout = val
+                            break
+            except OSError:
+                pass
+
+    with open(manifest_path, 'w') as f:
+        json.dump({"layouts": layouts, "currentLayout": current_layout}, f, indent=2)
+    return layouts
+
+
+def scan_yasb_configs(folder_path, user_settings):
+    manifest_path = os.path.join(folder_path, "yasbManifest.json")
+    result = {"yaml": "", "css": ""}
+
+    yasb_path = user_settings.get("Yasb-Config-Path", "")
+    if yasb_path and os.path.isdir(yasb_path):
+        yaml_file = os.path.join(yasb_path, "config.yaml")
+        css_file = os.path.join(yasb_path, "styles.css")
+        if os.path.exists(yaml_file):
+            with open(yaml_file) as f:
+                result["yaml"] = f.read()
+        if os.path.exists(css_file):
+            with open(css_file) as f:
+                result["css"] = f.read()
+
+    with open(manifest_path, 'w') as f:
+        json.dump(result, f, indent=2)
+    return result
+
+
+def scan_glazewm_configs(folder_path, user_settings):
+    manifest_path = os.path.join(folder_path, "glazewmManifest.json")
+    result = {"config": ""}
+
+    glaze_path = user_settings.get("GlazeWM-Config-Path", "")
+    if glaze_path and os.path.isdir(glaze_path):
+        config_file = os.path.join(glaze_path, "config.yaml")
+        if os.path.exists(config_file):
+            with open(config_file) as f:
+                result["config"] = f.read()
+
+    with open(manifest_path, 'w') as f:
+        json.dump(result, f, indent=2)
+    return result
+
+
+def scan_zebar_configs(folder_path, user_settings):
+    manifest_path = os.path.join(folder_path, "zebarManifest.json")
+    result = {"config": ""}
+
+    zebar_path = user_settings.get("Zebar-Config-Path", "")
+    if zebar_path and os.path.isdir(zebar_path):
+        config_file = os.path.join(zebar_path, "settings.json")
+        if os.path.exists(config_file):
+            try:
+                with open(config_file) as f:
+                    raw = f.read()
+                    json.loads(raw)
+                    result["config"] = raw
+            except (OSError, json.JSONDecodeError):
+                pass
+
+    with open(manifest_path, 'w') as f:
+        json.dump(result, f, indent=2)
+    return result
+
+
 def autodetect_paths():
     paths = {}
 
@@ -430,6 +537,11 @@ if __name__ == "__main__":
             except (FileNotFoundError, json.JSONDecodeError):
                 pass
             scan_windhawk_registry(folder_path, scan_settings)
+            scan_rainmeter_layouts(folder_path)
+            if scan_settings:
+                scan_yasb_configs(folder_path, scan_settings)
+                scan_glazewm_configs(folder_path, scan_settings)
+                scan_zebar_configs(folder_path, scan_settings)
             sys.exit(0)
 
         if target_arg == "autodetect":

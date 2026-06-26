@@ -89,17 +89,22 @@
     gap: 24px;
     padding: 0;
     max-width: 800px;
-    align-items: center;
+    align-items: start;
 }
 
 .form-group {
-    display: contents;
+    display: grid;
+    grid-column: 1 / -1;
+    grid-template-columns: subgrid;
+    gap: inherit;
+    align-items: start;
 }
 
-.form-group label {
+.form-group > label {
     color: var(--text-muted);
     font-size: 0.9rem;
     font-weight: 500;
+    padding-top: 14px;
 }
 
 input[type="text"],
@@ -112,9 +117,10 @@ textarea {
     font-family: inherit;
     font-size: 0.95rem;
     outline: none;
-    transition: var(--trans-smooth);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
     width: 100%;
     box-sizing: border-box;
+    resize: none;
 }
 
 input[type="text"]:focus,
@@ -125,6 +131,8 @@ select:focus {
     box-shadow: 0 0 0 4px var(--accent-glow);
 }
 
+
+
 select {
     background: var(--bg-card);
     border: 1px solid var(--border-light);
@@ -134,7 +142,7 @@ select {
     font-family: inherit;
     font-size: 0.95rem;
     outline: none;
-    transition: var(--trans-smooth);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
     width: 100%;
     box-sizing: border-box;
     cursor: pointer;
@@ -150,9 +158,21 @@ select:hover {
     border-color: var(--accent);
 }
 
+select:focus {
+    border-color: var(--accent);
+    background: rgba(255, 255, 255, 0.05);
+    box-shadow: 0 0 0 4px var(--accent-glow);
+}
+
 select option {
     background: var(--bg-darker);
     color: var(--text-main);
+    padding: 8px 12px;
+}
+
+select option:checked {
+    background: var(--accent-glow);
+    color: var(--accent);
 }
 
 .form-actions {

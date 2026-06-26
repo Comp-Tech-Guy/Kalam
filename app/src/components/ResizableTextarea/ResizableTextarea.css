@@ -1,0 +1,42 @@
+@import "../../index.css";
+
+.resizable-textarea {
+  position: relative;
+  width: 100%;
+  min-height: 80px;
+}
+
+.resizable-textarea textarea {
+  height: 100% !important;
+  min-height: 80px;
+  resize: none !important;
+}
+
+.resizable-textarea-handle {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: ns-resize;
+  color: var(--text-muted);
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  pointer-events: auto;
+}
+
+.resizable-textarea:hover .resizable-textarea-handle {
+  opacity: 0.6;
+}
+
+.resizable-textarea-handle:hover {
+  opacity: 1 !important;
+  color: var(--accent);
+}
+
+.resizable-textarea-handle svg {
+  transform: rotate(180deg);
+}

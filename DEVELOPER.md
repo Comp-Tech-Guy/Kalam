@@ -150,3 +150,69 @@ Copy-Item dist/kalam-Sidecar-x86_64-pc-windows-msvc.exe app/src-tauri/target/deb
 ```
 
 Rebuild whenever `sidecar/kalam-Sidecar-x86_64-pc-windows-msvc.py` changes.
+
+## SelectMenu Component
+
+Custom dropdown (`app/src/components/SelectMenu/`) used for the Rainmeter layout picker on CreateProfile. Fully styled with app CSS variables — no native `<select>` popup.
+
+| Behaviour | Detail |
+|-----------|--------|
+| Opening | `menuIn` animation: opacity 0→1, translateY -4px→0, 120ms ease-out |
+| Closing | `menuOut` animation: opacity 1→0, translateY 0→-4px, 120ms ease-in, `forwards` fill |
+| Dismiss | Click-outside closes with animation. Uses `exiting` state + 120ms `setTimeout` to keep element in DOM during exit. |
+| API | `value`, `onChange`, `options` (string array), `placeholder` — matches native `<select>` interface |
+
+### Rainmeter Layout Scan
+
+`scan_rainmeter_layouts()` in the sidecar reads layout folders from `%APPDATA%/Rainmeter/Layouts/`. Layouts are stored as **subdirectories** (not `.ini` files), e.g. `Mond`, `illustro default`. `@`-prefixed entries (like `@Backup`) are excluded.
+
+## ResizableTextarea Component
+
+Custom resizable textarea (`app/src/components/ResizableTextarea/`) replacing native `<textarea>` resize. The native Windows resize handle is an OS-drawn widget that cannot be fully styled with CSS — `::-webkit-resizer` only partially overrides it, leaving a white box at the bottom-right corner.
+
+### How it works
+- Wraps `<textarea>` in a `<div>` container with `position: relative`
+- Native resize disabled (`resize: none`), height controlled by the wrapper
+- A small drag handle (chevron icon) is positioned at `bottom: 0; right: 0` of the wrapper
+- `onMouseDown` on the handle adds `mousemove`/`mouseup` listeners to `document` (so drag tracking works even if mouse leaves the handle)
+- Height is set directly via `wrapperRef.current.style.height` — **no React state updates during drag** (zero re-renders)
+- `useEffect` cleanup removes stray listeners if the component unmounts mid-drag
+
+| Property | Detail |
+|----------|--------|
+| Min height | 80px (clamped in JS) |
+| Handle visibility | `opacity: 0` → `0.6` on wrapper hover → `1` on handle hover |
+| Cursor | `ns-resize` during active drag |
+| Theme | `var(--text-muted)`, turns `var(--accent)` on hover |
+| Performance | Direct DOM manipulation during drag, no React re-renders |
+
+### Usage
+```jsx
+<ResizableTextarea
+  value={code}
+  onChange={(e) => setCode(e.target.value)}
+  rows={5}
+  placeholder="Enter config..."
+  className="textarea-mono"
+/>
+```
+
+Props: `value`, `onChange`, `rows`, `placeholder`, `className` — same API as native `<textarea>`.
+
+## Form Layout & Textarea Design (CreateProfile)
+
+The CreateProfile form (`Dashboard.css`) uses a 2-column grid for labels + inputs. Key design decisions:
+
+### Grid Structure
+- `.profileCont` / `.settingCont`: `grid-template-columns: 200px 1fr` with `align-items: start`
+- `.form-group`: `display: grid; grid-template-columns: subgrid` — each row is a proper subgrid, preventing textarea resize from affecting adjacent rows
+- Labels get `padding-top: 14px` to vertically align with the first line of text in inputs/textarea
+- At `800px` breakpoint: collapses to single-column flex layout
+
+### Textarea Styling
+- `resize: none` — native resize removed (handled by ResizableTextarea component)
+- No CSS transitions on layout properties (`width`, `height`, `padding`) — only `border-color`, `box-shadow`, `background` transition to avoid jank during resize
+- `background: var(--bg-card)`, `border-radius: 10px`, focus state has accent glow
+
+### Why Not `::-webkit-resizer`
+The native `::-webkit-resizer` pseudo-element cannot fully override the OS-drawn resize handle in WebView2/Chromium. Background color bleeds through with lowered opacity and a white box remains visible at the bottom-right corner. The ResizableTextarea component solves this by disable native resize entirely and providing a custom JS-driven handle.
