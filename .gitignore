@@ -26,3 +26,11 @@ dist-ssr
 
 # Ignore Gemini specific files
 opencode.md
+
+# Python
+__pycache__/
+*.pyc
+sidecar/build/
+
+# Temp test files
+sidecar/test_*.py

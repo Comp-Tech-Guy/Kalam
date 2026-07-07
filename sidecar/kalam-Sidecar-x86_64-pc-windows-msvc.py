@@ -273,8 +273,67 @@ def _run_elevated(file, params):
     return True
 
 
+def _get_current_windhawk_settings():
+    current = {}
+    for key_path in [r"SOFTWARE\Windhawk\Engine\Mods", r"SOFTWARE\Windhawk\Mods"]:
+        for root_key in [winreg.HKEY_LOCAL_MACHINE, winreg.HKEY_CURRENT_USER]:
+            try:
+                key = winreg.OpenKey(root_key, key_path)
+            except OSError:
+                continue
+            try:
+                i = 0
+                while True:
+                    try:
+                        mod_id = winreg.EnumKey(key, i)
+                        if mod_id not in current:
+                            try:
+                                mod_subkey = winreg.OpenKey(key, mod_id)
+                                try:
+                                    current[mod_id] = _read_mod_subkey(mod_subkey, mod_id)
+                                finally:
+                                    winreg.CloseKey(mod_subkey)
+                            except OSError:
+                                pass
+                        i += 1
+                    except OSError:
+                        break
+            finally:
+                winreg.CloseKey(key)
+            if current:
+                return current
+    return current
+
+
+def _windhawk_settings_changed(mods, current_mods):
+    mod_ids = {m.get("id", "") for m in mods}
+
+    for mod in mods:
+        mod_id = mod.get("id", "")
+        if mod_id not in current_mods:
+            return True
+        cur = current_mods[mod_id]
+        if cur.get("enabled", 0) != mod.get("enabled", 0):
+            return True
+        desired_settings = mod.get("settings", {})
+        if desired_settings:
+            if cur.get("settings", {}) != desired_settings:
+                return True
+
+    for cur_id in current_mods:
+        if cur_id not in mod_ids:
+            return True
+
+    return False
+
+
 def _apply_windhawk_hklm(mods):
     import tempfile as _tempfile
+
+    current_mods = _get_current_windhawk_settings()
+    if not _windhawk_settings_changed(mods, current_mods):
+        return
+
     reg_lines = ['Windows Registry Editor Version 5.00', '']
     for mod in mods:
         mod_id = mod.get("id", "")
@@ -301,12 +360,9 @@ def _apply_windhawk_hklm(mods):
         with open(reg_file, 'w', encoding='utf-16le') as f:
             f.write('\ufeff' + reg_content)
         with open(bat_file, 'w') as f:
-            f.write(f'@reg import "{reg_file}" >nul 2>&1\n')
-            f.write('@sc query WindhawkEngine | find "RUNNING" >nul 2>&1\n')
-            f.write('@if not errorlevel 1 (\n')
-            f.write('    net stop WindhawkEngine >nul 2>&1\n')
-            f.write('    net start WindhawkEngine >nul 2>&1\n')
-            f.write(')\n')
+            f.write('@reg import "' + reg_file + '" >nul 2>&1\n')
+            f.write('@net stop Windhawk >nul 2>&1\n')
+            f.write('@net start Windhawk >nul 2>&1\n')
             f.write('@exit /b 0\n')
 
         _run_elevated(bat_file, '')
@@ -523,6 +579,99 @@ def autodetect_paths():
     return paths
 
 
+def load_json(file_path):
+    with open(file_path, 'r') as f:
+        return json.load(f)
+
+
+def get_profile_name(profile):
+    return profile.get("name") or profile.get("Name") or ""
+
+
+def apply_profile(folder_path, profile, user_settings):
+    settings_path = os.path.join(folder_path, "userSettings.json")
+    running_names = get_running_processes()
+
+    active_profile_id = user_settings.get("activeProfile")
+    if active_profile_id == profile["id"]:
+        needs_apply = False
+
+        for field, exe in [
+            ("RainmeterLayoutName", "Rainmeter.exe"),
+            ("GlazeWM-Config", "glazewm.exe"),
+            ("Zebar-Config", "zebar.exe"),
+        ]:
+            has_it = field in profile and profile[field]
+            running = exe.lower() in running_names
+            if (has_it and not running) or (not has_it and running):
+                needs_apply = True
+
+        has_yasb_yaml = "Yasb-Yaml" in profile and profile["Yasb-Yaml"]
+        has_yasb_css = "Yasb-CSS" in profile and profile["Yasb-CSS"]
+        yasb_running = "yasb.exe" in running_names
+        if (has_yasb_yaml and has_yasb_css and not yasb_running) or ((not has_yasb_yaml or not has_yasb_css) and yasb_running):
+            needs_apply = True
+
+        has_windhawk = "Windhawk-Mods" in profile and profile["Windhawk-Mods"]
+        if has_windhawk:
+            needs_apply = True
+
+        if not needs_apply:
+            return
+
+    rainmeter_layout = profile.get("RainmeterLayoutName", "")
+    if rainmeter_layout:
+        rain_path = user_settings.get("rainmeter-Path", "")
+        if rain_path:
+            rainmeter(rain_path, rainmeter_layout)
+        else:
+            print("WARNING: Rainmeter path not configured in settings")
+    elif "Rainmeter.exe" in running_names:
+        kill_process("Rainmeter.exe")
+
+    wallpaper_path = profile.get("Wallpaper-Path", "")
+    if wallpaper_path:
+        set_wallpaper_all_desktops(wallpaper_path)
+
+    yasb_yaml = profile.get("Yasb-Yaml", "")
+    yasb_css = profile.get("Yasb-CSS", "")
+    if yasb_yaml and yasb_css:
+        yasb_config_path = user_settings.get("Yasb-Config-Path", "")
+        yasb_exe_path = user_settings.get("Yasb-Exe-Path", "")
+        if yasb_config_path and yasb_exe_path:
+            yasb_code_inject(yasb_yaml, yasb_css, yasb_config_path, yasb_exe_path)
+        else:
+            print("WARNING: YASB paths not configured in settings")
+    elif "yasb.exe" in running_names:
+        kill_process("yasb.exe")
+
+    glaze_wm_config = profile.get("GlazeWM-Config", "")
+    if glaze_wm_config:
+        glaze_path = user_settings.get("GlazeWM-Config-Path", "")
+        if glaze_path:
+            glaze_wm_apply(glaze_wm_config, glaze_path)
+        else:
+            print("WARNING: GlazeWM config path not configured in settings")
+    elif "glazewm.exe" in running_names:
+        kill_process("glazewm.exe")
+
+    zebar_config = profile.get("Zebar-Config", "")
+    if zebar_config:
+        zebar_path = user_settings.get("Zebar-Config-Path", "")
+        if zebar_path:
+            zebar_apply(zebar_config, zebar_path)
+        else:
+            print("WARNING: Zebar config path not configured in settings")
+    elif "zebar.exe" in running_names:
+        kill_process("zebar.exe")
+
+    apply_windhawk_profile(profile, user_settings, folder_path)
+
+    user_settings["activeProfile"] = profile["id"]
+    with open(settings_path, 'w') as f:
+        json.dump(user_settings, f, indent=2)
+
+
 if __name__ == "__main__":
     try:
         folder_path = sys.argv[1]
@@ -590,15 +739,70 @@ if __name__ == "__main__":
                 print("Nothing to stop")
             sys.exit(0)
 
+        if target_arg == "list":
+            profiles_path = os.path.join(folder_path, "userProfiles.json")
+            try:
+                user_profiles = load_json(profiles_path)
+                listings = [{"id": p["id"], "name": get_profile_name(p)}
+                            for p in user_profiles.get("profiles", [])]
+                print(json.dumps(listings))
+            except (FileNotFoundError, json.JSONDecodeError) as e:
+                print(f"ERROR: {e}")
+                sys.exit(1)
+            sys.exit(0)
+
+        if target_arg == "current":
+            settings_path = os.path.join(folder_path, "userSettings.json")
+            profiles_path = os.path.join(folder_path, "userProfiles.json")
+            try:
+                user_settings = load_json(settings_path)
+                active_id = user_settings.get("activeProfile")
+                if active_id is None:
+                    print("null")
+                else:
+                    user_profiles = load_json(profiles_path)
+                    profile = None
+                    for p in user_profiles.get("profiles", []):
+                        if p["id"] == active_id:
+                            profile = {"id": p["id"], "name": get_profile_name(p)}
+                            break
+                    print(json.dumps(profile) if profile else "null")
+            except (FileNotFoundError, json.JSONDecodeError) as e:
+                print(f"ERROR: {e}")
+                sys.exit(1)
+            sys.exit(0)
+
+        if target_arg == "apply-by-name":
+            if len(sys.argv) < 4:
+                print("ERROR: Missing profile name argument. Expected: appDataDir apply-by-name \"Profile Name\"")
+                sys.exit(1)
+            profile_name = sys.argv[3]
+            profiles_path = os.path.join(folder_path, "userProfiles.json")
+            settings_path = os.path.join(folder_path, "userSettings.json")
+            try:
+                user_profiles = load_json(profiles_path)
+                user_settings = load_json(settings_path)
+            except (FileNotFoundError, json.JSONDecodeError) as e:
+                print(f"ERROR: {e}")
+                sys.exit(1)
+            profile = None
+            for p in user_profiles.get("profiles", []):
+                if get_profile_name(p) == profile_name:
+                    profile = p
+                    break
+            if profile is None:
+                print(f"ERROR: Profile with name \"{profile_name}\" not found")
+                sys.exit(1)
+            apply_profile(folder_path, profile, user_settings)
+            sys.exit(0)
+
         target_profile_id = int(target_arg)
 
         profiles_path = os.path.join(folder_path, "userProfiles.json")
         settings_path = os.path.join(folder_path, "userSettings.json")
 
-        with open(profiles_path, 'r') as f:
-            user_profiles = json.load(f)
-        with open(settings_path, 'r') as f:
-            user_settings = json.load(f)
+        user_profiles = load_json(profiles_path)
+        user_settings = load_json(settings_path)
 
         profile = None
         for p in user_profiles["profiles"]:
@@ -610,86 +814,7 @@ if __name__ == "__main__":
             print(f"ERROR: Profile with id {target_profile_id} not found")
             sys.exit(1)
 
-        running_names = get_running_processes()
-
-        active_profile_id = user_settings.get("activeProfile")
-        if active_profile_id == target_profile_id:
-            needs_apply = False
-
-            for field, exe in [
-                ("RainmeterLayoutName", "Rainmeter.exe"),
-                ("GlazeWM-Config", "glazewm.exe"),
-                ("Zebar-Config", "zebar.exe"),
-            ]:
-                has_it = field in profile and profile[field]
-                running = exe.lower() in running_names
-                if (has_it and not running) or (not has_it and running):
-                    needs_apply = True
-
-            has_yasb_yaml = "Yasb-Yaml" in profile and profile["Yasb-Yaml"]
-            has_yasb_css = "Yasb-CSS" in profile and profile["Yasb-CSS"]
-            yasb_running = "yasb.exe" in running_names
-            if (has_yasb_yaml and has_yasb_css and not yasb_running) or ((not has_yasb_yaml or not has_yasb_css) and yasb_running):
-                needs_apply = True
-
-            has_windhawk = "Windhawk-Mods" in profile and profile["Windhawk-Mods"]
-            if has_windhawk:
-                needs_apply = True
-
-            if not needs_apply:
-                sys.exit(0)
-
-        rainmeter_layout = profile.get("RainmeterLayoutName", "")
-        if rainmeter_layout:
-            rain_path = user_settings.get("rainmeter-Path", "")
-            if rain_path:
-                rainmeter(rain_path, rainmeter_layout)
-            else:
-                print("WARNING: Rainmeter path not configured in settings")
-        elif "Rainmeter.exe" in running_names:
-            kill_process("Rainmeter.exe")
-
-        wallpaper_path = profile.get("Wallpaper-Path", "")
-        if wallpaper_path:
-            set_wallpaper_all_desktops(wallpaper_path)
-
-        yasb_yaml = profile.get("Yasb-Yaml", "")
-        yasb_css = profile.get("Yasb-CSS", "")
-        if yasb_yaml and yasb_css:
-            yasb_config_path = user_settings.get("Yasb-Config-Path", "")
-            yasb_exe_path = user_settings.get("Yasb-Exe-Path", "")
-            if yasb_config_path and yasb_exe_path:
-                yasb_code_inject(yasb_yaml, yasb_css, yasb_config_path, yasb_exe_path)
-            else:
-                print("WARNING: YASB paths not configured in settings")
-        elif "yasb.exe" in running_names:
-            kill_process("yasb.exe")
-
-        glaze_wm_config = profile.get("GlazeWM-Config", "")
-        if glaze_wm_config:
-            glaze_path = user_settings.get("GlazeWM-Config-Path", "")
-            if glaze_path:
-                glaze_wm_apply(glaze_wm_config, glaze_path)
-            else:
-                print("WARNING: GlazeWM config path not configured in settings")
-        elif "glazewm.exe" in running_names:
-            kill_process("glazewm.exe")
-
-        zebar_config = profile.get("Zebar-Config", "")
-        if zebar_config:
-            zebar_path = user_settings.get("Zebar-Config-Path", "")
-            if zebar_path:
-                zebar_apply(zebar_config, zebar_path)
-            else:
-                print("WARNING: Zebar config path not configured in settings")
-        elif "zebar.exe" in running_names:
-            kill_process("zebar.exe")
-
-        apply_windhawk_profile(profile, user_settings, folder_path)
-
-        user_settings["activeProfile"] = target_profile_id
-        with open(settings_path, 'w') as f:
-            json.dump(user_settings, f, indent=2)
+        apply_profile(folder_path, profile, user_settings)
 
     except IndexError:
         print("ERROR: Missing arguments. Expected: appDataDir profileId")

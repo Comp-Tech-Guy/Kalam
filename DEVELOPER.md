@@ -151,6 +151,24 @@ Copy-Item dist/kalam-Sidecar-x86_64-pc-windows-msvc.exe app/src-tauri/target/deb
 
 Rebuild whenever `sidecar/kalam-Sidecar-x86_64-pc-windows-msvc.py` changes.
 
+## Sidecar CLI Reference
+
+The sidecar accepts `appDataDir` as the first argument and a command as the second:
+
+| Command | Args | Output | Description |
+|---------|------|--------|-------------|
+| `list` | — | JSON `[{id, name}]` | List all profiles |
+| `current` | — | `{id, name}` or `null` | Currently active profile |
+| `apply-by-name` | `"Profile Name"` | (none) | Look up and apply by name |
+| `stop-all` | — | Status text | Stop all managed tools |
+| `scan` | — | (writes manifest files) | Scan all tool configs |
+| `autodetect` | — | JSON paths | Auto-detect tool install paths |
+| `<numeric_id>` | — | (none) | Apply profile by numeric ID |
+
+### Windhawk Smart Restart
+
+When applying profiles containing `Windhawk-Mods`, the sidecar compares desired settings against current registry (`_get_current_windhawk_settings` → `_windhawk_settings_changed`). If nothing changed — for example re-applying the active profile or switching between profiles with identical Windhawk configs — the registry write, elevation, and service restart are skipped. Disabled mods with empty settings are only compared by enabled state, not settings content.
+
 ## SelectMenu Component
 
 Custom dropdown (`app/src/components/SelectMenu/`) used for the Rainmeter layout picker on CreateProfile. Fully styled with app CSS variables — no native `<select>` popup.
