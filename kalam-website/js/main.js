@@ -154,7 +154,15 @@
       if (!href) return;
 
       if (href.startsWith('http') || href.startsWith('//')) return;
-      if (href.startsWith('#')) return;
+      if (href.startsWith('#')) {
+        e.preventDefault();
+        var target = document.getElementById(href.substring(1));
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth' });
+          history.pushState(null, '', href);
+        }
+        return;
+      }
       if (href.startsWith('mailto:') || href.startsWith('tel:')) return;
 
       e.preventDefault();
