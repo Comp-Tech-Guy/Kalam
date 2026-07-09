@@ -83,6 +83,44 @@
     }
   }
 
+  function getArch() {
+    var ua = navigator.userAgent || '';
+    var plat = navigator.platform || '';
+    if (/aarch64|arm64/i.test(ua) || /arm/i.test(plat)) return 'aarch64';
+    return 'x64';
+  }
+
+  function initDownloadLinks() {
+    var arch = getArch();
+
+    fetch('https://api.github.com/repos/Comp-Tech-Guy/Kalam/releases/latest')
+      .then(function (res) {
+        if (!res.ok) throw new Error('GitHub API error');
+        return res.json();
+      })
+      .then(function (release) {
+        var assets = (release.assets || []).filter(function (a) {
+          return a.name && a.name.endsWith('.msi');
+        });
+        if (!assets.length) return;
+
+        var msi = assets.find(function (a) {
+          return a.name.indexOf(arch) !== -1;
+        }) || assets[0];
+
+        var url = msi.browser_download_url;
+        var version = (release.tag_name || '').replace(/^v/, '');
+
+        document.querySelectorAll('[data-download]').forEach(function (btn) {
+          btn.href = url;
+          if (version && btn.classList.contains('btn')) {
+            btn.textContent = 'Download v' + version;
+          }
+        });
+      })
+      .catch(function () {});
+  }
+
   function reinitialize() {
     var newAppContent = document.getElementById('app-content');
     if (newAppContent) appContent = newAppContent;
@@ -196,6 +234,7 @@
     initSidebarActive();
     initScrollReveal();
     initPrism();
+    initDownloadLinks();
     initRouter();
   }
 
