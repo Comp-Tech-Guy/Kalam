@@ -6,6 +6,14 @@
   var nav = document.querySelector('.nav');
   var isTransitioning = false;
 
+  function normalizePath(p) {
+    p = p.replace(/\/+$/g, '');
+    if (p.endsWith('/index')) return p.slice(0, -6);
+    if (p.endsWith('/index.html')) return p.slice(0, -11);
+    if (p === '' || p === '/') return '';
+    return p;
+  }
+
   function toggleMenu() {
     var hamburger = document.getElementById('hamburger');
     var navLinks = document.getElementById('navLinks');
@@ -139,7 +147,12 @@
     initPrism();
   }
 
-  function navigate(url) {
+  function finishLoad() {
+    isTransitioning = false;
+    reinitialize();
+  }
+
+  function navigate(url, isPop) {
     if (isTransitioning) return;
     isTransitioning = true;
 
@@ -157,10 +170,11 @@
 
         if (!newContent) {
           window.location.href = url;
+          isTransitioning = false;
           return;
         }
 
-        history.pushState({ url: url }, '', url);
+        if (!isPop) history.pushState({ url: url }, '', url);
         document.title = doc.title;
 
         var exiting = appContent;
@@ -178,15 +192,17 @@
               appContent.classList.add('page-enter');
               requestAnimationFrame(function () {
                 appContent.classList.remove('page-enter');
-                isTransitioning = false;
-                reinitialize();
+                finishLoad();
               });
             });
+          } else {
+            finishLoad();
           }
         }, 200);
       })
       .catch(function () {
         window.location.href = url;
+        isTransitioning = false;
       });
   }
 
@@ -214,25 +230,13 @@
 
       e.preventDefault();
       var fullUrl = new URL(href, window.location.href).pathname;
-      if (fullUrl === window.location.pathname) return;
+      if (normalizePath(fullUrl) === normalizePath(window.location.pathname)) return;
       navigate(fullUrl);
     });
 
     window.addEventListener('popstate', function () {
       var url = window.location.pathname;
-      fetch(url)
-        .then(function (res) { return res.ok ? res.text() : Promise.reject(); })
-        .then(function (html) {
-          var parser = new DOMParser();
-          var doc = parser.parseFromString(html, 'text/html');
-          var newContent = doc.getElementById('app-content');
-          if (!newContent) { window.location.reload(); return; }
-          document.title = doc.title;
-          appContent.innerHTML = newContent.innerHTML;
-          isTransitioning = false;
-          reinitialize();
-        })
-        .catch(function () { window.location.reload(); });
+      navigate(url, true);
     });
   }
 
