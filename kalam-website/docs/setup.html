@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>html{background:#0d0f12;color:#e2e8f0}</style>
+  <title>Setup & Build — Kalam Documentation</title>
+  <meta name="description" content="Kalam setup guide — prerequisites, installation, development build, and sidecar compilation." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Lexend:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/style.css" />
+  <link rel="icon" type="image/png" href="../favicon.png" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-okaidia.min.css" rel="stylesheet" />
+</head>
+<body>
+
+  <nav class="nav" id="nav">
+    <div class="nav__inner">
+      <a href="../index.html" class="nav__logo">Kalam</a>
+      <ul class="nav__links" id="navLinks">
+        <li><a href="../index.html#features" class="nav__link">Features</a></li>
+        <li><a href="../index.html#download" class="nav__link">Download</a></li>
+        <li>
+          <a href="https://github.com/Comp-Tech-Guy/Kalam" target="_blank" rel="noopener" class="nav__link nav__link--icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+            GitHub
+          </a>
+        </li>
+        <li class="nav__item--right"><a href="index.html" class="nav__cta">Docs</a></li>
+      </ul>
+      <button class="nav__hamburger" id="hamburger" aria-label="Toggle menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </nav>
+
+  <div id="app-content">
+  <div class="mobile-overlay" id="mobileOverlay"></div>
+  <aside class="docs-sidebar docs-sidebar--mobile" id="mobileSidebar">
+    <nav class="docs-sidebar__nav">
+      <a href="index.html" class="docs-sidebar__link">Home</a>
+      <a href="architecture.html" class="docs-sidebar__link">Architecture</a>
+      <a href="setup.html" class="docs-sidebar__link docs-sidebar__link--active">Setup & Build</a>
+      <a href="frontend.html" class="docs-sidebar__link">Frontend</a>
+      <a href="sidecar.html" class="docs-sidebar__link">Python Sidecar</a>
+      <a href="auto-update.html" class="docs-sidebar__link">Auto-Update & CI</a>
+      <a href="ahk.html" class="docs-sidebar__link">AHK Integration</a>
+    </nav>
+  </aside>
+
+  <div class="docs-layout">
+    <aside class="docs-sidebar">
+      <nav class="docs-sidebar__nav">
+        <a href="index.html" class="docs-sidebar__link">Home</a>
+        <a href="architecture.html" class="docs-sidebar__link">Architecture</a>
+        <a href="setup.html" class="docs-sidebar__link docs-sidebar__link--active">Setup & Build</a>
+        <a href="frontend.html" class="docs-sidebar__link">Frontend</a>
+        <a href="sidecar.html" class="docs-sidebar__link">Python Sidecar</a>
+        <a href="auto-update.html" class="docs-sidebar__link">Auto-Update & CI</a>
+        <a href="ahk.html" class="docs-sidebar__link">AHK Integration</a>
+      </nav>
+    </aside>
+    <main class="docs-content">
+      <h1>Setup & Build</h1>
+
+      <h2>Prerequisites</h2>
+      <ul>
+        <li><strong>Node.js</strong> 18+ (for React frontend + Vite)</li>
+        <li><strong>Rust</strong> stable (for Tauri backend)</li>
+        <li><strong>Python 3</strong> + <strong>PyInstaller</strong> (for sidecar compilation)</li>
+        <li><strong>Windows 10/11</strong> (Kalam is Windows-only)</li>
+      </ul>
+
+      <h2>Quick Start</h2>
+      <p>Clone the repository and start the development server:</p>
+      <pre><code class="language-powershell">cd app
+npm install
+npm run tauri dev</code></pre>
+
+      <p>This launches the Tauri desktop shell with hot-reload for the React frontend.</p>
+
+      <h2>Development Setup</h2>
+
+      <h3>Frontend</h3>
+      <p>The React app lives in <code>app/</code> and uses Vite as the build tool. All source files are under <code>app/src/</code>. The dev server is managed by Tauri — <code>npm run tauri dev</code> starts both the Vite dev server and the Tauri window.</p>
+
+      <h3>Rust Backend</h3>
+      <p>The Tauri backend lives in <code>app/src-tauri/</code>. Key files:</p>
+      <ul>
+        <li><code>src/lib.rs</code> — Plugin registration and Tauri builder</li>
+        <li><code>src/main.rs</code> — Entry point (suppresses console in release)</li>
+        <li><code>Cargo.toml</code> — Dependencies and release profile</li>
+        <li><code>tauri.conf.json</code> — Window configuration, bundle settings, updater config</li>
+      </ul>
+
+      <h3>Rust Release Profile</h3>
+      <pre><code class="language-toml">[profile.release]
+opt-level = "s"    # optimize for size
+lto = true         # link-time optimization
+codegen-units = 1  # single codegen unit for better optimization
+strip = true       # strip debug symbols
+panic = "abort"    # no unwinding</code></pre>
+
+      <h2>Building the Sidecar</h2>
+      <p>The Python sidecar is compiled to a standalone executable via PyInstaller. Rebuild whenever <code>sidecar/kalam-core.py</code> changes:</p>
+      <pre><code class="language-powershell">cd sidecar
+python -m PyInstaller kalam-core.spec --noconfirm
+Copy-Item dist/kalam-core-x86_64-pc-windows-msvc.exe app/src-tauri/binaries/kalam-core/ -Force
+Copy-Item dist/kalam-core-x86_64-pc-windows-msvc.exe app/src-tauri/target/debug/kalam-core.exe -Force</code></pre>
+
+      <p>The built binary is placed in two locations:</p>
+      <ul>
+        <li><code>app/src-tauri/binaries/kalam-core/</code> — For Tauri's sidecar bundling</li>
+        <li><code>app/src-tauri/target/debug/kalam-core.exe</code> — For development testing</li>
+      </ul>
+
+      <h2>Bundle Targets</h2>
+      <p>Kalam builds two installer formats:</p>
+      <ul>
+        <li><strong>MSI</strong> — Windows Installer package (enterprise-friendly)</li>
+        <li><strong>NSIS</strong> — Nullsoft Scriptable Install System (lighter, custom installer UI)</li>
+      </ul>
+      <p>Bundle targets are configured in <code>app/src-tauri/tauri.conf.json</code> under <code>bundle.targets</code>.</p>
+
+      <h2>Installation (End Users)</h2>
+      <p>Download the latest installer from <a href="https://github.com/Comp-Tech-Guy/Kalam/releases" target="_blank" rel="noopener">GitHub Releases</a>:</p>
+      <ol>
+        <li>Download the latest <code>.msi</code> or <code>.exe</code> (NSIS) installer</li>
+        <li>Run the installer</li>
+        <li>Kalam checks for updates automatically on startup</li>
+      </ol>
+      <p>Profiles are stored in <code>%APPDATA%/Kalam/</code> as JSON files.</p>
+    </main>
+  </div>
+
+  </div>
+
+  <footer class="footer">
+    <div class="footer__inner">
+      <p class="footer__text">&copy; 2026 Kalam &mdash; MIT License</p>
+      <ul class="footer__links">
+        <li><a href="https://github.com/Comp-Tech-Guy/Kalam" target="_blank" rel="noopener" class="footer__link">GitHub</a></li>
+        <li><a href="index.html" class="footer__link">Documentation</a></li>
+        <li><span class="footer__text">v0.1.0</span></li>
+      </ul>
+      <p class="footer__text">Built with Tauri + React + Python</p>
+    </div>
+  </footer>
+
+  <script src="../js/main.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>html{background:#0d0f12;color:#e2e8f0}</style>
+  <title>Frontend — Kalam Documentation</title>
+  <meta name="description" content="Kalam frontend documentation — React routing, layout system, components, and CSS architecture." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Lexend:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/style.css" />
+  <link rel="icon" type="image/png" href="../favicon.png" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-okaidia.min.css" rel="stylesheet" />
+</head>
+<body>
+
+  <nav class="nav" id="nav">
+    <div class="nav__inner">
+      <a href="../index.html" class="nav__logo">Kalam</a>
+      <ul class="nav__links" id="navLinks">
+        <li><a href="../index.html#features" class="nav__link">Features</a></li>
+        <li><a href="../index.html#download" class="nav__link">Download</a></li>
+        <li>
+          <a href="https://github.com/Comp-Tech-Guy/Kalam" target="_blank" rel="noopener" class="nav__link nav__link--icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+            GitHub
+          </a>
+        </li>
+        <li class="nav__item--right"><a href="index.html" class="nav__cta">Docs</a></li>
+      </ul>
+      <button class="nav__hamburger" id="hamburger" aria-label="Toggle menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </nav>
+
+  <div id="app-content">
+  <div class="mobile-overlay" id="mobileOverlay"></div>
+  <aside class="docs-sidebar docs-sidebar--mobile" id="mobileSidebar">
+    <nav class="docs-sidebar__nav">
+      <a href="index.html" class="docs-sidebar__link">Home</a>
+      <a href="architecture.html" class="docs-sidebar__link">Architecture</a>
+      <a href="setup.html" class="docs-sidebar__link">Setup & Build</a>
+      <a href="frontend.html" class="docs-sidebar__link docs-sidebar__link--active">Frontend</a>
+      <a href="sidecar.html" class="docs-sidebar__link">Python Sidecar</a>
+      <a href="auto-update.html" class="docs-sidebar__link">Auto-Update & CI</a>
+      <a href="ahk.html" class="docs-sidebar__link">AHK Integration</a>
+    </nav>
+  </aside>
+
+  <div class="docs-layout">
+    <aside class="docs-sidebar">
+      <nav class="docs-sidebar__nav">
+        <a href="index.html" class="docs-sidebar__link">Home</a>
+        <a href="architecture.html" class="docs-sidebar__link">Architecture</a>
+        <a href="setup.html" class="docs-sidebar__link">Setup & Build</a>
+        <a href="frontend.html" class="docs-sidebar__link docs-sidebar__link--active">Frontend</a>
+        <a href="sidecar.html" class="docs-sidebar__link">Python Sidecar</a>
+        <a href="auto-update.html" class="docs-sidebar__link">Auto-Update & CI</a>
+        <a href="ahk.html" class="docs-sidebar__link">AHK Integration</a>
+      </nav>
+    </aside>
+    <main class="docs-content">
+      <h1>Frontend</h1>
+
+      <h2>Routing</h2>
+      <p>All three page routes are lazy-loaded via <code>React.lazy()</code> in <code>main.jsx</code>, wrapped in <code>&lt;Suspense&gt;</code> with a <code>.loader</code> spinner fallback:</p>
+      <pre><code class="language-jsx">const Dashboard = React.lazy(() => import("./pages/Dashboard/Dashboard"));
+const CreateProfile = React.lazy(() => import("./pages/CreateProfile/CreateProfile"));
+const Settings = React.lazy(() => import("./pages/Settings/Settings"));</code></pre>
+
+      <pre><code class="language-jsx">&lt;BrowserRouter&gt;
+  &lt;Routes&gt;
+    &lt;Route path="/" element={&lt;AppLayout /&gt;}&gt;
+      &lt;Route index element={&lt;Suspense fallback={&lt;div className="loader" /&gt;}&gt;&lt;Dashboard /&gt;&lt;/Suspense&gt;} /&gt;
+      &lt;Route path="profile" element={&lt;Suspense fallback={&lt;div className="loader" /&gt;}&gt;&lt;CreateProfile /&gt;&lt;/Suspense&gt;} /&gt;
+      &lt;Route path="setting" element={&lt;Suspense fallback={&lt;div className="loader" /&gt;}&gt;&lt;Settings /&gt;&lt;/Suspense&gt;} /&gt;
+    &lt;/Route&gt;
+  &lt;/Routes&gt;
+&lt;/BrowserRouter&gt;</code></pre>
+
+      <p><code>AppLayout</code> is the persistent shell. Child routes swap via <code>&lt;Outlet /&gt;</code>.</p>
+
+      <h2>Layout System</h2>
+      <pre><code>┌─────────────────────────────────────┐
+│  Titlebar (40px, sticky, z-index 10)│
+├────────┬────────────────────────────┤
+│ Nav    │  PageContainer (flex: 1)   │
+│ 200px  │  ┌──────────────────────┐  │
+│ (56px  │  │  &lt;AppPg&gt;             │  │
+│ narrow)│  │  padding: 32px 40px  │  │
+│        │  │  24px 20px @800px    │  │
+│        │  │  16px 12px @500px    │  │
+│        │  └──────────────────────┘  │
+├────────┴────────────────────────────┤
+│  height: calc(100vh - 40px)         │
+└─────────────────────────────────────┘</code></pre>
+
+      <ul>
+        <li><strong>Nav collapses</strong> from <code>200px</code> to <code>56px</code> at <code>800px</code> window width — text labels hide via <code>max-width: 0; opacity: 0</code> (no layout reflow)</li>
+        <li><strong>Anti-jitter rule:</strong> No CSS transitions on layout properties (width, padding). Only visual-only properties (opacity, max-width) transition.</li>
+        <li><strong>Content padding</strong> steps down: <code>32px 40px</code> → <code>24px 20px</code> @800px → <code>16px 12px</code> @500px</li>
+      </ul>
+
+      <h2>Vite Build Config</h2>
+      <p><code>rollupOptions.output.manualChunks</code> splits dependencies into separate chunks:</p>
+      <ul>
+        <li><strong><code>vendor</code></strong> — <code>react</code> + <code>react-dom</code></li>
+        <li><strong><code>router</code></strong> — <code>react-router-dom</code></li>
+      </ul>
+
+      <h2>CSS Architecture</h2>
+      <p>Shared form/page styles live in <code>app/src/styles/forms.css</code> (imported by CreateProfile and Settings). <code>Dashboard.css</code> only contains Dashboard-specific styles (header, buttons). Six duplicate <code>@import "../../index.css"</code> lines were removed from component CSS files — Vite handles CSS injection automatically.</p>
+
+      <h2>Components</h2>
+
+      <h3>SelectMenu</h3>
+      <p>Custom dropdown replacing native <code>&lt;select&gt;</code>, used for the Rainmeter layout picker on CreateProfile. Features animated open/close (120ms), click-outside dismiss, and full theme support via CSS variables.</p>
+
+      <h3>ResizableTextarea</h3>
+      <p>Custom resizable textarea that replaces the native Windows resize handle (an unstylable OS-drawn widget). The native handle is disabled with <code>resize: none</code> and a themed drag handle is rendered at the bottom-right corner. Height is set directly on the DOM ref during drag — zero React re-renders. Minimum height: 80px.</p>
+
+      <h3>ImportExportModal</h3>
+      <p>Full-screen modal overlay with backdrop blur for importing/exporting profiles. Supports radio toggle between single/all profiles for export. Auto-detects single vs wrapped JSON format on import.</p>
+
+      <h3>UpdateBanner</h3>
+      <p>Floating toast at bottom-right driven by <code>useUpdateChecker</code> hook. Three states: <code>available</code> (version + release notes), <code>downloading</code> (percentage + progress bar), <code>downloaded</code> (Restart & Install button). Dismiss animation slides right 30px + fades over 250ms using only GPU-composited properties.</p>
+
+      <h3>ProfileCard</h3>
+      <p>Displays profile name and active tool badges (emoji icons). Three action buttons: Run (calls sidecar), Edit (navigates to <code>/profile</code>), Remove.</p>
+
+      <h2>Form Layout</h2>
+      <p>CreateProfile and Settings forms use <code>app/src/styles/forms.css</code>:</p>
+      <ul>
+        <li><code>.profileCont</code> / <code>.settingCont</code>: <code>grid-template-columns: 200px 1fr</code> with <code>align-items: start</code></li>
+        <li><code>.form-group</code>: <code>display: grid; grid-template-columns: subgrid</code> — prevents textarea resize from affecting adjacent rows</li>
+        <li>At <code>800px</code>: collapses to single-column flex layout</li>
+      </ul>
+
+      <h2>Tauri Window Config</h2>
+      <table>
+        <thead>
+          <tr><th>Property</th><th>Value</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Default size</td><td>1000x800</td></tr>
+          <tr><td>Minimum size</td><td>700x500</td></tr>
+          <tr><td>Decorations</td><td><code>false</code> (custom titlebar)</td></tr>
+        </tbody>
+      </table>
+    </main>
+  </div>
+
+  </div>
+
+  <footer class="footer">
+    <div class="footer__inner">
+      <p class="footer__text">&copy; 2026 Kalam &mdash; MIT License</p>
+      <ul class="footer__links">
+        <li><a href="https://github.com/Comp-Tech-Guy/Kalam" target="_blank" rel="noopener" class="footer__link">GitHub</a></li>
+        <li><a href="index.html" class="footer__link">Documentation</a></li>
+        <li><span class="footer__text">v0.1.0</span></li>
+      </ul>
+      <p class="footer__text">Built with Tauri + React + Python</p>
+    </div>
+  </footer>
+
+  <script src="../js/main.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+</body>
+</html>

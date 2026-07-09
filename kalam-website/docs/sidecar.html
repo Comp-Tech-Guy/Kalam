@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>html{background:#0d0f12;color:#e2e8f0}</style>
+  <title>Python Sidecar — Kalam Documentation</title>
+  <meta name="description" content="Kalam Python sidecar documentation — CLI reference, tool logic, Windhawk, and auto-detect." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Lexend:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/style.css" />
+  <link rel="icon" type="image/png" href="../favicon.png" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-okaidia.min.css" rel="stylesheet" />
+</head>
+<body>
+
+  <nav class="nav" id="nav">
+    <div class="nav__inner">
+      <a href="../index.html" class="nav__logo">Kalam</a>
+      <ul class="nav__links" id="navLinks">
+        <li><a href="../index.html#features" class="nav__link">Features</a></li>
+        <li><a href="../index.html#download" class="nav__link">Download</a></li>
+        <li>
+          <a href="https://github.com/Comp-Tech-Guy/Kalam" target="_blank" rel="noopener" class="nav__link nav__link--icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+            GitHub
+          </a>
+        </li>
+        <li class="nav__item--right"><a href="index.html" class="nav__cta">Docs</a></li>
+      </ul>
+      <button class="nav__hamburger" id="hamburger" aria-label="Toggle menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </nav>
+
+  <div id="app-content">
+  <div class="mobile-overlay" id="mobileOverlay"></div>
+  <aside class="docs-sidebar docs-sidebar--mobile" id="mobileSidebar">
+    <nav class="docs-sidebar__nav">
+      <a href="index.html" class="docs-sidebar__link">Home</a>
+      <a href="architecture.html" class="docs-sidebar__link">Architecture</a>
+      <a href="setup.html" class="docs-sidebar__link">Setup & Build</a>
+      <a href="frontend.html" class="docs-sidebar__link">Frontend</a>
+      <a href="sidecar.html" class="docs-sidebar__link docs-sidebar__link--active">Python Sidecar</a>
+      <a href="auto-update.html" class="docs-sidebar__link">Auto-Update & CI</a>
+      <a href="ahk.html" class="docs-sidebar__link">AHK Integration</a>
+    </nav>
+  </aside>
+
+  <div class="docs-layout">
+    <aside class="docs-sidebar">
+      <nav class="docs-sidebar__nav">
+        <a href="index.html" class="docs-sidebar__link">Home</a>
+        <a href="architecture.html" class="docs-sidebar__link">Architecture</a>
+        <a href="setup.html" class="docs-sidebar__link">Setup & Build</a>
+        <a href="frontend.html" class="docs-sidebar__link">Frontend</a>
+        <a href="sidecar.html" class="docs-sidebar__link docs-sidebar__link--active">Python Sidecar</a>
+        <a href="auto-update.html" class="docs-sidebar__link">Auto-Update & CI</a>
+        <a href="ahk.html" class="docs-sidebar__link">AHK Integration</a>
+      </nav>
+    </aside>
+    <main class="docs-content">
+      <h1>Python Sidecar</h1>
+
+      <p>The sidecar (<code>sidecar/kalam-core.py</code>, compiled to <code>kalam-core-x86_64-pc-windows-msvc.exe</code>) handles all system-level operations. The frontend communicates with it via <code>@tauri-apps/plugin-shell</code> <code>Command.sidecar()</code>.</p>
+
+      <h2>CLI Reference</h2>
+      <table>
+        <thead>
+          <tr><th>Command</th><th>Args</th><th>Output</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>list</code></td><td>—</td><td>JSON <code>[{id, name}]</code></td><td>List all profiles</td></tr>
+          <tr><td><code>current</code></td><td>—</td><td><code>{id, name}</code> or <code>null</code></td><td>Currently active profile</td></tr>
+          <tr><td><code>apply-by-name</code></td><td><code>"Profile Name"</code></td><td>(none)</td><td>Look up and apply by name</td></tr>
+          <tr><td><code>&lt;numeric_id&gt;</code></td><td>—</td><td>(none)</td><td>Apply profile by numeric ID</td></tr>
+          <tr><td><code>scan</code></td><td>—</td><td>(writes manifest files)</td><td>Scan all tool configs</td></tr>
+          <tr><td><code>autodetect</code></td><td>—</td><td>JSON paths</td><td>Auto-detect tool install paths</td></tr>
+          <tr><td><code>stop-all</code></td><td>—</td><td>Status text</td><td>Stop all managed tools</td></tr>
+        </tbody>
+      </table>
+
+      <h2>Profile Application Flow</h2>
+      <p><code>apply_profile()</code> orchestrates the full sequence:</p>
+      <ol>
+        <li>Fetch running processes once (cached as <code>running_names</code> set)</li>
+        <li>Apply each tool in order: Rainmeter → Wallpaper → YASB → GlazeWM → Zebar → Windhawk</li>
+        <li>For each tool: check if config exists → write config → start/restart process</li>
+        <li>If a tool is not in the profile but is running → kill it</li>
+        <li>Set <code>activeProfile</code> in settings</li>
+      </ol>
+
+      <h2>Tool-Specific Logic</h2>
+      <table>
+        <thead>
+          <tr><th>Tool</th><th>Apply Function</th><th>What It Does</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Rainmeter</td><td><code>rainmeter()</code></td><td>Starts exe if not running, loads layout via <code>!LoadLayout</code></td></tr>
+          <tr><td>YASB</td><td><code>yasb_code_inject()</code></td><td>Writes <code>config.yaml</code> + <code>styles.css</code>, starts exe if needed</td></tr>
+          <tr><td>GlazeWM</td><td><code>glaze_wm_apply()</code></td><td>Writes <code>config.yaml</code>, kills with graceful <code>exit</code> command, restarts</td></tr>
+          <tr><td>Zebar</td><td><code>zebar_apply()</code></td><td>Writes <code>settings.json</code>, kills and restarts</td></tr>
+          <tr><td>Windhawk</td><td><code>apply_windhawk_profile()</code></td><td>Installed: writes <code>.reg</code> file, runs elevated via <code>ShellExecuteExU</code> with <code>runas</code>; Portable: kills and restarts</td></tr>
+          <tr><td>Wallpaper</td><td><code>set_wallpaper_all_desktops()</code></td><td>Uses <code>pyvda</code> to set wallpaper across virtual desktops</td></tr>
+        </tbody>
+      </table>
+
+      <h2>Process Scan Optimization</h2>
+      <p><code>apply_profile()</code>, <code>kill_process()</code>, <code>is_process_running()</code>, and all tool-apply functions accept an optional <code>running_names</code> parameter (set of lowercase exe names). When provided, they skip redundant <code>psutil.process_iter</code> scans and use the pre-computed set instead. The process list is fetched once at the start of <code>apply_profile()</code> or <code>stop-all</code> and threaded through all downstream calls.</p>
+
+      <h2>Windhawk Smart Restart</h2>
+      <p>When applying profiles with <code>Windhawk-Mods</code>, the sidecar compares desired settings against current registry via <code>_windhawk_settings_changed()</code>. If nothing changed — re-applying the same profile or switching between profiles with identical Windhawk configs — the registry write, elevation, and service restart are skipped entirely. This avoids unnecessary UAC prompts and service interruptions.</p>
+
+      <p>Both <code>scan_windhawk_registry()</code> and <code>_get_current_windhawk_settings()</code> share <code>_enumerate_windhawk_registry()</code>, which reads from <code>HKLM</code> and <code>HKCU</code> under <code>SOFTWARE\Windhawk\Engine\Mods</code> and <code>SOFTWARE\Windhawk\Mods</code>, returning a deduplicated list.</p>
+
+      <h2>Auto-Detect Paths</h2>
+      <p><code>autodetect_paths()</code> resolves tool paths dynamically using environment-aware lookups:</p>
+      <table>
+        <thead>
+          <tr><th>Helper</th><th>Purpose</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>_first_existing(iterable)</code></td><td>Returns first path that <code>os.path.exists()</code>, or <code>""</code></td></tr>
+          <tr><td><code>_program_files_dirs()</code></td><td>Reads <code>%ProgramW6432%</code>, <code>%ProgramFiles%</code>, <code>%ProgramFiles(x86)%</code> — called once and reused</td></tr>
+        </tbody>
+      </table>
+
+      <p><strong>Detection order per tool:</strong> <code>shutil.which()</code> → <code>_program_files_dirs()</code> + tool name → <code>%LOCALAPPDATA%\Programs\&lt;Tool&gt;</code> → <code>%LOCALAPPDATA%\Microsoft\WinGet\Links\&lt;Tool&gt;</code></p>
+
+      <h3>Known Config Paths</h3>
+      <ul>
+        <li><strong>YASB:</strong> <code>YASB_CONFIG_HOME</code> env → <code>~/.config/yasb/</code> → <code>~/.yasb/</code></li>
+        <li><strong>GlazeWM:</strong> <code>~/.glzr/glazewm/</code> → <code>~/.glazewm/</code></li>
+        <li><strong>Zebar:</strong> <code>%APPDATA%/zebar</code> → <code>~/.zebar/</code></li>
+      </ul>
+
+      <h2>Sidecar Internal Refactors</h2>
+      <ul>
+        <li><code>_enumerate_windhawk_registry()</code> — shared helper, eliminates duplicate registry enumeration</li>
+        <li><code>_parse_rainmeter_ini()</code> — handles both UTF-16-LE and UTF-8 encodings of <code>Rainmeter.ini</code></li>
+        <li><code>_program_files_dirs()</code> — called once per <code>autodetect_paths()</code> instead of per tool</li>
+        <li><code>kill_process()</code> — <code>break</code> after successful kill to avoid scanning remaining processes</li>
+        <li><code>scan_zebar_configs()</code> — removed redundant <code>json.loads()</code> validation</li>
+      </ul>
+
+      <h2>Windhawk Mod Schema</h2>
+      <pre><code class="language-json">{
+  "id": "modernflyouts",
+  "enabled": 1,
+  "settings": { "show-labels": true, "animation-speed": 200 }
+}</code></pre>
+    </main>
+  </div>
+
+  </div>
+
+  <footer class="footer">
+    <div class="footer__inner">
+      <p class="footer__text">&copy; 2026 Kalam &mdash; MIT License</p>
+      <ul class="footer__links">
+        <li><a href="https://github.com/Comp-Tech-Guy/Kalam" target="_blank" rel="noopener" class="footer__link">GitHub</a></li>
+        <li><a href="index.html" class="footer__link">Documentation</a></li>
+        <li><span class="footer__text">v0.1.0</span></li>
+      </ul>
+      <p class="footer__text">Built with Tauri + React + Python</p>
+    </div>
+  </footer>
+
+  <script src="../js/main.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+</body>
+</html>

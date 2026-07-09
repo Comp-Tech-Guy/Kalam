@@ -467,3 +467,58 @@ AppData := A_AppData . "\Kalam"
 ### Windhawk Smart Restart
 
 When applying profiles with `Windhawk-Mods`, the sidecar compares the desired mod settings against the current registry state. If nothing changed (re-applying the same profile, or switching between profiles with identical Windhawk configs), the service restart is skipped entirely — no UAC prompt, no service interruption.
+
+## Website (`kalam-website/`)
+
+Static landing page + documentation site, deployed on GitHub Pages (pure HTML/CSS/JS, no build step).
+
+### Pages
+
+| Path | Content |
+|------|---------|
+| `index.html` | Landing: hero, features grid, how-it-works, download, footer |
+| `docs/index.html` | Docs home with card grid linking to 6 doc pages |
+| `docs/architecture.html` | System overview, tech stack, project structure |
+| `docs/setup.html` | Prerequisites, dev setup, build instructions |
+| `docs/frontend.html` | Routing, layout, components, CSS architecture |
+| `docs/sidecar.html` | CLI reference, tool logic, Windhawk, auto-detect |
+| `docs/auto-update.html` | Signing, release workflow, common pitfalls |
+| `docs/ahk.html` | Commands, example scripts, CLI reference |
+
+### Design
+
+- **Theme**: Dark (`#0D0F12` bg, `#1EB8A5` accent)
+- **Fonts**: `Caveat` (cursive logo), `Lexend` (body)
+- **Nav**: Logo | Features | Download | GitHub | Docs CTA button (accent-filled, `margin-left: auto`)
+- **Responsive**: Mobile hamburger menu, stacked docs sidebar as off-canvas drawer below 1024px
+- **Scroll reveals**: `.animate` class + IntersectionObserver with staggered delays (0.15s steps, 0.7s transition)
+
+### SPA Navigation
+
+All internal links intercepted by `js/main.js` — no full-page reloads:
+
+1. Click handler intercepts internal `<a>` clicks
+2. `fetch()` target page, parse HTML with `DOMParser`
+3. Extract `#app-content` div (wraps everything below nav, above footer)
+4. Swap inner HTML with exit/enter animations (opacity + translateY, 0.25s)
+5. `history.pushState` / `popstate` for back/forward
+6. Re-inits mobile menu, scroll reveal, sidebar active highlighting, Prism.js after each swap
+7. Falls back to normal navigation on fetch errors
+
+### Files
+
+| Path | Purpose |
+|------|---------|
+| `kalam-website/css/style.css` | All styles (1044 lines) |
+| `kalam-website/js/main.js` | SPA router + mobile menu + scroll reveal |
+| `kalam-website/favicon.png` | Favicon |
+| `kalam-website/icon.png` | App icon for preview |
+
+### Local Dev
+
+```powershell
+cd kalam-website
+python -m http.server 8000
+```
+
+Open `http://localhost:8000` — SPA navigation works on a local server. Opening `index.html` directly from the filesystem will break `fetch()` due to file protocol restrictions.

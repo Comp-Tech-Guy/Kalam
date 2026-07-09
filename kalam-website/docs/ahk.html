@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>html{background:#0d0f12;color:#e2e8f0}</style>
+  <title>AHK Integration — Kalam Documentation</title>
+  <meta name="description" content="Kalam AutoHotKey integration guide — switch profiles and stop tools from AHK scripts without opening the GUI." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Lexend:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/style.css" />
+  <link rel="icon" type="image/png" href="../favicon.png" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-okaidia.min.css" rel="stylesheet" />
+</head>
+<body>
+
+  <nav class="nav" id="nav">
+    <div class="nav__inner">
+      <a href="../index.html" class="nav__logo">Kalam</a>
+      <ul class="nav__links" id="navLinks">
+        <li><a href="../index.html#features" class="nav__link">Features</a></li>
+        <li><a href="../index.html#download" class="nav__link">Download</a></li>
+        <li>
+          <a href="https://github.com/Comp-Tech-Guy/Kalam" target="_blank" rel="noopener" class="nav__link nav__link--icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+            GitHub
+          </a>
+        </li>
+        <li class="nav__item--right"><a href="index.html" class="nav__cta">Docs</a></li>
+      </ul>
+      <button class="nav__hamburger" id="hamburger" aria-label="Toggle menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </nav>
+
+  <div id="app-content">
+  <div class="mobile-overlay" id="mobileOverlay"></div>
+  <aside class="docs-sidebar docs-sidebar--mobile" id="mobileSidebar">
+    <nav class="docs-sidebar__nav">
+      <a href="index.html" class="docs-sidebar__link">Home</a>
+      <a href="architecture.html" class="docs-sidebar__link">Architecture</a>
+      <a href="setup.html" class="docs-sidebar__link">Setup & Build</a>
+      <a href="frontend.html" class="docs-sidebar__link">Frontend</a>
+      <a href="sidecar.html" class="docs-sidebar__link">Python Sidecar</a>
+      <a href="auto-update.html" class="docs-sidebar__link">Auto-Update & CI</a>
+      <a href="ahk.html" class="docs-sidebar__link docs-sidebar__link--active">AHK Integration</a>
+    </nav>
+  </aside>
+
+  <div class="docs-layout">
+    <aside class="docs-sidebar">
+      <nav class="docs-sidebar__nav">
+        <a href="index.html" class="docs-sidebar__link">Home</a>
+        <a href="architecture.html" class="docs-sidebar__link">Architecture</a>
+        <a href="setup.html" class="docs-sidebar__link">Setup & Build</a>
+        <a href="frontend.html" class="docs-sidebar__link">Frontend</a>
+        <a href="sidecar.html" class="docs-sidebar__link">Python Sidecar</a>
+        <a href="auto-update.html" class="docs-sidebar__link">Auto-Update & CI</a>
+        <a href="ahk.html" class="docs-sidebar__link docs-sidebar__link--active">AHK Integration</a>
+      </nav>
+    </aside>
+    <main class="docs-content">
+      <h1>AHK Integration</h1>
+
+      <p>Switch profiles and stop all tools from AutoHotKey scripts without opening the GUI. The Python sidecar (<code>kalam-core.exe</code>) is a standalone CLI that AHK calls via <code>RunWait</code>.</p>
+
+      <h2>Commands</h2>
+      <table>
+        <thead>
+          <tr><th>Command</th><th>Args</th><th>What it does</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>list</code></td><td><code>appDataDir list</code></td><td>Prints JSON array <code>[{id, name}, ...]</code> to stdout</td></tr>
+          <tr><td><code>current</code></td><td><code>appDataDir current</code></td><td>Prints <code>{id, name}</code> of active profile or <code>null</code></td></tr>
+          <tr><td><code>apply-by-name</code></td><td><code>appDataDir apply-by-name "Profile Name"</code></td><td>Looks up profile by name and applies it</td></tr>
+          <tr><td><code>stop-all</code></td><td><code>appDataDir stop-all</code></td><td>Stops all managed tools</td></tr>
+        </tbody>
+      </table>
+
+      <p><code>appDataDir</code> is <code>%APPDATA%\Kalam</code>.</p>
+
+      <h2>Example AHK Script (v2)</h2>
+      <pre><code class="language-autohotkey">#SingleInstance
+Sidecar := "C:\Program Files\Kalam\binaries\kalam-core\kalam-core-x86_64-pc-windows-msvc.exe"
+AppData := A_AppData . "\Kalam"
+
+; Win+1 → Gaming profile
+#1:: RunWait('"' Sidecar '" "' AppData '" apply-by-name "Gaming"', , "Hide")
+
+; Win+2 → Work profile
+#2:: RunWait('"' Sidecar '" "' AppData '" apply-by-name "Work"', , "Hide")
+
+; Ctrl+Win+S → Stop all
+^#s:: RunWait('"' Sidecar '" "' AppData '" stop-all', , "Hide")</code></pre>
+
+      <h2>Sidecar CLI Reference</h2>
+      <table>
+        <thead>
+          <tr><th>Command</th><th>Args</th><th>Output</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>list</code></td><td><code>appDataDir list</code></td><td>JSON array <code>[{id, name}]</code></td><td>List all profiles</td></tr>
+          <tr><td><code>current</code></td><td><code>appDataDir current</code></td><td><code>{id, name}</code> or <code>null</code></td><td>Show active profile</td></tr>
+          <tr><td><code>apply-by-name</code></td><td><code>appDataDir apply-by-name "Name"</code></td><td>(none)</td><td>Look up profile by name and apply it</td></tr>
+          <tr><td><code>stop-all</code></td><td><code>appDataDir stop-all</code></td><td>Status text</td><td>Stop all managed tools</td></tr>
+          <tr><td><code>&lt;id&gt;</code></td><td><code>appDataDir &lt;id&gt;</code></td><td>(none)</td><td>Apply profile by numeric ID</td></tr>
+        </tbody>
+      </table>
+
+      <h2>Windhawk Smart Restart</h2>
+      <p>When applying profiles with <code>Windhawk-Mods</code>, the sidecar compares the desired mod settings against the current registry state. If nothing changed (re-applying the same profile, or switching between profiles with identical Windhawk configs), the service restart is skipped entirely — no UAC prompt, no service interruption.</p>
+    </main>
+  </div>
+
+  </div>
+
+  <footer class="footer">
+    <div class="footer__inner">
+      <p class="footer__text">&copy; 2026 Kalam &mdash; MIT License</p>
+      <ul class="footer__links">
+        <li><a href="https://github.com/Comp-Tech-Guy/Kalam" target="_blank" rel="noopener" class="footer__link">GitHub</a></li>
+        <li><a href="index.html" class="footer__link">Documentation</a></li>
+        <li><span class="footer__text">v0.1.0</span></li>
+      </ul>
+      <p class="footer__text">Built with Tauri + React + Python</p>
+    </div>
+  </footer>
+
+  <script src="../js/main.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+</body>
+</html>

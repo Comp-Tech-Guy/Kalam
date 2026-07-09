@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>html{background:#0d0f12;color:#e2e8f0}</style>
+  <title>Kalam — Profile-based desktop environment manager for Windows</title>
+  <meta name="description" content="Bundle configurations for Rainmeter, YASB, GlazeWM, Zebar, Wallpaper, and Windhawk into profiles. Apply any profile with one click." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Lexend:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="icon" type="image/png" href="favicon.png" />
+</head>
+<body>
+
+  <!-- Nav -->
+  <nav class="nav" id="nav">
+    <div class="nav__inner">
+      <a href="index.html" class="nav__logo">Kalam</a>
+      <ul class="nav__links" id="navLinks">
+        <li><a href="#features" class="nav__link">Features</a></li>
+        <li><a href="#download" class="nav__link">Download</a></li>
+        <li>
+          <a href="https://github.com/Comp-Tech-Guy/Kalam" target="_blank" rel="noopener" class="nav__link nav__link--icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+            GitHub
+          </a>
+        </li>
+        <li class="nav__item--right"><a href="docs/index.html" class="nav__cta">Docs</a></li>
+      </ul>
+      <button class="nav__hamburger" id="hamburger" aria-label="Toggle menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </nav>
+
+  <div id="app-content">
+  <!-- Mobile overlay -->
+  <div class="mobile-overlay" id="mobileOverlay"></div>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero__content">
+      <h1 class="hero__title animate"><span class="hero__title-accent">Kalam</span></h1>
+      <p class="hero__tagline animate animate--delay-1">Profile-based desktop environment manager for Windows</p>
+      <p class="hero__subtitle animate animate--delay-2">Bundle configurations for Rainmeter, YASB, GlazeWM, Zebar, Wallpaper, and Windhawk into profiles. Apply any profile with one click.</p>
+      <div class="hero__actions animate animate--delay-3">
+        <a href="https://github.com/Comp-Tech-Guy/Kalam/releases" target="_blank" rel="noopener" class="btn btn--primary btn--large">Download v0.1.0</a>
+        <a href="docs/index.html" class="btn btn--secondary btn--large">Read the Docs</a>
+      </div>
+      <div class="hero__screenshot animate animate--delay-4">Screenshot coming soon</div>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section class="section" id="features">
+    <div class="container">
+      <div class="section__header animate">
+        <h2 class="section__title">Supported Tools</h2>
+        <p class="section__subtitle">Kalam manages every aspect of your desktop setup through a single interface.</p>
+      </div>
+      <div class="features-grid">
+        <div class="feature-card animate">
+          <span class="feature-card__icon">🎨</span>
+          <h3 class="feature-card__title">Rainmeter</h3>
+          <p class="feature-card__desc">Layout selection and activation. Pick from your installed Rainmeter layouts and apply them instantly.</p>
+        </div>
+        <div class="feature-card animate animate--delay-1">
+          <span class="feature-card__icon">📊</span>
+          <h3 class="feature-card__title">YASB</h3>
+          <p class="feature-card__desc">Config YAML + styles CSS injection. Full control over your taskbar appearance and behavior.</p>
+        </div>
+        <div class="feature-card animate animate--delay-2">
+          <span class="feature-card__icon">🪟</span>
+          <h3 class="feature-card__title">GlazeWM</h3>
+          <p class="feature-card__desc">Window manager config. Swap between tiling layouts and workspace setups seamlessly.</p>
+        </div>
+        <div class="feature-card animate animate--delay-3">
+          <span class="feature-card__icon">📈</span>
+          <h3 class="feature-card__title">Zebar</h3>
+          <p class="feature-card__desc">Status bar settings. Customize system monitors, clock, and quick-access widgets.</p>
+        </div>
+        <div class="feature-card animate animate--delay-4">
+          <span class="feature-card__icon">🖼️</span>
+          <h3 class="feature-card__title">Wallpaper</h3>
+          <p class="feature-card__desc">Desktop background across virtual desktops. Set unique wallpapers that persist per profile.</p>
+        </div>
+        <div class="feature-card animate animate--delay-5">
+          <span class="feature-card__icon">🔧</span>
+          <h3 class="feature-card__title">Windhawk</h3>
+          <p class="feature-card__desc">Mod enable/disable + per-mod settings. Fine-tune Windows shell mods without manual registry edits.</p>
+        </div>
+      </div>
+      <!--<div class="callouts">
+        <div class="callout">
+          <span class="callout__icon">⚡</span>
+          <h3 class="callout__title">One-Click Switching</h3>
+          <p class="callout__desc">Apply a full desktop layout instantly. Switch between work, gaming, and creative setups in seconds.</p>
+        </div>
+        <div class="callout">
+          <span class="callout__icon">🔍</span>
+          <h3 class="callout__title">Auto-Detect</h3>
+          <p class="callout__desc">Finds installed tools automatically. No manual path configuration needed.</p>
+        </div>
+        <div class="callout">
+          <span class="callout__icon">🔄</span>
+          <h3 class="callout__title">Auto-Update</h3>
+          <p class="callout__desc">Updates delivered via GitHub Releases. Stay current with the latest features and fixes.</p>
+        </div>
+      </div>-->
+    </div>
+  </section>
+
+  <!-- How It Works -->
+  <section class="section">
+    <div class="container">
+      <div class="section__header animate">
+        <h2 class="section__title">How It Works</h2>
+        <p class="section__subtitle">Three simple steps to a fully customized desktop.</p>
+      </div>
+      <div class="steps">
+        <div class="step animate">
+          <div class="step__number">1</div>
+          <h3 class="step__title">Create Profile</h3>
+          <p class="step__desc">Give your profile a name and select which tools to include. Each profile is a complete desktop blueprint.</p>
+        </div>
+        <div class="step animate animate--delay-1">
+          <div class="step__number">2</div>
+          <h3 class="step__title">Configure Tools</h3>
+          <p class="step__desc">Set up each tool exactly how you want it — Rainmeter layouts, YASB styles, GlazeWM workspaces, and more.</p>
+        </div>
+        <div class="step animate animate--delay-2">
+          <div class="step__number">3</div>
+          <h3 class="step__title">Apply</h3>
+          <p class="step__desc">Click Run on any profile to switch your entire desktop environment. Everything changes at once.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Download -->
+  <section class="section download" id="download">
+    <div class="download__inner animate">
+      <h2 class="download__title">Get Kalam</h2>
+      <a href="https://github.com/Comp-Tech-Guy/Kalam/releases" target="_blank" rel="noopener" class="btn btn--primary btn--large">Download v0.1.0</a>
+      <p class="download__info">Windows 10/11 &middot; MSI or NSIS installer &middot; Auto-updates</p>
+    </div>
+  </section>
+
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer__inner">
+      <p class="footer__text">&copy; 2026 Kalam &mdash; MIT License</p>
+      <ul class="footer__links">
+        <li><a href="https://github.com/Comp-Tech-Guy/Kalam" target="_blank" rel="noopener" class="footer__link">GitHub</a></li>
+        <li><a href="docs/index.html" class="footer__link">Documentation</a></li>
+        <li><span class="footer__text">v0.1.0</span></li>
+      </ul>
+      <p class="footer__text">Built with Tauri + React + Python</p>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
