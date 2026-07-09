@@ -27,7 +27,7 @@
               "validator": ".+"
             }
           ],
-          "name": "binaries/my-sidecar/kalam-Sidecar",
+          "name": "binaries/kalam-core/kalam-core",
           "sidecar": true
         }
       ]

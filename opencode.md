@@ -22,7 +22,7 @@ Profile-based desktop environment manager for Windows. Bundles configurations fo
 | Settings | `app/src/pages/Settings/Settings.jsx` |
 | Sidecar service | `app/src/services/sidecar.js` |
 | Storage service | `app/src/services/storage.js` |
-| Python sidecar source | `sidecar/kalam-Sidecar-x86_64-pc-windows-msvc.py` |
+| Python sidecar source | `sidecar/kalam-core.py` |
 | SelectMenu component | `app/src/components/SelectMenu/SelectMenu.jsx` |
 | ResizableTextarea | `app/src/components/ResizableTextarea/ResizableTextarea.jsx` |
 | ImportExportModal | `app/src/components/ImportExportModal/ImportExportModal.jsx` |
@@ -213,7 +213,7 @@ export async function stopAll() {
 
 **Error:** `Error: ERROR: invalid literal for int() with base 10: 'stop-all'`
 
-**Cause:** The compiled `.exe` at `app/src-tauri/binaries/my-sidecar/` was built from an older Python source that didn't have the `stop-all` handler.
+**Cause:** The compiled `.exe` at `app/src-tauri/binaries/kalam-core/` was built from an older Python source that didn't have the `stop-all` handler.
 
 **Fix:** Rebuild the sidecar binary.
 
@@ -221,14 +221,14 @@ export async function stopAll() {
 
 ```powershell
 cd sidecar
-python -m PyInstaller kalam-Sidecar-x86_64-pc-windows-msvc.spec --noconfirm
-Copy-Item dist/kalam-Sidecar-x86_64-pc-windows-msvc.exe app/src-tauri/binaries/my-sidecar/ -Force
-Copy-Item dist/kalam-Sidecar-x86_64-pc-windows-msvc.exe app/src-tauri/target/debug/kalam-Sidecar.exe -Force
+python -m PyInstaller kalam-core.spec --noconfirm
+Copy-Item dist/kalam-core-x86_64-pc-windows-msvc.exe app/src-tauri/binaries/kalam-core/ -Force
+Copy-Item dist/kalam-core-x86_64-pc-windows-msvc.exe app/src-tauri/target/debug/kalam-core.exe -Force
 ```
 
 ### When to Rebuild
 
-Rebuild whenever `sidecar/kalam-Sidecar-x86_64-pc-windows-msvc.py` changes, including:
+Rebuild whenever `sidecar/kalam-core.py` changes, including:
 - Adding new special commands (`"scan"`, `"stop-all"`, `"autodetect"`)
 - Modifying tool apply functions
 - Changing Windhawk registry logic
@@ -439,7 +439,7 @@ AHK scripts can switch profiles and stop-all without opening the GUI by calling 
 
 ```autohotkey
 #SingleInstance
-Sidecar := "C:\Program Files\Kalam\binaries\my-sidecar\kalam-Sidecar-x86_64-pc-windows-msvc.exe"
+Sidecar := "C:\Program Files\Kalam\binaries\kalam-core\kalam-core-x86_64-pc-windows-msvc.exe"
 AppData := A_AppData . "\Kalam"
 
 ; Win+1 → Gaming profile

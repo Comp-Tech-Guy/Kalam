@@ -44,7 +44,7 @@
   "bundle": {
     "createUpdaterArtifacts": true,
     "externalBin": [
-      "binaries/my-sidecar/kalam-Sidecar"
+      "binaries/kalam-core/kalam-core"
     ],
     "active": true,
     "targets": "all",

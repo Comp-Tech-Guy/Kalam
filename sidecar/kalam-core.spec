@@ -2,7 +2,7 @@
 
 
 a = Analysis(
-    ['kalam-Sidecar-x86_64-pc-windows-msvc.py'],
+    ['kalam-core.py'],
     pathex=[],
     binaries=[],
     datas=[],
@@ -25,7 +25,7 @@ exe = EXE(
     a.binaries,
     a.datas,
     [],
-    name='kalam-Sidecar-x86_64-pc-windows-msvc',
+    name='kalam-core-x86_64-pc-windows-msvc',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,

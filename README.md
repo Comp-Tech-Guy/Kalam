@@ -21,7 +21,7 @@ npm run tauri dev
 
 ## AutoHotKey Integration
 
-You can switch profiles and stop-all from AutoHotKey scripts without opening the GUI. The Python sidecar (`kalam-Sidecar.exe`) is a standalone CLI that AHK calls via `RunWait`.
+You can switch profiles and stop-all from AutoHotKey scripts without opening the GUI. The Python sidecar (`kalam-core.exe`) is a standalone CLI that AHK calls via `RunWait`.
 
 ### Commands
 
@@ -38,7 +38,7 @@ You can switch profiles and stop-all from AutoHotKey scripts without opening the
 
 ```autohotkey
 ; kalam_switch.ahk — edit paths and profile names to match your setup
-Sidecar := "C:\Program Files\Kalam\binaries\my-sidecar\kalam-Sidecar-x86_64-pc-windows-msvc.exe"
+Sidecar := "C:\Program Files\Kalam\binaries\kalam-core\kalam-core-x86_64-pc-windows-msvc.exe"
 AppData := A_AppData . "\Kalam"
 
 ; Win+1 → Gaming profile

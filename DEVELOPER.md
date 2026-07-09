@@ -144,12 +144,12 @@ In the `downloading` state, the progress bar sits on its own line below the text
 
 ```powershell
 cd sidecar
-python -m PyInstaller kalam-Sidecar-x86_64-pc-windows-msvc.spec --noconfirm
-Copy-Item dist/kalam-Sidecar-x86_64-pc-windows-msvc.exe app/src-tauri/binaries/my-sidecar/ -Force
-Copy-Item dist/kalam-Sidecar-x86_64-pc-windows-msvc.exe app/src-tauri/target/debug/kalam-Sidecar.exe -Force
+python -m PyInstaller kalam-core.spec --noconfirm
+Copy-Item dist/kalam-core-x86_64-pc-windows-msvc.exe app/src-tauri/binaries/kalam-core/ -Force
+Copy-Item dist/kalam-core-x86_64-pc-windows-msvc.exe app/src-tauri/target/debug/kalam-core.exe -Force
 ```
 
-Rebuild whenever `sidecar/kalam-Sidecar-x86_64-pc-windows-msvc.py` changes.
+Rebuild whenever `sidecar/kalam-core.py` changes.
 
 ## Sidecar CLI Reference
 
@@ -256,7 +256,7 @@ Profile import/export via `app/src/components/ImportExportModal/`. Opened from D
 
 ## Auto-Detect Paths
 
-`autodetect_paths()` in the sidecar (`sidecar/kalam-Sidecar-x86_64-pc-windows-msvc.py`) dynamically resolves tool paths using environment-aware lookups instead of hardcoded `C:\` paths.
+`autodetect_paths()` in the sidecar (`sidecar/kalam-core.py`) dynamically resolves tool paths using environment-aware lookups instead of hardcoded `C:\` paths.
 
 ### Helpers
 - `_first_existing(iterable)` — returns the first path that `os.path.exists()`, or `""`

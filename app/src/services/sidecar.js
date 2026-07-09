@@ -3,7 +3,7 @@ import { Command } from "@tauri-apps/plugin-shell";
 
 async function SideCar(profileId) {
     const folder = await appDataDir()
-    const command = Command.sidecar('binaries/my-sidecar/kalam-Sidecar' , [folder, profileId.toString()]);
+    const command = Command.sidecar('binaries/kalam-core/kalam-core' , [folder, profileId.toString()]);
     const output = await command.execute();
     if (output.code !== 0) {
         throw new Error(output.stderr || output.stdout || `Sidecar exited with code ${output.code}`);
@@ -13,7 +13,7 @@ async function SideCar(profileId) {
 
 export async function autoDetectPaths() {
     const folder = await appDataDir();
-    const command = Command.sidecar('binaries/my-sidecar/kalam-Sidecar', [folder, 'autodetect']);
+    const command = Command.sidecar('binaries/kalam-core/kalam-core', [folder, 'autodetect']);
     const output = await command.execute();
     if (output.code !== 0) {
         throw new Error(output.stderr || output.stdout || `Sidecar exited with code ${output.code}`);
