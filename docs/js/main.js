@@ -1,10 +1,10 @@
 (function () {
   'use strict';
 
-  var appContent = document.getElementById('app-content');
-  var overlay = document.getElementById('mobileOverlay');
-  var nav = document.querySelector('.nav');
   var isTransitioning = false;
+
+  function $id(id) { return document.getElementById(id); }
+  function $q(s) { return document.querySelector(s); }
 
   function normalizePath(p) {
     p = p.replace(/\/+$/g, '');
@@ -15,8 +15,9 @@
   }
 
   function toggleMenu() {
-    var hamburger = document.getElementById('hamburger');
-    var navLinks = document.getElementById('navLinks');
+    var hamburger = $id('hamburger');
+    var navLinks = $id('navLinks');
+    var overlay = $id('mobileOverlay');
     if (!hamburger || !navLinks) return;
     hamburger.classList.toggle('active');
     navLinks.classList.toggle('open');
@@ -25,8 +26,9 @@
   }
 
   function closeMenu() {
-    var hamburger = document.getElementById('hamburger');
-    var navLinks = document.getElementById('navLinks');
+    var hamburger = $id('hamburger');
+    var navLinks = $id('navLinks');
+    var overlay = $id('mobileOverlay');
     if (!hamburger || !navLinks) return;
     hamburger.classList.remove('active');
     navLinks.classList.remove('open');
@@ -35,7 +37,8 @@
   }
 
   function initMobileMenu() {
-    var hamburger = document.getElementById('hamburger');
+    var hamburger = $id('hamburger');
+    var overlay = $id('mobileOverlay');
     if (hamburger) {
       hamburger.removeEventListener('click', toggleMenu);
       hamburger.addEventListener('click', toggleMenu);
@@ -51,6 +54,7 @@
   }
 
   function initNavScroll() {
+    var nav = $q('.nav');
     if (!nav) return;
     var onScroll = function () {
       nav.classList.toggle('nav--scrolled', window.scrollY > 20);
@@ -61,11 +65,11 @@
   }
 
   function initSidebarActive() {
-    var currentPath = window.location.pathname;
-    document.querySelectorAll('.docs-sidebar__link').forEach(function (link) {
+    var links = document.querySelectorAll('.docs-sidebar__link');
+    var norm = normalizePath(window.location.pathname);
+    links.forEach(function (link) {
       link.classList.remove('docs-sidebar__link--active');
-      var href = link.getAttribute('href');
-      if (currentPath.endsWith(href)) {
+      if (norm.endsWith(normalizePath(link.getAttribute('href') || ''))) {
         link.classList.add('docs-sidebar__link--active');
       }
     });
@@ -139,8 +143,6 @@
   }
 
   function reinitialize() {
-    var newAppContent = document.getElementById('app-content');
-    if (newAppContent) appContent = newAppContent;
     initMobileMenu();
     initSidebarActive();
     initScrollReveal();
@@ -174,10 +176,10 @@
           return;
         }
 
-        if (!isPop) history.pushState({ url: url }, '', url);
+        if (!isPop)         history.pushState({ url: url }, '', url);
         document.title = doc.title;
 
-        var exiting = appContent;
+        var exiting = $id('app-content');
         if (exiting) {
           exiting.classList.add('page-exit');
         }
@@ -186,12 +188,12 @@
           if (exiting && exiting.parentNode) {
             exiting.innerHTML = newContent.innerHTML;
             exiting.className = 'page-enter';
-            appContent = exiting;
+            void exiting.offsetHeight;
 
             requestAnimationFrame(function () {
-              appContent.classList.add('page-enter');
+              exiting.classList.add('page-enter');
               requestAnimationFrame(function () {
-                appContent.classList.remove('page-enter');
+                exiting.classList.remove('page-enter');
                 finishLoad();
               });
             });
@@ -242,13 +244,10 @@
 
   function init() {
     closeMenu();
-    initMobileMenu();
     initNavScroll();
-    initSidebarActive();
-    initScrollReveal();
-    initPrism();
-    initDownloadLinks();
     initRouter();
+    reinitialize();
+    initDownloadLinks();
   }
 
   if (document.readyState === 'loading') {
