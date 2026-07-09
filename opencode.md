@@ -17,9 +17,10 @@ Profile-based desktop environment manager for Windows. Bundles configurations fo
 | App shell | `app/src/layouts/AppLayout.jsx` |
 | App shell CSS | `app/src/layouts/AppLayout.css` |
 | Dashboard | `app/src/pages/Dashboard/Dashboard.jsx` |
-| Dashboard CSS (shared) | `app/src/pages/Dashboard/Dashboard.css` |
+| Dashboard CSS | `app/src/pages/Dashboard/Dashboard.css` |
 | CreateProfile | `app/src/pages/CreateProfile/CreateProfile.jsx` |
 | Settings | `app/src/pages/Settings/Settings.jsx` |
+| Shared form styles | `app/src/styles/forms.css` |
 | Sidecar service | `app/src/services/sidecar.js` |
 | Storage service | `app/src/services/storage.js` |
 | Python sidecar source | `sidecar/kalam-core.py` |
@@ -35,22 +36,28 @@ Profile-based desktop environment manager for Windows. Bundles configurations fo
 ### Routes (`app/src/main.jsx`)
 
 ```jsx
+const Dashboard = React.lazy(() => import("./pages/Dashboard/Dashboard"));
+const CreateProfile = React.lazy(() => import("./pages/CreateProfile/CreateProfile"));
+const Settings = React.lazy(() => import("./pages/Settings/Settings"));
+
 <BrowserRouter>
   <Routes>
     <Route path="/" element={<AppLayout />}>
-      <Route index element={<Dashboard />} />
-      <Route path="profile" element={<CreateProfile />} />
-      <Route path="setting" element={<Settings />} />
+      <Route index element={<Suspense fallback={<div className="loader" />}><Dashboard /></Suspense>} />
+      <Route path="profile" element={<Suspense fallback={<div className="loader" />}><CreateProfile /></Suspense>} />
+      <Route path="setting" element={<Suspense fallback={<div className="loader" />}><Settings /></Suspense>} />
     </Route>
   </Routes>
 </BrowserRouter>
 ```
 
-`AppLayout` is the persistent shell. Child routes swap via `<Outlet />`.
+All three page routes are lazy-loaded with `React.lazy` and wrapped in `<Suspense>` with a `.loader` spinner fallback. `AppLayout` is the persistent shell. Child routes swap via `<Outlet />`.
 
 ### AppLayout (`app/src/layouts/AppLayout.jsx`)
 
 Three-state onboarding gating (`null` = loading, `true` = show onboarding, `false` = show app). Custom titlebar (min/max/close) since `decorations: false`. Sidebar with three NavLinks. Content area renders `<Outlet />`. Renders `<UpdateBanner />` at the bottom.
+
+Onboarding is lazy-loaded with `React.lazy` and wrapped in `<Suspense fallback={<div className="loader" />}>` — only fetched when `showOnboarding` is true (first launch).
 
 ### Dashboard (`app/src/pages/Dashboard/Dashboard.jsx`)
 
@@ -117,6 +124,7 @@ Create or edit profiles that bundle tool configs. Key behaviors:
 
 - **Edit mode**: Detected via `location.state.profile`. Pre-fills all fields from the profile object.
 - **New profile**: All fields start empty. All tools are **auto-populated** from the current system state via `sidecar("scan")`.
+- **CSS**: Imports `../../styles/forms.css` (shared with Settings), not Dashboard.css.
 - **Windhawk auto-import**: Scans Windows registry for installed mods. Loads them into the form with toggles and editable settings JSON. Auto-checks Windhawk in the tool checklist if any mods exist.
 - **Rainmeter auto-import**: Scans `%APPDATA%/Rainmeter/Layouts/` for layout subdirectories. Renders a custom `<SelectMenu>` dropdown (see below) with available layouts, pre-selecting the current active one. Falls back to a text input if no layouts detected.
 - **YASB / GlazeWM / Zebar auto-import**: Reads the current config files from the paths configured in Settings. Pre-fills textareas with the file contents.
@@ -170,10 +178,14 @@ export async function stopAll() {
 ```
 
 The Python sidecar handles `"stop-all"` by:
-1. Getting all running processes
-2. Killing `Rainmeter.exe`, `yasb.exe`, `glazewm.exe`, `zebar.exe` if running
+1. Getting all running processes (cached as a set of lowercase names)
+2. Killing `Rainmeter.exe`, `yasb.exe`, `glazewm.exe`, `zebar.exe` if running (using the cached set to skip redundant `psutil.process_iter` scans)
 3. Reading `windhawkManifest.json` → if Windhawk is **Installed**, disables all mods via HKLM registry (elevated); if **Portable**, kills `windhawk.exe`
 4. Wallpaper is left unchanged
+
+### Process Scan Optimization (`running_names`)
+
+All tool-apply functions (`rainmeter()`, `yasb_code_inject()`, `glaze_wm_apply()`, `zebar_apply()`) and `kill_process()` / `is_process_running()` accept an optional `running_names` parameter (a set of lowercase exe names). When provided, they skip redundant `psutil.process_iter` scans. The process list is fetched once at the start of `apply_profile()` or `stop-all` and threaded through all downstream calls.
 
 ## Common Issues
 
@@ -248,7 +260,7 @@ Rebuild whenever `sidecar/kalam-core.py` changes, including:
 | GlazeWM config | `~/.glzr/glazewm/`, `~/.glazewm/` (fallback) |
 | Zebar config | `%APPDATA%/zebar`, `~/.zebar/` (fallback) |
 
-Helper functions: `_first_existing(paths_iter)` returns the first path that exists, `_program_files_dirs()` reads `%ProgramW6432%`, `%ProgramFiles%`, `%ProgramFiles(x86)%` from environment (not hardcoded).
+Helper functions: `_first_existing(paths_iter)` returns the first path that exists, `_program_files_dirs()` reads `%ProgramW6432%`, `%ProgramFiles%`, `%ProgramFiles(x86)%` from environment (not hardcoded). `_program_files_dirs()` is called once at the start of `autodetect_paths()` and reused across all tool lookups.
 
 ## Auto-Update System
 
