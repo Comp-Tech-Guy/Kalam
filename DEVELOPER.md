@@ -234,3 +234,38 @@ The CreateProfile form (`Dashboard.css`) uses a 2-column grid for labels + input
 
 ### Why Not `::-webkit-resizer`
 The native `::-webkit-resizer` pseudo-element cannot fully override the OS-drawn resize handle in WebView2/Chromium. Background color bleeds through with lowered opacity and a white box remains visible at the bottom-right corner. The ResizableTextarea component solves this by disable native resize entirely and providing a custom JS-driven handle.
+
+## ImportExportModal Component
+
+Profile import/export via `app/src/components/ImportExportModal/`. Opened from Dashboard header buttons, renders as a full-screen modal overlay with backdrop blur.
+
+### Export Flow
+1. User clicks "Export" on Dashboard → modal opens
+2. Radio toggle: "Single Profile" (dropdown to pick one) or "All Profiles"
+3. Clicking "Export" opens Tauri `save` dialog for the `.json` file path
+4. `exportProfile(profileId)` or `exportAllProfiles()` in `storage.js` reads profiles and writes via Tauri `fs.writeTextFile`
+
+### Import Flow
+1. User clicks "Import" → modal opens (Tauri `open` dialog fires immediately)
+2. Selected file is read via `fs.readTextFile`
+3. Content parsed: single profile object → imports directly; `{ profiles: [...] }` → imports all (overwrite confirmation via dialog)
+4. `importSingleProfile()` / `importAllProfiles()` in `storage.js` merge into `userProfiles.json`
+
+### Capabilities
+`app/src-tauri/capabilities/default.json` needs `fs:allow-read-text-file` and broad fs scopes (`$DESKTOP/**`, `$DOWNLOAD/**`, `$DOCUMENT/**`, `$HOME/**`) for user-chosen file dialogs.
+
+## Auto-Detect Paths
+
+`autodetect_paths()` in the sidecar (`sidecar/kalam-Sidecar-x86_64-pc-windows-msvc.py`) dynamically resolves tool paths using environment-aware lookups instead of hardcoded `C:\` paths.
+
+### Helpers
+- `_first_existing(iterable)` — returns the first path that `os.path.exists()`, or `""`
+- `_program_files_dirs()` — reads `%ProgramW6432%`, `%ProgramFiles%`, `%ProgramFiles(x86)%` from environment
+
+### Tool Detection Order
+Each tool tried in order: `shutil.which()`, then `_program_files_dirs()` + tool name, then `%LOCALAPPDATA%\Programs\<Tool>`, then `%LOCALAPPDATA%\Microsoft\WinGet\Links\<Tool>`.
+
+### Known Config Paths
+- **YASB**: checks `YASB_CONFIG_HOME` env, then `~/.config/yasb/`, then `~/.yasb/`
+- **GlazeWM**: checks `~/.glzr/glazewm/`, then `~/.glazewm/`
+- **Zebar**: checks `%APPDATA%/zebar`, then `~/.zebar/`

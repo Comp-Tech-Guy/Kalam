@@ -9,10 +9,6 @@
     margin-bottom: 32px;
 }
 
-.dashboard-header-text {
-    padding-right: 130px;
-}
-
 .dashboard-header-text h1 {
     font-size: 1.75rem;
     margin-bottom: 4px;
@@ -25,11 +21,40 @@
     font-size: 0.9rem;
 }
 
-/* Stop All Button */
+/* Header Actions Row */
+.dashboard-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.btn-header-export,
+.btn-header-import {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: transparent;
+    color: var(--text-muted);
+    border: 1px solid var(--border-light);
+    padding: 9px 16px;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 0.82rem;
+    cursor: pointer;
+    transition: var(--trans-smooth);
+    font-family: inherit;
+    flex-shrink: 0;
+}
+
+.btn-header-export:hover,
+.btn-header-import:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+    background: var(--accent-glow);
+}
+
 .btn-stop-all {
-    position: absolute;
-    top: 0;
-    right: 0;
     display: inline-flex;
     align-items: center;
     gap: 8px;
@@ -187,14 +212,6 @@ select option:checked {
 
 .form-actions .btn-detect:first-child {
     margin-right: auto;
-}
-
-.btn-onboarding-reset {
-    opacity: 0.65;
-}
-
-.btn-onboarding-reset:hover {
-    opacity: 1;
 }
 
 .btn-submit {

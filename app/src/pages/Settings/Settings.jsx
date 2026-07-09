@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import "../Dashboard/Dashboard.css"
-import { editData, getData, setOnboardingComplete } from "../../services/storage";
+import { editData, getData } from "../../services/storage";
 import { autoDetectPaths as detectSidecarPaths } from "../../services/sidecar";
 import { requestManualCheck } from "../../services/useUpdateChecker";
 
@@ -16,7 +16,6 @@ function Settings() {
     const [saved, setSaved] = useState(false);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
-    const [onboardingReset, setOnboardingReset] = useState(false);
     const [checkUpdateStatus, setCheckUpdateStatus] = useState('');
 
     const loadData = async () => {
@@ -51,6 +50,7 @@ function Settings() {
             const found = await detectSidecarPaths();
 
             if (found['rainmeter-Path']) setRainPath(found['rainmeter-Path']);
+            if (found['Yasb-Exe-Path']) setYasbExe(found['Yasb-Exe-Path']);
             if (found['Yasb-Config-Path']) setYasbPath(found['Yasb-Config-Path']);
             if (found['GlazeWM-Config-Path']) setGlazePath(found['GlazeWM-Config-Path']);
             if (found['Zebar-Config-Path']) setZebarPath(found['Zebar-Config-Path']);
@@ -91,12 +91,6 @@ function Settings() {
         requestManualCheck();
         setCheckUpdateStatus('Checking...');
         setTimeout(() => setCheckUpdateStatus(''), 3000);
-    };
-
-    const resetOnboarding = async () => {
-        await setOnboardingComplete(false);
-        setOnboardingReset(true);
-        setTimeout(() => setOnboardingReset(false), 3000);
     };
 
     if (loading) {
@@ -150,7 +144,7 @@ function Settings() {
                         type="text" 
                         value={yasbPath} 
                         onChange={(e) => setYasbPath(e.target.value)} 
-                        placeholder="C:\Users\Name\.yasb"
+                        placeholder="C:\Users\Name\.config\yasb"
                     />
                 </div>
 
@@ -160,7 +154,7 @@ function Settings() {
                         type="text" 
                         value={glazePath} 
                         onChange={(e) => setGlazePath(e.target.value)} 
-                        placeholder="C:\Users\Name\.glazewm"
+                        placeholder="C:\Users\Name\.glzr\glazewm"
                     />
                 </div>
 
@@ -202,15 +196,6 @@ function Settings() {
                         disabled={detecting}
                     >
                         {detecting ? "Scanning..." : "Auto Detect Paths"}
-                    </button>
-                    <button
-                        id="settings-reset-onboarding"
-                        className="btn-detect btn-onboarding-reset"
-                        onClick={resetOnboarding}
-                        disabled={onboardingReset}
-                        title="Reset the onboarding wizard — it will show again on next app launch"
-                    >
-                        {onboardingReset ? "Onboarding Reset ✓" : "Show Onboarding Again"}
                     </button>
                     <button
                         className="btn-detect"

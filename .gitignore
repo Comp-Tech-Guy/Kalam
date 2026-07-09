@@ -24,8 +24,6 @@ dist-ssr
 *.sw?
 *.txt
 
-# Ignore Gemini specific files
-opencode.md
 
 # Python
 __pycache__/

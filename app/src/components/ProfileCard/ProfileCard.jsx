@@ -37,8 +37,12 @@ function ProfileCard({ data, onRecieve }) {
   };
   
   const onRemove = async (id) => {
-    await removeData("userProfiles.json", id);
-    await onRecieve();
+    try {
+      await removeData("userProfiles.json", id);
+      await onRecieve();
+    } catch (e) {
+      alert(`Failed to remove profile: ${e.message}`);
+    }
   };
 
   const onEdit = () => {

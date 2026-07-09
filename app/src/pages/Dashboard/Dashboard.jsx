@@ -2,11 +2,13 @@ import "./Dashboard.css"
 import { getData } from "../../services/storage";
 import { useEffect, useState, useCallback } from "react";
 import ProfileCard from "../../components/ProfileCard/ProfileCard";
+import ImportExportModal from "../../components/ImportExportModal/ImportExportModal";
 import { stopAll } from "../../services/sidecar";
 
 function Dashboard() {
     const [data, setData] = useState(null);
     const [stopping, setStopping] = useState(false);
+    const [modalMode, setModalMode] = useState(null);
     
     const dataRecieve = useCallback(async (forceRefresh) => {
         const json = await getData("userProfiles.json", forceRefresh);
@@ -26,10 +28,15 @@ function Dashboard() {
         try {
             await stopAll();
         } catch (e) {
-            console.error("Stop all failed:", e);
+            alert(`Stop all failed: ${e.message}`);
         } finally {
             setStopping(false);
         }
+    };
+
+    const handleModalClose = (refreshed) => {
+        setModalMode(null);
+        if (refreshed) refresh();
     };
 
     return (
@@ -39,10 +46,20 @@ function Dashboard() {
                     <h1>My Profiles</h1>
                     <p>Select a configuration to apply to your desktop.</p>
                 </div>
-                <button className="btn-stop-all" onClick={handleStopAll} disabled={stopping}>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>
-                    {stopping ? "Stopping..." : "Stop All"}
-                </button>
+                <div className="dashboard-header-actions">
+                    <button className="btn-header-export" onClick={() => setModalMode("export")}>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        Export
+                    </button>
+                    <button className="btn-header-import" onClick={() => setModalMode("import")}>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                        Import
+                    </button>
+                    <button className="btn-stop-all" onClick={handleStopAll} disabled={stopping}>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>
+                        {stopping ? "Stopping..." : "Stop All"}
+                    </button>
+                </div>
             </header>
             
             <div className="profile-grid">
@@ -67,6 +84,14 @@ function Dashboard() {
                     </div>
                 )}
             </div>
+
+            {modalMode && (
+                <ImportExportModal
+                    mode={modalMode}
+                    profiles={data?.profiles || []}
+                    onClose={handleModalClose}
+                />
+            )}
         </main>
     );
 }

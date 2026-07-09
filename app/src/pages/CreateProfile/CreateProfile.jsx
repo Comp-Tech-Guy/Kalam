@@ -93,7 +93,7 @@ function CreateProfile() {
             setWindhawkMods(allMods);
           }
         } catch (e) {
-          console.error("Failed to scan tool configs:", e);
+          alert(`Scan failed: ${e.message}`);
         }
 
         hasAutoPopulated.current = true;
@@ -240,7 +240,7 @@ function CreateProfile() {
         reset();
       }
     } catch (err) {
-      console.error(err);
+      alert(`Failed to save: ${err.message}`);
     }
   };
 
@@ -281,7 +281,7 @@ function CreateProfile() {
       if (select === null) return;
       setImagePath(select);
     } catch (e) {
-      console.log("Error selecting file:", e);
+      console.error("Error selecting file:", e);
     }
   }
 
@@ -482,6 +482,11 @@ function CreateProfile() {
         )}
 
         <div className="form-actions">
+          {isEditing && (
+            <button className="btn-detect" onClick={() => navigate("/")}>
+              Cancel
+            </button>
+          )}
           <button className="btn-submit" onClick={storeData} disabled={added}>
             {added ? (isEditing ? "Profile Saved!" : "Profile Added!") : (isEditing ? "Save Changes" : "Add Profile")}
           </button>

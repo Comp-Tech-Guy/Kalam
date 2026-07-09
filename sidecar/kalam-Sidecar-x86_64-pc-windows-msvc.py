@@ -1,6 +1,7 @@
 import os
 import sys
 import json
+import shutil
 import subprocess
 import ctypes
 import psutil
@@ -87,15 +88,16 @@ def yasb_code_inject(yaml_content, css, yasb_config_path, yasb_exe_path):
         f.write(css.strip())
 
 
-def glaze_wm_apply(config_yaml, config_path):
+def glaze_wm_apply(config_yaml, config_path, exe_path=""):
     config_file = os.path.join(config_path, "config.yaml")
     with open(config_file, 'w') as f:
         f.write(config_yaml.strip())
 
+    glaze_exe = exe_path or "glazewm.exe"
     if is_process_running("glazewm.exe"):
-        subprocess.run(["glazewm.exe", "exit"], creationflags=_NO_WINDOW)
+        subprocess.run([glaze_exe, "exit"], creationflags=_NO_WINDOW)
         time.sleep(0.5)
-    subprocess.Popen(["glazewm.exe"], creationflags=_NO_WINDOW)
+    subprocess.Popen([glaze_exe], creationflags=_NO_WINDOW)
 
 
 def zebar_apply(config_json, config_path):
@@ -527,26 +529,38 @@ def scan_zebar_configs(folder_path, user_settings):
     return result
 
 
+def _first_existing(paths_iter):
+    for p in paths_iter:
+        if p and os.path.exists(p):
+            return p
+    return ""
+
+def _program_files_dirs():
+    dirs = []
+    for var in ["ProgramW6432", "ProgramFiles", "ProgramFiles(x86)"]:
+        val = os.environ.get(var)
+        if val and os.path.isdir(val):
+            dirs.append(val)
+    return dirs
+
 def autodetect_paths():
     paths = {}
 
-    rainmeter_checks = [
-        r"C:\Program Files\Rainmeter\Rainmeter.exe",
-        r"C:\Program Files (x86)\Rainmeter\Rainmeter.exe",
-    ]
-    for p in rainmeter_checks:
-        if os.path.exists(p):
-            paths["rainmeter-Path"] = p
-            break
+    rainmeter_checks = [shutil.which("Rainmeter.exe")]
+    for pf in _program_files_dirs():
+        rainmeter_checks.append(os.path.join(pf, "Rainmeter", "Rainmeter.exe"))
+    rainmeter_checks.append(os.path.join(os.environ.get("LOCALAPPDATA", ""), "Rainmeter", "Rainmeter.exe"))
+    found = _first_existing(rainmeter_checks)
+    if found:
+        paths["rainmeter-Path"] = found
 
-    windhawk_checks = [
-        r"C:\Program Files\Windhawk\Windhawk.exe",
-        r"C:\Program Files (x86)\Windhawk\Windhawk.exe",
-    ]
-    for p in windhawk_checks:
-        if os.path.exists(p):
-            paths["Windhawk-Path"] = p
-            break
+    windhawk_checks = [shutil.which("windhawk.exe")]
+    for pf in _program_files_dirs():
+        windhawk_checks.append(os.path.join(pf, "Windhawk", "Windhawk.exe"))
+    windhawk_checks.append(os.path.join(os.environ.get("LOCALAPPDATA", ""), "Windhawk", "windhawk.exe"))
+    found = _first_existing(windhawk_checks)
+    if found:
+        paths["Windhawk-Path"] = found
 
     wh_type = "Portable"
     for root_key in [winreg.HKEY_LOCAL_MACHINE]:
@@ -560,16 +574,62 @@ def autodetect_paths():
     paths["Windhawk-Type"] = wh_type
 
     user_home = os.path.expanduser("~")
-    yasb_config = os.path.join(user_home, ".yasb")
-    if os.path.isdir(yasb_config):
-        paths["Yasb-Config-Path"] = yasb_config
+    appdata = os.environ.get("APPDATA", "")
 
-    glaze_config = os.path.join(user_home, ".glazewm")
+    yasb_exe = shutil.which("yasb.exe")
+    if not yasb_exe:
+        for pf in _program_files_dirs():
+            candidate = os.path.join(pf, "YASB", "yasb.exe")
+            if os.path.exists(candidate):
+                yasb_exe = candidate
+                break
+    if not yasb_exe:
+        yasb_exe = _first_existing([
+            os.path.join(os.environ.get("LOCALAPPDATA", ""), "Programs", "YASB", "yasb.exe"),
+            os.path.join(os.environ.get("LOCALAPPDATA", ""), "Microsoft", "WinGet", "Links", "yasb.exe"),
+        ])
+    if yasb_exe:
+        paths["Yasb-Exe-Path"] = yasb_exe
+
+    yasb_config_home = os.environ.get("YASB_CONFIG_HOME", "")
+    yasb_config = _first_existing([
+        yasb_config_home,
+        os.path.join(user_home, ".config", "yasb"),
+        os.path.join(user_home, ".yasb"),
+    ])
+    if yasb_config:
+        paths["Yasb-Config-Path"] = yasb_config
+    elif yasb_exe:
+        yasb_dir = os.path.dirname(yasb_exe)
+        parent = os.path.dirname(yasb_dir)
+        fallback = os.path.join(parent, ".config", "yasb") if parent else ""
+        if fallback and os.path.isdir(fallback):
+            paths["Yasb-Config-Path"] = fallback
+
+    glaze_exe = shutil.which("glazewm.exe")
+    if not glaze_exe:
+        for pf in _program_files_dirs():
+            candidate = os.path.join(pf, "GlazeWM", "glazewm.exe")
+            if os.path.exists(candidate):
+                glaze_exe = candidate
+                break
+    if not glaze_exe:
+        glaze_exe = _first_existing([
+            os.path.join(os.environ.get("LOCALAPPDATA", ""), "Programs", "GlazeWM", "glazewm.exe"),
+            os.path.join(os.environ.get("LOCALAPPDATA", ""), "Microsoft", "WinGet", "Links", "glazewm.exe"),
+        ])
+    if glaze_exe:
+        paths["GlazeWM-Exe-Path"] = glaze_exe
+
+    glaze_config = _first_existing([
+        os.path.join(user_home, ".glzr", "glazewm"),
+        os.path.join(user_home, ".glazewm"),
+    ])
     if os.path.isdir(glaze_config):
         paths["GlazeWM-Config-Path"] = glaze_config
 
-    zebar_config = os.path.join(user_home, "AppData", "Roaming", "zebar")
-    if os.path.isdir(zebar_config):
+    zebar_config = os.path.join(appdata, "zebar") if appdata else ""
+    if zebar_config and os.path.isdir(zebar_config):
         paths["Zebar-Config-Path"] = zebar_config
     else:
         zebar_config2 = os.path.join(user_home, ".zebar")
@@ -648,8 +708,9 @@ def apply_profile(folder_path, profile, user_settings):
     glaze_wm_config = profile.get("GlazeWM-Config", "")
     if glaze_wm_config:
         glaze_path = user_settings.get("GlazeWM-Config-Path", "")
+        glaze_exe = user_settings.get("GlazeWM-Exe-Path", "")
         if glaze_path:
-            glaze_wm_apply(glaze_wm_config, glaze_path)
+            glaze_wm_apply(glaze_wm_config, glaze_path, glaze_exe)
         else:
             print("WARNING: GlazeWM config path not configured in settings")
     elif "glazewm.exe" in running_names:
