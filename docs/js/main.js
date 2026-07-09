@@ -86,7 +86,9 @@
   function getArch() {
     var ua = navigator.userAgent || '';
     var plat = navigator.platform || '';
-    if (/aarch64|arm64/i.test(ua) || /arm/i.test(plat)) return 'aarch64';
+    if (/aarch64|arm64|arm/i.test(ua) || /arm|win32|win64/i.test(plat)) {
+      if (/windows\s+arm|wow64/i.test(ua) || /arm/i.test(plat)) return 'aarch64';
+    }
     return 'x64';
   }
 
@@ -117,6 +119,13 @@
             btn.textContent = 'Download v' + version;
           }
         });
+
+        if (arch === 'aarch64') {
+          var info = document.querySelector('.download__info');
+          if (info) {
+            info.textContent = 'Windows 10/11 ARM64 \u00B7 Using x64 installer (compatible via emulation)';
+          }
+        }
       })
       .catch(function () {});
   }
