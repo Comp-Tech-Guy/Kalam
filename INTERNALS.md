@@ -7,25 +7,25 @@ Technical reference for how Kalam works under the hood.
 ## Architecture Overview
 
 ```
-┌──────────────────────────────────────────────────────────┐
-│                    Tauri v2 Shell                        │
-│              (Rust backend + WebView2)                   │
-├──────────────────────┬───────────────────────────────────┤
-│   React 19 Frontend  │      Python 3 Sidecar            │
-│   (Vite + Router)    │      (kalam-core.exe)            │
-│                      │                                   │
-│  ┌──────────────┐    │   ┌─────────────────────────┐    │
+┌───────────────────────────────────────────────────────────┐
+│                     Tauri v2 Shell                        │
+│               (Rust backend + WebView2)                   │
+├───────────────────────┬───────────────────────────────────┤
+│   React 19 Frontend   │       Python 3 Sidecar            │
+│   (Vite + Router)     │       (kalam-core.exe)            │
+│                       │                                   │
+│  ┌───────────────┐    │   ┌──────────────────────────┐    │
 │  │  Dashboard    │    │   │  Tool Apply Functions    │    │
-│  │  CreateProfile│───▶│   │  rainmeter()            │    │
-│  │  Settings     │    │   │  yasb_code_inject()     │    │
-│  └──────────────┘    │   │  glaze_wm_apply()       │    │
-│                      │   │  zebar_apply()           │    │
-│  Sidecar Service     │   │  apply_windhawk_profile()│    │
-│  (shell plugin)      │   └─────────────────────────┘    │
-├──────────────────────┴───────────────────────────────────┤
-│                    Tool Configs                          │
-│  Rainmeter · YASB · GlazeWM · Zebar · Windhawk · Wall.  │
-└──────────────────────────────────────────────────────────┘
+│  │ CreateProfile │────│──>│  rainmeter()             │    │
+│  │   Settings    │    │   │  yasb_code_inject()      │    │
+│  └───────────────┘    │   │  glaze_wm_apply()        │    │
+│                       │   │  zebar_apply()           │    │
+│   Sidecar Service     │   │  apply_windhawk_profile()│    │
+│   (shell plugin)      │   └──────────────────────────┘    │
+├───────────────────────┴───────────────────────────────────┤
+│                     Tool Configs                          │
+│   Rainmeter · YASB · GlazeWM · Zebar · Windhawk · Wall.   │
+└───────────────────────────────────────────────────────────┘
 ```
 
 - **Tauri** provides the desktop shell, window management, and native API access (filesystem, dialogs, process control, updater)
