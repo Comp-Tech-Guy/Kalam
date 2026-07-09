@@ -209,36 +209,17 @@
   }
 
   function initRouter() {
+    // anchor scrolling only
     document.addEventListener('click', function (e) {
       var link = e.target.closest('a');
       if (!link) return;
-      if (link.getAttribute('target') === '_blank') return;
-      if (link.hasAttribute('download')) return;
-
       var href = link.getAttribute('href');
-      if (!href) return;
-
-      if (href.startsWith('http') || href.startsWith('//')) return;
-      if (href.startsWith('#')) {
+      if (!href || !href.startsWith('#')) return;
+      var target = document.getElementById(href.substring(1));
+      if (target) {
         e.preventDefault();
-        var target = document.getElementById(href.substring(1));
-        if (target) {
-          target.scrollIntoView({ behavior: 'smooth' });
-          history.pushState(null, '', href);
-        }
-        return;
+        target.scrollIntoView({ behavior: 'smooth' });
       }
-      if (href.startsWith('mailto:') || href.startsWith('tel:')) return;
-
-      e.preventDefault();
-      var fullUrl = new URL(href, window.location.href).pathname;
-      if (normalizePath(fullUrl) === normalizePath(window.location.pathname)) return;
-      navigate(fullUrl);
-    });
-
-    window.addEventListener('popstate', function () {
-      var url = window.location.pathname;
-      navigate(url, true);
     });
   }
 
