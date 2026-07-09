@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import "../Dashboard/Dashboard.css"
+import "../../styles/forms.css"
 import { editData, getData } from "../../services/storage";
 import { autoDetectPaths as detectSidecarPaths } from "../../services/sidecar";
 import { requestManualCheck } from "../../services/useUpdateChecker";

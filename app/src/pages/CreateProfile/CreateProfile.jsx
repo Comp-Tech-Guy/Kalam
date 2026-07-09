@@ -5,7 +5,7 @@ import { addData, editData, getData } from "../../services/storage";
 import sidecar from "../../services/sidecar";
 import SelectMenu from "../../components/SelectMenu/SelectMenu";
 import ResizableTextarea from "../../components/ResizableTextarea/ResizableTextarea";
-import "../Dashboard/Dashboard.css";
+import "../../styles/forms.css";
 
 function CreateProfile() {
   const location = useLocation();

@@ -1,4 +1,5 @@
 import "./Dashboard.css"
+import "../../styles/forms.css"
 import { getData } from "../../services/storage";
 import { useEffect, useState, useCallback } from "react";
 import ProfileCard from "../../components/ProfileCard/ProfileCard";

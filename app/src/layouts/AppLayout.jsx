@@ -1,10 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense, lazy } from "react";
 import "./AppLayout.css";
 import { getCurrentWindow } from '@tauri-apps/api/window';
 import { initializeFS, getData } from '../services/storage';
 import { NavLink, Outlet } from "react-router-dom";
-import Onboarding from '../pages/Onboarding/Onboarding';
 import UpdateBanner from '../components/UpdateBanner/UpdateBanner';
+
+const Onboarding = lazy(() => import('../pages/Onboarding/Onboarding'));
 
 function AppLayout() {
   const [isMaximized, setIsMaximized] = useState(false);
@@ -56,7 +57,9 @@ function AppLayout() {
   return (
     <main className="container" >
       {showOnboarding && (
-        <Onboarding onDone={() => setShowOnboarding(false)} />
+        <Suspense>
+          <Onboarding onDone={() => setShowOnboarding(false)} />
+        </Suspense>
       )}
       <div className="titlebar" data-tauri-drag-region>
         <div className="app-icon">
