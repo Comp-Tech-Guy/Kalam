@@ -24,7 +24,9 @@ def get_running_processes():
     return names
 
 
-def is_process_running(exe_name: str) -> bool:
+def is_process_running(exe_name: str, running_names=None) -> bool:
+    if running_names is not None:
+        return exe_name.lower() in running_names
     target_lower = exe_name.lower()
     for process in psutil.process_iter(['name']):
         try:
@@ -35,8 +37,11 @@ def is_process_running(exe_name: str) -> bool:
     return False
 
 
-def kill_process(exe_name: str):
+def kill_process(exe_name: str, running_names=None):
     target_lower = exe_name.lower()
+
+    if running_names is not None and target_lower not in running_names:
+        return
 
     if target_lower == "glazewm.exe":
         subprocess.run(["glazewm.exe", "exit"],
@@ -69,16 +74,16 @@ def set_wallpaper_all_desktops(image_path):
         d.set_wallpaper(image_path)
 
 
-def rainmeter(path, layout):
-    if not is_process_running("Rainmeter.exe"):
+def rainmeter(path, layout, running_names=None):
+    if not is_process_running("Rainmeter.exe", running_names):
         subprocess.Popen([path], creationflags=_NO_WINDOW)
 
     time.sleep(1)
     subprocess.run([path, "!LoadLayout", layout], creationflags=_NO_WINDOW)
 
 
-def yasb_code_inject(yaml_content, css, yasb_config_path, yasb_exe_path):
-    if not is_process_running("yasb.exe"):
+def yasb_code_inject(yaml_content, css, yasb_config_path, yasb_exe_path, running_names=None):
+    if not is_process_running("yasb.exe", running_names):
         subprocess.Popen([yasb_exe_path], creationflags=_NO_WINDOW)
 
     css_file = os.path.join(yasb_config_path, "styles.css")
@@ -90,25 +95,25 @@ def yasb_code_inject(yaml_content, css, yasb_config_path, yasb_exe_path):
         f.write(css.strip())
 
 
-def glaze_wm_apply(config_yaml, config_path, exe_path=""):
+def glaze_wm_apply(config_yaml, config_path, exe_path="", running_names=None):
     config_file = os.path.join(config_path, "config.yaml")
     with open(config_file, 'w') as f:
         f.write(config_yaml.strip())
 
     glaze_exe = exe_path or "glazewm.exe"
-    if is_process_running("glazewm.exe"):
+    if is_process_running("glazewm.exe", running_names):
         subprocess.run([glaze_exe, "exit"], creationflags=_NO_WINDOW)
         time.sleep(0.5)
     subprocess.Popen([glaze_exe], creationflags=_NO_WINDOW)
 
 
-def zebar_apply(config_json, config_path):
+def zebar_apply(config_json, config_path, running_names=None):
     config_file = os.path.join(config_path, "settings.json")
     formatted = json.loads(config_json)
     with open(config_file, 'w') as f:
         json.dump(formatted, f, indent=2)
 
-    kill_process("zebar.exe")
+    kill_process("zebar.exe", running_names)
     subprocess.Popen(["zebar.exe"], creationflags=_NO_WINDOW)
 
 
@@ -649,11 +654,11 @@ def apply_profile(folder_path, profile, user_settings):
     if rainmeter_layout:
         rain_path = user_settings.get("rainmeter-Path", "")
         if rain_path:
-            rainmeter(rain_path, rainmeter_layout)
+            rainmeter(rain_path, rainmeter_layout, running_names)
         else:
             print("WARNING: Rainmeter path not configured in settings")
     elif "Rainmeter.exe" in running_names:
-        kill_process("Rainmeter.exe")
+        kill_process("Rainmeter.exe", running_names)
 
     wallpaper_path = profile.get("Wallpaper-Path", "")
     if wallpaper_path:
@@ -665,32 +670,32 @@ def apply_profile(folder_path, profile, user_settings):
         yasb_config_path = user_settings.get("Yasb-Config-Path", "")
         yasb_exe_path = user_settings.get("Yasb-Exe-Path", "")
         if yasb_config_path and yasb_exe_path:
-            yasb_code_inject(yasb_yaml, yasb_css, yasb_config_path, yasb_exe_path)
+            yasb_code_inject(yasb_yaml, yasb_css, yasb_config_path, yasb_exe_path, running_names)
         else:
             print("WARNING: YASB paths not configured in settings")
     elif "yasb.exe" in running_names:
-        kill_process("yasb.exe")
+        kill_process("yasb.exe", running_names)
 
     glaze_wm_config = profile.get("GlazeWM-Config", "")
     if glaze_wm_config:
         glaze_path = user_settings.get("GlazeWM-Config-Path", "")
         glaze_exe = user_settings.get("GlazeWM-Exe-Path", "")
         if glaze_path:
-            glaze_wm_apply(glaze_wm_config, glaze_path, glaze_exe)
+            glaze_wm_apply(glaze_wm_config, glaze_path, glaze_exe, running_names)
         else:
             print("WARNING: GlazeWM config path not configured in settings")
     elif "glazewm.exe" in running_names:
-        kill_process("glazewm.exe")
+        kill_process("glazewm.exe", running_names)
 
     zebar_config = profile.get("Zebar-Config", "")
     if zebar_config:
         zebar_path = user_settings.get("Zebar-Config-Path", "")
         if zebar_path:
-            zebar_apply(zebar_config, zebar_path)
+            zebar_apply(zebar_config, zebar_path, running_names)
         else:
             print("WARNING: Zebar config path not configured in settings")
     elif "zebar.exe" in running_names:
-        kill_process("zebar.exe")
+        kill_process("zebar.exe", running_names)
 
     apply_windhawk_profile(profile, user_settings, folder_path)
 
@@ -730,7 +735,7 @@ if __name__ == "__main__":
             names = get_running_processes()
             for exe in ["Rainmeter.exe", "yasb.exe", "glazewm.exe", "zebar.exe"]:
                 if exe.lower() in names:
-                    kill_process(exe)
+                    kill_process(exe, names)
                     stopped.append(exe)
 
             settings_path = os.path.join(folder_path, "userSettings.json")
@@ -755,7 +760,7 @@ if __name__ == "__main__":
                         _apply_windhawk_hklm(mods)
                         stopped.append("Windhawk-mods")
                     elif wh_path and os.path.exists(wh_path):
-                        kill_process("windhawk.exe")
+                        kill_process("windhawk.exe", names)
                         stopped.append("Windhawk")
             except (FileNotFoundError, json.JSONDecodeError, KeyError):
                 pass

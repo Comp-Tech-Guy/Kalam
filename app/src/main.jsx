@@ -13,9 +13,9 @@ ReactDOM.createRoot(document.getElementById("root")).render(
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<AppLayout />}>
-          <Route index element={<Suspense><Dashboard /></Suspense>} />
-          <Route path="profile" element={<Suspense><CreateProfile /></Suspense>} />
-          <Route path="setting" element={<Suspense><Settings /></Suspense>} />
+          <Route index element={<Suspense fallback={<div className="loader" />}><Dashboard /></Suspense>} />
+          <Route path="profile" element={<Suspense fallback={<div className="loader" />}><CreateProfile /></Suspense>} />
+          <Route path="setting" element={<Suspense fallback={<div className="loader" />}><Settings /></Suspense>} />
         </Route>
       </Routes>
     </BrowserRouter>

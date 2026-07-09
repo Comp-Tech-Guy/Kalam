@@ -57,7 +57,7 @@ function AppLayout() {
   return (
     <main className="container" >
       {showOnboarding && (
-        <Suspense>
+        <Suspense fallback={<div className="loader" />}>
           <Onboarding onDone={() => setShowOnboarding(false)} />
         </Suspense>
       )}
