@@ -4,6 +4,7 @@ import json
 import shutil
 import subprocess
 import ctypes
+import tempfile
 import psutil
 import time
 import yaml
@@ -54,6 +55,7 @@ def kill_process(exe_name: str):
                 except psutil.TimeoutExpired:
                     process.kill()
                     process.wait(timeout=1)
+                break
         except (psutil.NoSuchProcess, psutil.AccessDenied):
             pass
 
@@ -168,11 +170,9 @@ def _scan_portable_mods(windhawk_path):
     return mods
 
 
-def scan_windhawk_registry(folder_path, user_settings=None):
-    manifest_path = os.path.join(folder_path, "windhawkManifest.json")
-    mods = []
+def _enumerate_windhawk_registry():
     seen_ids = set()
-
+    entries = []
     for key_path in [r"SOFTWARE\Windhawk\Engine\Mods", r"SOFTWARE\Windhawk\Mods"]:
         for root_key in [winreg.HKEY_LOCAL_MACHINE, winreg.HKEY_CURRENT_USER]:
             try:
@@ -194,16 +194,20 @@ def scan_windhawk_registry(folder_path, user_settings=None):
                                     winreg.CloseKey(mod_subkey)
                             except OSError:
                                 entry = {"id": mod_id, "name": mod_id, "enabled": 1}
-                            mods.append(entry)
+                            entries.append(entry)
                         i += 1
                     except OSError:
                         break
             finally:
                 winreg.CloseKey(key)
-            if mods:
-                break
-        if mods:
-            break
+            if entries:
+                return entries
+    return entries
+
+
+def scan_windhawk_registry(folder_path, user_settings=None):
+    manifest_path = os.path.join(folder_path, "windhawkManifest.json")
+    mods = _enumerate_windhawk_registry()
 
     if not mods and user_settings:
         wh_type = user_settings.get("Windhawk-Type", "Installed")
@@ -276,35 +280,8 @@ def _run_elevated(file, params):
 
 
 def _get_current_windhawk_settings():
-    current = {}
-    for key_path in [r"SOFTWARE\Windhawk\Engine\Mods", r"SOFTWARE\Windhawk\Mods"]:
-        for root_key in [winreg.HKEY_LOCAL_MACHINE, winreg.HKEY_CURRENT_USER]:
-            try:
-                key = winreg.OpenKey(root_key, key_path)
-            except OSError:
-                continue
-            try:
-                i = 0
-                while True:
-                    try:
-                        mod_id = winreg.EnumKey(key, i)
-                        if mod_id not in current:
-                            try:
-                                mod_subkey = winreg.OpenKey(key, mod_id)
-                                try:
-                                    current[mod_id] = _read_mod_subkey(mod_subkey, mod_id)
-                                finally:
-                                    winreg.CloseKey(mod_subkey)
-                            except OSError:
-                                pass
-                        i += 1
-                    except OSError:
-                        break
-            finally:
-                winreg.CloseKey(key)
-            if current:
-                return current
-    return current
+    entries = _enumerate_windhawk_registry()
+    return {e["id"]: e for e in entries}
 
 
 def _windhawk_settings_changed(mods, current_mods):
@@ -330,8 +307,6 @@ def _windhawk_settings_changed(mods, current_mods):
 
 
 def _apply_windhawk_hklm(mods):
-    import tempfile as _tempfile
-
     current_mods = _get_current_windhawk_settings()
     if not _windhawk_settings_changed(mods, current_mods):
         return
@@ -355,7 +330,7 @@ def _apply_windhawk_hklm(mods):
             reg_lines.append('')
 
     reg_content = '\r\n'.join(reg_lines) + '\r\n'
-    td = _tempfile.gettempdir()
+    td = tempfile.gettempdir()
     reg_file = os.path.join(td, 'kalam_windhawk.reg')
     bat_file = os.path.join(td, 'Kalam_Update_Windhawk_Settings.bat')
     try:
@@ -422,10 +397,27 @@ def apply_windhawk_profile(profile, user_settings, folder_path):
             print("WARNING: Windhawk path not configured or not found for portable mode")
 
 
+def _parse_rainmeter_ini(ini_path):
+    for encoding in ['utf-16-le', 'utf-8']:
+        try:
+            with open(ini_path, encoding=encoding) as f:
+                for line in f:
+                    line = line.strip()
+                    if line.startswith('ActiveLayoutFile='):
+                        val = line.split('=', 1)[1].strip().strip('"')
+                        if val.endswith('.ini'):
+                            val = val[:-4]
+                        if '\\' in val:
+                            val = val.rsplit('\\', 1)[1]
+                        return val
+        except (OSError, UnicodeDecodeError):
+            continue
+    return ""
+
+
 def scan_rainmeter_layouts(folder_path):
     manifest_path = os.path.join(folder_path, "rainmeterManifest.json")
     layouts = []
-    current_layout = ""
 
     appdata = os.environ.get('APPDATA', '')
     rainmeter_appdata = os.path.join(appdata, 'Rainmeter')
@@ -438,34 +430,9 @@ def scan_rainmeter_layouts(folder_path):
                 layouts.append(entry)
 
     rainmeter_ini = os.path.join(rainmeter_appdata, 'Rainmeter.ini')
+    current_layout = ""
     if os.path.exists(rainmeter_ini):
-        try:
-            with open(rainmeter_ini, encoding='utf-16-le') as f:
-                for line in f:
-                    line = line.strip()
-                    if line.startswith('ActiveLayoutFile='):
-                        val = line.split('=', 1)[1].strip().strip('"')
-                        if val.endswith('.ini'):
-                            val = val[:-4]
-                        if '\\' in val:
-                            val = val.rsplit('\\', 1)[1]
-                        current_layout = val
-                        break
-        except (OSError, UnicodeDecodeError):
-            try:
-                with open(rainmeter_ini, encoding='utf-8') as f:
-                    for line in f:
-                        line = line.strip()
-                        if line.startswith('ActiveLayoutFile='):
-                            val = line.split('=', 1)[1].strip().strip('"')
-                            if val.endswith('.ini'):
-                                val = val[:-4]
-                            if '\\' in val:
-                                val = val.rsplit('\\', 1)[1]
-                            current_layout = val
-                            break
-            except OSError:
-                pass
+        current_layout = _parse_rainmeter_ini(rainmeter_ini)
 
     with open(manifest_path, 'w') as f:
         json.dump({"layouts": layouts, "currentLayout": current_layout}, f, indent=2)
@@ -518,10 +485,8 @@ def scan_zebar_configs(folder_path, user_settings):
         if os.path.exists(config_file):
             try:
                 with open(config_file) as f:
-                    raw = f.read()
-                    json.loads(raw)
-                    result["config"] = raw
-            except (OSError, json.JSONDecodeError):
+                    result["config"] = f.read()
+            except OSError:
                 pass
 
     with open(manifest_path, 'w') as f:
@@ -545,9 +510,10 @@ def _program_files_dirs():
 
 def autodetect_paths():
     paths = {}
+    pf_dirs = _program_files_dirs()
 
     rainmeter_checks = [shutil.which("Rainmeter.exe")]
-    for pf in _program_files_dirs():
+    for pf in pf_dirs:
         rainmeter_checks.append(os.path.join(pf, "Rainmeter", "Rainmeter.exe"))
     rainmeter_checks.append(os.path.join(os.environ.get("LOCALAPPDATA", ""), "Rainmeter", "Rainmeter.exe"))
     found = _first_existing(rainmeter_checks)
@@ -555,7 +521,7 @@ def autodetect_paths():
         paths["rainmeter-Path"] = found
 
     windhawk_checks = [shutil.which("windhawk.exe")]
-    for pf in _program_files_dirs():
+    for pf in pf_dirs:
         windhawk_checks.append(os.path.join(pf, "Windhawk", "Windhawk.exe"))
     windhawk_checks.append(os.path.join(os.environ.get("LOCALAPPDATA", ""), "Windhawk", "windhawk.exe"))
     found = _first_existing(windhawk_checks)
@@ -578,7 +544,7 @@ def autodetect_paths():
 
     yasb_exe = shutil.which("yasb.exe")
     if not yasb_exe:
-        for pf in _program_files_dirs():
+        for pf in pf_dirs:
             candidate = os.path.join(pf, "YASB", "yasb.exe")
             if os.path.exists(candidate):
                 yasb_exe = candidate
@@ -608,7 +574,7 @@ def autodetect_paths():
 
     glaze_exe = shutil.which("glazewm.exe")
     if not glaze_exe:
-        for pf in _program_files_dirs():
+        for pf in pf_dirs:
             candidate = os.path.join(pf, "GlazeWM", "glazewm.exe")
             if os.path.exists(candidate):
                 glaze_exe = candidate
