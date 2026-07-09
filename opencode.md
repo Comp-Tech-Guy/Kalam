@@ -468,7 +468,7 @@ AppData := A_AppData . "\Kalam"
 
 When applying profiles with `Windhawk-Mods`, the sidecar compares the desired mod settings against the current registry state. If nothing changed (re-applying the same profile, or switching between profiles with identical Windhawk configs), the service restart is skipped entirely — no UAC prompt, no service interruption.
 
-## Website (`kalam-website/`)
+## Website (`docs/`)
 
 Static landing page + documentation site, deployed on GitHub Pages (pure HTML/CSS/JS, no build step).
 
@@ -509,15 +509,15 @@ All internal links intercepted by `js/main.js` — no full-page reloads:
 
 | Path | Purpose |
 |------|---------|
-| `kalam-website/css/style.css` | All styles (1044 lines) |
-| `kalam-website/js/main.js` | SPA router + mobile menu + scroll reveal |
-| `kalam-website/favicon.png` | Favicon |
-| `kalam-website/icon.png` | App icon for preview |
+| `docs/css/style.css` | All styles (1044 lines) |
+| `docs/js/main.js` | SPA router + mobile menu + scroll reveal |
+| `docs/favicon.png` | Favicon |
+| `docs/icon.png` | App icon for preview |
 
 ### Local Dev
 
 ```powershell
-cd kalam-website
+cd docs
 python -m http.server 8000
 ```
 
