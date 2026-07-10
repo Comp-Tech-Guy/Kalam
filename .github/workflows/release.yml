@@ -68,6 +68,43 @@ jobs:
           $json.version = "${{ steps.version.outputs.version }}"
           $json | ConvertTo-Json -Depth 32 | Set-Content $path
 
+      - name: Update package.json version
+        shell: pwsh
+        working-directory: app
+        run: |
+          $path = "package.json"
+          $json = Get-Content $path -Raw | ConvertFrom-Json
+          $json.version = "${{ steps.version.outputs.version }}"
+          $json | ConvertTo-Json -Depth 32 | Set-Content $path
+
+      - name: Update Cargo.toml version
+        shell: pwsh
+        working-directory: app/src-tauri
+        run: |
+          $path = "Cargo.toml"
+          $content = Get-Content $path -Raw
+          $content = $content -replace '(?<=^version = ")[^"]+', "${{ steps.version.outputs.version }}"
+          Set-Content $path $content
+
+      - name: Update README.md badge
+        shell: pwsh
+        run: |
+          $ver = "${{ steps.version.outputs.version }}"
+          (Get-Content README.md -Raw) -replace 'version-\d+\.\d+\.\d+-blue', "version-$ver-blue" | Set-Content README.md
+
+      - name: Commit and push version bump
+        shell: pwsh
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add app/package.json app/src-tauri/tauri.conf.json app/src-tauri/Cargo.toml README.md
+          if (-not (git diff --cached --quiet)) {
+            git commit -m "v${{ steps.version.outputs.version }}"
+            git push
+          } else {
+            Write-Host "No version changes to commit — files already match."
+          }
+
       - name: Build and release
         uses: tauri-apps/tauri-action@v0
         env:
