@@ -379,7 +379,7 @@ img {
 }
 
 .download::before {
-  animation: glowPulse 4s ease-in-out 2s infinite;
+  opacity: 0.6;
 }
 
 .btn--large {
