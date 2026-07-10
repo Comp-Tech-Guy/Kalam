@@ -324,7 +324,6 @@ img {
 .btn--primary:hover {
   background: #23d4be;
   transform: translateY(-1px);
-  box-shadow: 0 4px 20px var(--accent-glow);
   opacity: 1;
 }
 
@@ -362,10 +361,6 @@ img {
 .animate--delay-7 { transition-delay: 1.05s; }
 .animate--delay-8 { transition-delay: 1.20s; }
 .animate--delay-9 { transition-delay: 1.35s; }
-
-.btn--primary {
-  animation: ctaPulse 3s ease-in-out infinite;
-}
 
 @keyframes ctaPulse {
   0%, 100% {
