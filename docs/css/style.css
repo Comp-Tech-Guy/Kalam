@@ -259,9 +259,18 @@ img {
   margin: 0 auto;
   border-radius: 12px;
   border: 1px solid var(--border-light);
-  background: var(--bg-card);
+  /*background: var(--bg-card);*/
   position: relative;
-  overflow: hidden;
+  /*overflow: hidden;*/
+}
+
+.hero__screenshot::before{
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-color: var(--accent);
+  filter: blur(5px);
+  z-index: -2;
 }
 
 .hero__screenshot img {
@@ -417,17 +426,19 @@ img {
 }
 
 .feature-card {
-  background: var(--bg-card);
+  background: rgba(255, 255, 255, 0.03);
   border: 1px solid var(--border-light);
   border-radius: 12px;
   padding: 28px;
   transition: var(--trans-smooth);
+  z-index: 0;
 }
 
 .feature-card:hover {
   transform: translateY(-4px);
   border-color: var(--border-active);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+  box-shadow:
+    0 0 10px rgba(30, 184, 165, 1)
 }
 
 .feature-card__icon {

@@ -1,6 +1,6 @@
 # Kalam
 
-![Version](https://img.shields.io/badge/version-0.2.0-blue)
+![Version](https://img.shields.io/badge/version-0.1.0-blue)
 ![Platform](https://img.shields.io/badge/platform-Windows-0078d4)
 ![Tauri](https://img.shields.io/badge/Tauri-v2-24C8DB)
 ![License](https://img.shields.io/badge/license-MIT-green)
