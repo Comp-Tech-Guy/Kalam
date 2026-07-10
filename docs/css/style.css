@@ -321,22 +321,10 @@ img {
   color: var(--bg-darker);
 }
 
-.btn--primary:hover {
-  background: #23d4be;
-  transform: translateY(-1px);
-  opacity: 1;
-}
-
 .btn--secondary {
   background: transparent;
   color: var(--text-main);
   border: 1px solid var(--border-light);
-}
-
-.btn--secondary:hover {
-  border-color: var(--text-muted);
-  transform: translateY(-1px);
-  opacity: 1;
 }
 
 /* ── Animations ── */
