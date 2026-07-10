@@ -74,7 +74,7 @@ Switch profiles and stop all tools from AutoHotKey scripts without opening the G
 
 ```autohotkey
 ; kalam_switch.ahk — edit paths and profile names to match your setup
-Sidecar := "C:\Program Files\Kalam\binaries\kalam-core\kalam-core-x86_64-pc-windows-msvc.exe"
+Sidecar := "C:\Program Files\Kalam\binaries\kalam-core\kalam-core.exe"
 AppData := A_AppData . "\Kalam"
 
 ; Win+1 → Gaming profile
