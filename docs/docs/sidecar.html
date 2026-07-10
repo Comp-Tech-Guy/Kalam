@@ -41,26 +41,40 @@
   <div class="mobile-overlay" id="mobileOverlay"></div>
   <aside class="docs-sidebar docs-sidebar--mobile" id="mobileSidebar">
     <nav class="docs-sidebar__nav">
-      <a href="index.html" class="docs-sidebar__link">Home</a>
+      <span class="docs-sidebar__section">User Guide</span>
+      <a href="getting-started.html" class="docs-sidebar__link">Getting Started</a>
+      <a href="profiles.html" class="docs-sidebar__link">Profiles</a>
+      <a href="settings.html" class="docs-sidebar__link">Settings</a>
+      <a href="import-export.html" class="docs-sidebar__link">Import / Export</a>
+      <a href="tools-reference.html" class="docs-sidebar__link">Tools Reference</a>
+      <a href="troubleshooting.html" class="docs-sidebar__link">Troubleshooting</a>
+      <a href="ahk.html" class="docs-sidebar__link">AHK Integration</a>
+      <span class="docs-sidebar__section">Developer</span>
       <a href="architecture.html" class="docs-sidebar__link">Architecture</a>
       <a href="setup.html" class="docs-sidebar__link">Setup & Build</a>
       <a href="frontend.html" class="docs-sidebar__link">Frontend</a>
       <a href="sidecar.html" class="docs-sidebar__link docs-sidebar__link--active">Python Sidecar</a>
       <a href="auto-update.html" class="docs-sidebar__link">Auto-Update & CI</a>
-      <a href="ahk.html" class="docs-sidebar__link">AHK Integration</a>
     </nav>
   </aside>
 
   <div class="docs-layout">
     <aside class="docs-sidebar">
       <nav class="docs-sidebar__nav">
-        <a href="index.html" class="docs-sidebar__link">Home</a>
+        <span class="docs-sidebar__section">User Guide</span>
+        <a href="getting-started.html" class="docs-sidebar__link">Getting Started</a>
+        <a href="profiles.html" class="docs-sidebar__link">Profiles</a>
+        <a href="settings.html" class="docs-sidebar__link">Settings</a>
+        <a href="import-export.html" class="docs-sidebar__link">Import / Export</a>
+        <a href="tools-reference.html" class="docs-sidebar__link">Tools Reference</a>
+        <a href="troubleshooting.html" class="docs-sidebar__link">Troubleshooting</a>
+        <a href="ahk.html" class="docs-sidebar__link">AHK Integration</a>
+        <span class="docs-sidebar__section">Developer</span>
         <a href="architecture.html" class="docs-sidebar__link">Architecture</a>
         <a href="setup.html" class="docs-sidebar__link">Setup & Build</a>
         <a href="frontend.html" class="docs-sidebar__link">Frontend</a>
         <a href="sidecar.html" class="docs-sidebar__link docs-sidebar__link--active">Python Sidecar</a>
         <a href="auto-update.html" class="docs-sidebar__link">Auto-Update & CI</a>
-        <a href="ahk.html" class="docs-sidebar__link">AHK Integration</a>
       </nav>
     </aside>
     <main class="docs-content">
@@ -104,13 +118,13 @@
           <tr><td>YASB</td><td><code>yasb_code_inject()</code></td><td>Writes <code>config.yaml</code> + <code>styles.css</code>, starts exe if needed</td></tr>
           <tr><td>GlazeWM</td><td><code>glaze_wm_apply()</code></td><td>Writes <code>config.yaml</code>, kills with graceful <code>exit</code> command, restarts</td></tr>
           <tr><td>Zebar</td><td><code>zebar_apply()</code></td><td>Writes <code>settings.json</code>, kills and restarts</td></tr>
-          <tr><td>Windhawk</td><td><code>apply_windhawk_profile()</code></td><td>Installed: writes <code>.reg</code> file, runs elevated via <code>ShellExecuteExU</code> with <code>runas</code>; Portable: kills and restarts</td></tr>
+          <tr><td>Windhawk</td><td><code>apply_windhawk_profile()</code></td><td>Installed: writes <code>.reg</code> file, runs elevated via <code>ShellExecuteExW</code> with <code>runas</code>; Portable: kills and restarts</td></tr>
           <tr><td>Wallpaper</td><td><code>set_wallpaper_all_desktops()</code></td><td>Uses <code>pyvda</code> to set wallpaper across virtual desktops</td></tr>
         </tbody>
       </table>
 
       <h2>Process Scan Optimization</h2>
-      <p><code>apply_profile()</code>, <code>kill_process()</code>, <code>is_process_running()</code>, and all tool-apply functions accept an optional <code>running_names</code> parameter (set of lowercase exe names). When provided, they skip redundant <code>psutil.process_iter</code> scans and use the pre-computed set instead. The process list is fetched once at the start of <code>apply_profile()</code> or <code>stop-all</code> and threaded through all downstream calls.</p>
+      <p><code>kill_process()</code>, <code>is_process_running()</code>, <code>rainmeter()</code>, <code>yasb_code_inject()</code>, <code>glaze_wm_apply()</code>, and <code>zebar_apply()</code> accept an optional <code>running_names</code> parameter (set of lowercase exe names). When provided, they skip redundant <code>psutil.process_iter</code> scans and use the pre-computed set instead. <code>apply_profile()</code> creates the set internally and threads it through the individual tool functions.</p>
 
       <h2>Windhawk Smart Restart</h2>
       <p>When applying profiles with <code>Windhawk-Mods</code>, the sidecar compares desired settings against current registry via <code>_windhawk_settings_changed()</code>. If nothing changed — re-applying the same profile or switching between profiles with identical Windhawk configs — the registry write, elevation, and service restart are skipped entirely. This avoids unnecessary UAC prompts and service interruptions.</p>

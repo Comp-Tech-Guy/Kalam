@@ -41,26 +41,40 @@
   <div class="mobile-overlay" id="mobileOverlay"></div>
   <aside class="docs-sidebar docs-sidebar--mobile" id="mobileSidebar">
     <nav class="docs-sidebar__nav">
-      <a href="index.html" class="docs-sidebar__link">Home</a>
+      <span class="docs-sidebar__section">User Guide</span>
+      <a href="getting-started.html" class="docs-sidebar__link">Getting Started</a>
+      <a href="profiles.html" class="docs-sidebar__link">Profiles</a>
+      <a href="settings.html" class="docs-sidebar__link">Settings</a>
+      <a href="import-export.html" class="docs-sidebar__link">Import / Export</a>
+      <a href="tools-reference.html" class="docs-sidebar__link">Tools Reference</a>
+      <a href="troubleshooting.html" class="docs-sidebar__link">Troubleshooting</a>
+      <a href="ahk.html" class="docs-sidebar__link">AHK Integration</a>
+      <span class="docs-sidebar__section">Developer</span>
       <a href="architecture.html" class="docs-sidebar__link">Architecture</a>
       <a href="setup.html" class="docs-sidebar__link docs-sidebar__link--active">Setup & Build</a>
       <a href="frontend.html" class="docs-sidebar__link">Frontend</a>
       <a href="sidecar.html" class="docs-sidebar__link">Python Sidecar</a>
       <a href="auto-update.html" class="docs-sidebar__link">Auto-Update & CI</a>
-      <a href="ahk.html" class="docs-sidebar__link">AHK Integration</a>
     </nav>
   </aside>
 
   <div class="docs-layout">
     <aside class="docs-sidebar">
       <nav class="docs-sidebar__nav">
-        <a href="index.html" class="docs-sidebar__link">Home</a>
+        <span class="docs-sidebar__section">User Guide</span>
+        <a href="getting-started.html" class="docs-sidebar__link">Getting Started</a>
+        <a href="profiles.html" class="docs-sidebar__link">Profiles</a>
+        <a href="settings.html" class="docs-sidebar__link">Settings</a>
+        <a href="import-export.html" class="docs-sidebar__link">Import / Export</a>
+        <a href="tools-reference.html" class="docs-sidebar__link">Tools Reference</a>
+        <a href="troubleshooting.html" class="docs-sidebar__link">Troubleshooting</a>
+        <a href="ahk.html" class="docs-sidebar__link">AHK Integration</a>
+        <span class="docs-sidebar__section">Developer</span>
         <a href="architecture.html" class="docs-sidebar__link">Architecture</a>
         <a href="setup.html" class="docs-sidebar__link docs-sidebar__link--active">Setup & Build</a>
         <a href="frontend.html" class="docs-sidebar__link">Frontend</a>
         <a href="sidecar.html" class="docs-sidebar__link">Python Sidecar</a>
         <a href="auto-update.html" class="docs-sidebar__link">Auto-Update & CI</a>
-        <a href="ahk.html" class="docs-sidebar__link">AHK Integration</a>
       </nav>
     </aside>
     <main class="docs-content">
@@ -71,7 +85,7 @@
         <li><strong>Node.js</strong> 18+ (for React frontend + Vite)</li>
         <li><strong>Rust</strong> stable (for Tauri backend)</li>
         <li><strong>Python 3</strong> + <strong>PyInstaller</strong> (for sidecar compilation)</li>
-        <li><strong>Windows 10/11</strong> (Kalam is Windows-only)</li>
+        <li><strong>Windows 11</strong> (Kalam is Windows-only)</li>
       </ul>
 
       <h2>Quick Start</h2>
@@ -118,17 +132,12 @@ Copy-Item dist/kalam-core-x86_64-pc-windows-msvc.exe app/src-tauri/target/debug/
       </ul>
 
       <h2>Bundle Targets</h2>
-      <p>Kalam builds two installer formats:</p>
-      <ul>
-        <li><strong>MSI</strong> — Windows Installer package (enterprise-friendly)</li>
-        <li><strong>NSIS</strong> — Nullsoft Scriptable Install System (lighter, custom installer UI)</li>
-      </ul>
-      <p>Bundle targets are configured in <code>app/src-tauri/tauri.conf.json</code> under <code>bundle.targets</code>.</p>
+      <p>Kalam builds an <strong>MSI</strong> installer (Windows Installer package). Bundle targets are configured in <code>app/src-tauri/tauri.conf.json</code> under <code>bundle.targets</code>.</p>
 
       <h2>Installation (End Users)</h2>
       <p>Download the latest installer from <a href="https://github.com/Comp-Tech-Guy/Kalam/releases" target="_blank" rel="noopener" data-download>GitHub Releases</a>:</p>
       <ol>
-        <li>Download the latest <code>.msi</code> or <code>.exe</code> (NSIS) installer</li>
+        <li>Download the latest <code>.msi</code> installer</li>
         <li>Run the installer</li>
         <li>Kalam checks for updates automatically on startup</li>
       </ol>

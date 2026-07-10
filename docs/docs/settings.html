@@ -4,8 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>html{background:#0d0f12;color:#e2e8f0}</style>
-  <title>Documentation — Kalam</title>
-  <meta name="description" content="Kalam documentation — learn how to install, configure, and use Kalam." />
+  <title>Settings — Kalam Documentation</title>
+  <meta name="description" content="Configure global tool paths and application settings in Kalam." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Lexend:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -14,7 +14,6 @@
 </head>
 <body>
 
-  <!-- Nav -->
   <nav class="nav" id="nav">
     <div class="nav__inner">
       <a href="../index.html" class="nav__logo">Kalam</a>
@@ -44,7 +43,7 @@
       <span class="docs-sidebar__section">User Guide</span>
       <a href="getting-started.html" class="docs-sidebar__link">Getting Started</a>
       <a href="profiles.html" class="docs-sidebar__link">Profiles</a>
-      <a href="settings.html" class="docs-sidebar__link">Settings</a>
+      <a href="settings.html" class="docs-sidebar__link docs-sidebar__link--active">Settings</a>
       <a href="import-export.html" class="docs-sidebar__link">Import / Export</a>
       <a href="tools-reference.html" class="docs-sidebar__link">Tools Reference</a>
       <a href="troubleshooting.html" class="docs-sidebar__link">Troubleshooting</a>
@@ -58,14 +57,13 @@
     </nav>
   </aside>
 
-  <!-- Docs layout -->
   <div class="docs-layout">
     <aside class="docs-sidebar">
       <nav class="docs-sidebar__nav">
         <span class="docs-sidebar__section">User Guide</span>
         <a href="getting-started.html" class="docs-sidebar__link">Getting Started</a>
         <a href="profiles.html" class="docs-sidebar__link">Profiles</a>
-        <a href="settings.html" class="docs-sidebar__link">Settings</a>
+        <a href="settings.html" class="docs-sidebar__link docs-sidebar__link--active">Settings</a>
         <a href="import-export.html" class="docs-sidebar__link">Import / Export</a>
         <a href="tools-reference.html" class="docs-sidebar__link">Tools Reference</a>
         <a href="troubleshooting.html" class="docs-sidebar__link">Troubleshooting</a>
@@ -79,70 +77,70 @@
       </nav>
     </aside>
     <main class="docs-content">
-      <h1>Documentation</h1>
-      <p>Welcome to the Kalam documentation. Here you'll find everything you need to install, configure, build, and extend Kalam.</p>
+      <h1>Settings</h1>
 
-      <h2>User Guide</h2>
-      <div class="docs-card-grid">
-        <a href="getting-started.html" class="docs-card">
-          <h3 class="docs-card__title">Getting Started</h3>
-          <p class="docs-card__desc">Installation, first launch, and onboarding wizard walkthrough.</p>
-        </a>
-        <a href="profiles.html" class="docs-card">
-          <h3 class="docs-card__title">Profiles</h3>
-          <p class="docs-card__desc">Create, edit, and apply desktop configuration profiles.</p>
-        </a>
-        <a href="settings.html" class="docs-card">
-          <h3 class="docs-card__title">Settings</h3>
-          <p class="docs-card__desc">Configure global tool paths and auto-detect settings.</p>
-        </a>
-        <a href="import-export.html" class="docs-card">
-          <h3 class="docs-card__title">Import / Export</h3>
-          <p class="docs-card__desc">Backup, share, and migrate your profiles.</p>
-        </a>
-        <a href="tools-reference.html" class="docs-card">
-          <h3 class="docs-card__title">Tools Reference</h3>
-          <p class="docs-card__desc">Deep dive into each supported tool and what Kalam manages.</p>
-        </a>
-        <a href="troubleshooting.html" class="docs-card">
-          <h3 class="docs-card__title">Troubleshooting</h3>
-          <p class="docs-card__desc">Common issues and how to fix them.</p>
-        </a>
-        <a href="ahk.html" class="docs-card">
-          <h3 class="docs-card__title">AHK Integration</h3>
-          <p class="docs-card__desc">Profile switching and CLI commands via AutoHotKey.</p>
-        </a>
-      </div>
+      <h2>Overview</h2>
+      <p>The Settings page lets you configure global paths to your installed tools. Kalam needs to know where each tool is installed so it can read configs and manage processes.</p>
 
-      <h2>Developer</h2>
-      <div class="docs-card-grid">
-        <a href="architecture.html" class="docs-card">
-          <h3 class="docs-card__title">Architecture</h3>
-          <p class="docs-card__desc">System overview, tech stack, and project structure.</p>
-        </a>
-        <a href="setup.html" class="docs-card">
-          <h3 class="docs-card__title">Setup & Build</h3>
-          <p class="docs-card__desc">Prerequisites, development setup, and build instructions.</p>
-        </a>
-        <a href="frontend.html" class="docs-card">
-          <h3 class="docs-card__title">Frontend</h3>
-          <p class="docs-card__desc">Routing, layout system, components, and CSS architecture.</p>
-        </a>
-        <a href="sidecar.html" class="docs-card">
-          <h3 class="docs-card__title">Python Sidecar</h3>
-          <p class="docs-card__desc">CLI reference, tool logic, Windhawk, and auto-detect.</p>
-        </a>
-        <a href="auto-update.html" class="docs-card">
-          <h3 class="docs-card__title">Auto-Update & CI</h3>
-          <p class="docs-card__desc">Signing, release workflow, and common pitfalls.</p>
-        </a>
-      </div>
+      <h2>Tool Paths</h2>
+
+      <h3>Rainmeter Path</h3>
+      <p>Path to <code>Rainmeter.exe</code>. Example: <code>C:\Program Files\Rainmeter\Rainmeter.exe</code></p>
+      <p>Kalam uses this to launch Rainmeter and load layouts.</p>
+
+      <h3>YASB Exe Path</h3>
+      <p>Path to <code>yasb.exe</code>. Example: <code>C:\Path\To\yasb.exe</code></p>
+      <p>Kalam uses this to launch YASB when applying a profile.</p>
+
+      <h3>YASB Config Path</h3>
+      <p>Path to the YASB config directory. Example: <code>C:\Users\Name\.config\yasb</code></p>
+      <p>Kalam reads and writes <code>config.yaml</code> and <code>styles.css</code> in this directory.</p>
+
+      <h3>GlazeWM Config Path</h3>
+      <p>Path to the GlazeWM config directory. Example: <code>C:\Users\Name\.glzr\glazewm</code></p>
+      <p>Kalam reads and writes <code>config.yaml</code> in this directory.</p>
+
+      <h3>Zebar Config Path</h3>
+      <p>Path to the Zebar config directory. Example: <code>C:\Users\Name\AppData\Roaming\zebar</code></p>
+      <p>Kalam reads and writes <code>settings.json</code> in this directory.</p>
+
+      <h3>Windhawk Type</h3>
+      <p>Two options:</p>
+      <ul>
+        <li><strong>Installed (Service)</strong> — Windhawk is installed as a Windows service. Kalam manages mods via the Windows registry and restarts the service.</li>
+        <li><strong>Portable (File-based)</strong> — Windhawk is run as a portable executable. Kalam manages mods via the registry (with a warning on permission issues) and restarts the process.</li>
+      </ul>
+
+      <h3>Windhawk Path</h3>
+      <p>Path to <code>windhawk.exe</code>. Example: <code>C:\Path\To\windhawk.exe</code></p>
+      <p>Only needed for portable mode. For installed mode, Kalam finds the service automatically.</p>
+
+      <h2>Actions</h2>
+
+      <h3>Auto Detect Paths</h3>
+      <p>Click this button to scan your system for installed tools. Kalam searches common Windows locations:</p>
+      <ul>
+        <li>Program Files directories</li>
+        <li>Local AppData</li>
+        <li>WinGet shortcuts</li>
+        <li>Windows Registry</li>
+        <li>System PATH</li>
+      </ul>
+      <p>Found paths are automatically filled in. If a tool isn't found, its field stays empty — you can enter the path manually.</p>
+
+      <h3>Check for Updates</h3>
+      <p>Manually triggers an update check against GitHub Releases. If an update is available, a banner appears at the bottom of the app with download and install options.</p>
+
+      <h3>Save Changes</h3>
+      <p>Persists all path settings. Click this after making any changes.</p>
+
+      <h2>Data Storage</h2>
+      <p>All settings are stored in <code>%APPDATA%/Kalam/userSettings.json</code>. Profiles are stored separately in <code>%APPDATA%/Kalam/userProfiles.json</code>.</p>
     </main>
   </div>
 
   </div>
 
-  <!-- Footer -->
   <footer class="footer">
     <div class="footer__inner">
       <p class="footer__text">&copy; 2026 Kalam &mdash; MIT License</p>

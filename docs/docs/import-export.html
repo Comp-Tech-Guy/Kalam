@@ -4,17 +4,17 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>html{background:#0d0f12;color:#e2e8f0}</style>
-  <title>Documentation — Kalam</title>
-  <meta name="description" content="Kalam documentation — learn how to install, configure, and use Kalam." />
+  <title>Import / Export — Kalam Documentation</title>
+  <meta name="description" content="Share and backup your Kalam profiles with import and export." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Lexend:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../css/style.css" />
   <link rel="icon" type="image/png" href="../favicon.png" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-okaidia.min.css" rel="stylesheet" />
 </head>
 <body>
 
-  <!-- Nav -->
   <nav class="nav" id="nav">
     <div class="nav__inner">
       <a href="../index.html" class="nav__logo">Kalam</a>
@@ -45,7 +45,7 @@
       <a href="getting-started.html" class="docs-sidebar__link">Getting Started</a>
       <a href="profiles.html" class="docs-sidebar__link">Profiles</a>
       <a href="settings.html" class="docs-sidebar__link">Settings</a>
-      <a href="import-export.html" class="docs-sidebar__link">Import / Export</a>
+      <a href="import-export.html" class="docs-sidebar__link docs-sidebar__link--active">Import / Export</a>
       <a href="tools-reference.html" class="docs-sidebar__link">Tools Reference</a>
       <a href="troubleshooting.html" class="docs-sidebar__link">Troubleshooting</a>
       <a href="ahk.html" class="docs-sidebar__link">AHK Integration</a>
@@ -58,7 +58,6 @@
     </nav>
   </aside>
 
-  <!-- Docs layout -->
   <div class="docs-layout">
     <aside class="docs-sidebar">
       <nav class="docs-sidebar__nav">
@@ -66,7 +65,7 @@
         <a href="getting-started.html" class="docs-sidebar__link">Getting Started</a>
         <a href="profiles.html" class="docs-sidebar__link">Profiles</a>
         <a href="settings.html" class="docs-sidebar__link">Settings</a>
-        <a href="import-export.html" class="docs-sidebar__link">Import / Export</a>
+        <a href="import-export.html" class="docs-sidebar__link docs-sidebar__link--active">Import / Export</a>
         <a href="tools-reference.html" class="docs-sidebar__link">Tools Reference</a>
         <a href="troubleshooting.html" class="docs-sidebar__link">Troubleshooting</a>
         <a href="ahk.html" class="docs-sidebar__link">AHK Integration</a>
@@ -79,70 +78,60 @@
       </nav>
     </aside>
     <main class="docs-content">
-      <h1>Documentation</h1>
-      <p>Welcome to the Kalam documentation. Here you'll find everything you need to install, configure, build, and extend Kalam.</p>
+      <h1>Import / Export</h1>
 
-      <h2>User Guide</h2>
-      <div class="docs-card-grid">
-        <a href="getting-started.html" class="docs-card">
-          <h3 class="docs-card__title">Getting Started</h3>
-          <p class="docs-card__desc">Installation, first launch, and onboarding wizard walkthrough.</p>
-        </a>
-        <a href="profiles.html" class="docs-card">
-          <h3 class="docs-card__title">Profiles</h3>
-          <p class="docs-card__desc">Create, edit, and apply desktop configuration profiles.</p>
-        </a>
-        <a href="settings.html" class="docs-card">
-          <h3 class="docs-card__title">Settings</h3>
-          <p class="docs-card__desc">Configure global tool paths and auto-detect settings.</p>
-        </a>
-        <a href="import-export.html" class="docs-card">
-          <h3 class="docs-card__title">Import / Export</h3>
-          <p class="docs-card__desc">Backup, share, and migrate your profiles.</p>
-        </a>
-        <a href="tools-reference.html" class="docs-card">
-          <h3 class="docs-card__title">Tools Reference</h3>
-          <p class="docs-card__desc">Deep dive into each supported tool and what Kalam manages.</p>
-        </a>
-        <a href="troubleshooting.html" class="docs-card">
-          <h3 class="docs-card__title">Troubleshooting</h3>
-          <p class="docs-card__desc">Common issues and how to fix them.</p>
-        </a>
-        <a href="ahk.html" class="docs-card">
-          <h3 class="docs-card__title">AHK Integration</h3>
-          <p class="docs-card__desc">Profile switching and CLI commands via AutoHotKey.</p>
-        </a>
-      </div>
+      <h2>Overview</h2>
+      <p>Kalam lets you export profiles as JSON files and import them on another machine or after a fresh install. This is useful for backing up your configurations or sharing setups with others.</p>
 
-      <h2>Developer</h2>
-      <div class="docs-card-grid">
-        <a href="architecture.html" class="docs-card">
-          <h3 class="docs-card__title">Architecture</h3>
-          <p class="docs-card__desc">System overview, tech stack, and project structure.</p>
-        </a>
-        <a href="setup.html" class="docs-card">
-          <h3 class="docs-card__title">Setup & Build</h3>
-          <p class="docs-card__desc">Prerequisites, development setup, and build instructions.</p>
-        </a>
-        <a href="frontend.html" class="docs-card">
-          <h3 class="docs-card__title">Frontend</h3>
-          <p class="docs-card__desc">Routing, layout system, components, and CSS architecture.</p>
-        </a>
-        <a href="sidecar.html" class="docs-card">
-          <h3 class="docs-card__title">Python Sidecar</h3>
-          <p class="docs-card__desc">CLI reference, tool logic, Windhawk, and auto-detect.</p>
-        </a>
-        <a href="auto-update.html" class="docs-card">
-          <h3 class="docs-card__title">Auto-Update & CI</h3>
-          <p class="docs-card__desc">Signing, release workflow, and common pitfalls.</p>
-        </a>
-      </div>
+      <h2>Exporting Profiles</h2>
+
+      <h3>From the Dashboard</h3>
+      <p>Click the <strong>Export</strong> button (download icon) in the top-right corner of the Dashboard.</p>
+
+      <h3>Export Options</h3>
+      <p>A modal opens with two options:</p>
+      <ul>
+        <li><strong>Export single profile</strong> — Select a specific profile from the dropdown. A preview shows which tools are configured in that profile (badge icons for Rainmeter, YASB, GlazeWM, Zebar, Windhawk, Wallpaper).</li>
+        <li><strong>Export all profiles</strong> — Exports every profile in one file.</li>
+      </ul>
+      <p>Click <strong>Export</strong> and choose where to save the <code>.json</code> file.</p>
+
+      <h3>Export File Format</h3>
+      <p>The exported JSON contains the profile data including:</p>
+      <ul>
+        <li>Profile name and ID</li>
+        <li>All tool configurations (YAML, CSS, JSON content)</li>
+        <li>Wallpaper path</li>
+        <li>Windhawk mod states and settings</li>
+      </ul>
+
+      <h2>Importing Profiles</h2>
+
+      <h3>From the Dashboard</h3>
+      <p>Click the <strong>Import</strong> button (upload icon) in the top-right corner of the Dashboard.</p>
+
+      <h3>Import Options</h3>
+      <p>A modal opens with two options:</p>
+      <ul>
+        <li><strong>Import single profile</strong> — The JSON file should contain a single profile object with a <code>Name</code> (or <code>name</code>) field. A new ID is automatically assigned to avoid conflicts.</li>
+        <li><strong>Import all profiles</strong> — The JSON file should contain either a <code>{ "profiles": [...] }</code> object or a raw array of profiles. Duplicate IDs are automatically reassigned.</li>
+      </ul>
+      <p>Click <strong>Import</strong> and select the <code>.json</code> file to import.</p>
+
+      <h3>After Import</h3>
+      <p>Imported profiles appear immediately on the Dashboard. You can edit them to adjust paths or settings for your machine.</p>
+
+      <h2>Use Cases</h2>
+      <ul>
+        <li><strong>Backup</strong> — Export all profiles regularly to protect against data loss</li>
+        <li><strong>Migration</strong> — Export from one machine, import on another</li>
+        <li><strong>Sharing</strong> — Send a profile JSON to a friend (they'll need to adjust paths in Settings)</li>
+      </ul>
     </main>
   </div>
 
   </div>
 
-  <!-- Footer -->
   <footer class="footer">
     <div class="footer__inner">
       <p class="footer__text">&copy; 2026 Kalam &mdash; MIT License</p>
@@ -156,5 +145,6 @@
   </footer>
 
   <script src="../js/main.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
 </body>
 </html>

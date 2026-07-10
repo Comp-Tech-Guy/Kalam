@@ -357,12 +357,6 @@ img {
   }
 }
 
-.feature-card:hover {
-  transform: translateY(-6px);
-  border-color: var(--border-active);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
-}
-
 .nav__cta:hover {
   animation: ctaHover 0.3s ease;
 }
@@ -670,6 +664,20 @@ img {
   background: var(--accent-glow);
 }
 
+.docs-sidebar__section {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  padding: 16px 12px 6px;
+  opacity: 0.6;
+}
+
+.docs-sidebar__section:first-child {
+  padding-top: 0;
+}
+
 .docs-content {
   flex: 1;
   min-width: 0;
@@ -800,7 +808,7 @@ img {
 .docs-card:hover {
   border-color: var(--border-active);
   transform: translateY(-2px);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0 10px rgba(30, 184, 165, 1);
 }
 
 .docs-card__title {

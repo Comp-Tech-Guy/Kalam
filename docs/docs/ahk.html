@@ -41,26 +41,40 @@
   <div class="mobile-overlay" id="mobileOverlay"></div>
   <aside class="docs-sidebar docs-sidebar--mobile" id="mobileSidebar">
     <nav class="docs-sidebar__nav">
-      <a href="index.html" class="docs-sidebar__link">Home</a>
+      <span class="docs-sidebar__section">User Guide</span>
+      <a href="getting-started.html" class="docs-sidebar__link">Getting Started</a>
+      <a href="profiles.html" class="docs-sidebar__link">Profiles</a>
+      <a href="settings.html" class="docs-sidebar__link">Settings</a>
+      <a href="import-export.html" class="docs-sidebar__link">Import / Export</a>
+      <a href="tools-reference.html" class="docs-sidebar__link">Tools Reference</a>
+      <a href="troubleshooting.html" class="docs-sidebar__link">Troubleshooting</a>
+      <a href="ahk.html" class="docs-sidebar__link docs-sidebar__link--active">AHK Integration</a>
+      <span class="docs-sidebar__section">Developer</span>
       <a href="architecture.html" class="docs-sidebar__link">Architecture</a>
       <a href="setup.html" class="docs-sidebar__link">Setup & Build</a>
       <a href="frontend.html" class="docs-sidebar__link">Frontend</a>
       <a href="sidecar.html" class="docs-sidebar__link">Python Sidecar</a>
       <a href="auto-update.html" class="docs-sidebar__link">Auto-Update & CI</a>
-      <a href="ahk.html" class="docs-sidebar__link docs-sidebar__link--active">AHK Integration</a>
     </nav>
   </aside>
 
   <div class="docs-layout">
     <aside class="docs-sidebar">
       <nav class="docs-sidebar__nav">
-        <a href="index.html" class="docs-sidebar__link">Home</a>
+        <span class="docs-sidebar__section">User Guide</span>
+        <a href="getting-started.html" class="docs-sidebar__link">Getting Started</a>
+        <a href="profiles.html" class="docs-sidebar__link">Profiles</a>
+        <a href="settings.html" class="docs-sidebar__link">Settings</a>
+        <a href="import-export.html" class="docs-sidebar__link">Import / Export</a>
+        <a href="tools-reference.html" class="docs-sidebar__link">Tools Reference</a>
+        <a href="troubleshooting.html" class="docs-sidebar__link">Troubleshooting</a>
+        <a href="ahk.html" class="docs-sidebar__link docs-sidebar__link--active">AHK Integration</a>
+        <span class="docs-sidebar__section">Developer</span>
         <a href="architecture.html" class="docs-sidebar__link">Architecture</a>
         <a href="setup.html" class="docs-sidebar__link">Setup & Build</a>
         <a href="frontend.html" class="docs-sidebar__link">Frontend</a>
         <a href="sidecar.html" class="docs-sidebar__link">Python Sidecar</a>
         <a href="auto-update.html" class="docs-sidebar__link">Auto-Update & CI</a>
-        <a href="ahk.html" class="docs-sidebar__link docs-sidebar__link--active">AHK Integration</a>
       </nav>
     </aside>
     <main class="docs-content">
@@ -85,7 +99,7 @@
 
       <h2>Example AHK Script (v2)</h2>
       <pre><code class="language-autohotkey">#SingleInstance
-Sidecar := "C:\Program Files\Kalam\binaries\kalam-core\kalam-core-x86_64-pc-windows-msvc.exe"
+Sidecar := "C:\Program Files\Kalam\kalam-core.exe"
 AppData := A_AppData . "\Kalam"
 
 ; Win+1 → Gaming profile

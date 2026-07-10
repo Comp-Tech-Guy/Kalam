@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>html{background:#0d0f12;color:#e2e8f0}</style>
+  <title>Tools Reference — Kalam Documentation</title>
+  <meta name="description" content="Detailed reference for each tool managed by Kalam — Rainmeter, YASB, GlazeWM, Zebar, Windhawk, and Wallpaper." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Lexend:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/style.css" />
+  <link rel="icon" type="image/png" href="../favicon.png" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-okaidia.min.css" rel="stylesheet" />
+</head>
+<body>
+
+  <nav class="nav" id="nav">
+    <div class="nav__inner">
+      <a href="../index.html" class="nav__logo">Kalam</a>
+      <ul class="nav__links" id="navLinks">
+        <li><a href="../index.html#features" class="nav__link">Features</a></li>
+        <li><a href="../index.html#download" class="nav__link">Download</a></li>
+        <li>
+          <a href="https://github.com/Comp-Tech-Guy/Kalam" target="_blank" rel="noopener" class="nav__link nav__link--icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+            GitHub
+          </a>
+        </li>
+        <li class="nav__item--right"><a href="index.html" class="nav__cta">Docs</a></li>
+      </ul>
+      <button class="nav__hamburger" id="hamburger" aria-label="Toggle menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </nav>
+
+  <div id="app-content">
+  <div class="mobile-overlay" id="mobileOverlay"></div>
+  <aside class="docs-sidebar docs-sidebar--mobile" id="mobileSidebar">
+    <nav class="docs-sidebar__nav">
+      <span class="docs-sidebar__section">User Guide</span>
+      <a href="getting-started.html" class="docs-sidebar__link">Getting Started</a>
+      <a href="profiles.html" class="docs-sidebar__link">Profiles</a>
+      <a href="settings.html" class="docs-sidebar__link">Settings</a>
+      <a href="import-export.html" class="docs-sidebar__link">Import / Export</a>
+      <a href="tools-reference.html" class="docs-sidebar__link docs-sidebar__link--active">Tools Reference</a>
+      <a href="troubleshooting.html" class="docs-sidebar__link">Troubleshooting</a>
+      <a href="ahk.html" class="docs-sidebar__link">AHK Integration</a>
+      <span class="docs-sidebar__section">Developer</span>
+      <a href="architecture.html" class="docs-sidebar__link">Architecture</a>
+      <a href="setup.html" class="docs-sidebar__link">Setup & Build</a>
+      <a href="frontend.html" class="docs-sidebar__link">Frontend</a>
+      <a href="sidecar.html" class="docs-sidebar__link">Python Sidecar</a>
+      <a href="auto-update.html" class="docs-sidebar__link">Auto-Update & CI</a>
+    </nav>
+  </aside>
+
+  <div class="docs-layout">
+    <aside class="docs-sidebar">
+      <nav class="docs-sidebar__nav">
+        <span class="docs-sidebar__section">User Guide</span>
+        <a href="getting-started.html" class="docs-sidebar__link">Getting Started</a>
+        <a href="profiles.html" class="docs-sidebar__link">Profiles</a>
+        <a href="settings.html" class="docs-sidebar__link">Settings</a>
+        <a href="import-export.html" class="docs-sidebar__link">Import / Export</a>
+        <a href="tools-reference.html" class="docs-sidebar__link docs-sidebar__link--active">Tools Reference</a>
+        <a href="troubleshooting.html" class="docs-sidebar__link">Troubleshooting</a>
+        <a href="ahk.html" class="docs-sidebar__link">AHK Integration</a>
+        <span class="docs-sidebar__section">Developer</span>
+        <a href="architecture.html" class="docs-sidebar__link">Architecture</a>
+        <a href="setup.html" class="docs-sidebar__link">Setup & Build</a>
+        <a href="frontend.html" class="docs-sidebar__link">Frontend</a>
+        <a href="sidecar.html" class="docs-sidebar__link">Python Sidecar</a>
+        <a href="auto-update.html" class="docs-sidebar__link">Auto-Update & CI</a>
+      </nav>
+    </aside>
+    <main class="docs-content">
+      <h1>Tools Reference</h1>
+      <p>Detailed reference for each tool managed by Kalam — Rainmeter, YASB, GlazeWM, Zebar, Windhawk, and Wallpaper.</p>
+
+      <h2>Rainmeter</h2>
+      <ul>
+        <li><strong>What Kalam manages:</strong> Layout selection and activation</li>
+        <li><strong>Config path:</strong> <code>%APPDATA%/Rainmeter/Layouts/</code> (reads layout subdirectories)</li>
+        <li><strong>Settings path in Kalam:</strong> Rainmeter Path (path to <code>Rainmeter.exe</code>)</li>
+        <li><strong>Profile field:</strong> Layout name (selected from dropdown or typed manually)</li>
+        <li><strong>When applying:</strong> Launches Rainmeter if not running, then loads the selected layout with <code>!LoadLayout</code></li>
+        <li><strong>When profile has no layout:</strong> Kills Rainmeter if it's running</li>
+        <li><strong>Prerequisite:</strong> Rainmeter must be installed with at least one layout in the Layouts folder</li>
+      </ul>
+
+      <h2>YASB (Yet Another Status Bar)</h2>
+      <ul>
+        <li><strong>What Kalam manages:</strong> Full config injection (YAML + CSS)</li>
+        <li><strong>Config path:</strong> User-specified YASB Config Path (e.g., <code>C:\Users\Name\.config\yasb</code>)</li>
+        <li><strong>Profile fields:</strong> <code>config.yaml</code> content and <code>styles.css</code> content</li>
+        <li><strong>When applying:</strong> Writes both files to the config directory, launches <code>yasb.exe</code> if not running</li>
+        <li><strong>When either field is empty:</strong> Kills YASB if it's running</li>
+        <li><strong>Prerequisite:</strong> YASB must be installed and the config path must be set in Settings</li>
+      </ul>
+
+      <h2>GlazeWM</h2>
+      <ul>
+        <li><strong>What Kalam manages:</strong> Window manager config (<code>config.yaml</code>)</li>
+        <li><strong>Config path:</strong> User-specified GlazeWM Config Path (e.g., <code>C:\Users\Name\.glzr\glazewm</code>)</li>
+        <li><strong>Profile field:</strong> Full YAML config content</li>
+        <li><strong>When applying:</strong> Writes <code>config.yaml</code>, sends a graceful exit command to GlazeWM, then relaunches it</li>
+        <li><strong>When field is empty:</strong> Sends exit command to stop GlazeWM if running</li>
+        <li><strong>Prerequisite:</strong> GlazeWM must be installed and the config path must be set in Settings</li>
+        <li><strong>Note:</strong> GlazeWM restarts automatically with the new config. All window tiling rules are reloaded.</li>
+      </ul>
+
+      <h2>Zebar</h2>
+      <ul>
+        <li><strong>What Kalam manages:</strong> Status bar settings (<code>settings.json</code>)</li>
+        <li><strong>Config path:</strong> User-specified Zebar Config Path (e.g., <code>C:\Users\Name\AppData\Roaming\zebar</code>)</li>
+        <li><strong>Profile field:</strong> Full JSON settings content</li>
+        <li><strong>When applying:</strong> Writes <code>settings.json</code>, kills Zebar if running, then relaunches it</li>
+        <li><strong>When field is empty:</strong> Kills Zebar if it's running</li>
+        <li><strong>Prerequisite:</strong> Zebar must be installed and the config path must be set in Settings</li>
+      </ul>
+
+      <h2>Windhawk</h2>
+      <ul>
+        <li><strong>What Kalam manages:</strong> Per-mod enabled/disabled state and per-mod settings</li>
+        <li><strong>Config mechanism:</strong> Windows Registry — writes to <code>HKLM\SOFTWARE\Windhawk\Engine\Mods\</code>; reads from both <code>Engine\Mods</code> and <code>Mods</code> under <code>HKLM</code>/<code>HKCU</code></li>
+        <li><strong>Settings in Kalam:</strong> Windhawk Type (Installed vs Portable) and Windhawk Path</li>
+        <li><strong>Profile field:</strong> Array of mods, each with an ID, enabled state, and JSON settings</li>
+        <li><strong>When applying (Installed mode):</strong> Writes registry entries with a <code>.reg</code> file, executes via elevated command, then restarts the Windhawk service</li>
+        <li><strong>When applying (Portable mode):</strong> Same registry write (with permission warning), kills and relaunches <code>windhawk.exe</code></li>
+        <li><strong>Mods NOT in the profile</strong> are explicitly disabled when applying</li>
+        <li><strong>Smart Restart:</strong> Kalam compares current vs desired registry state and skips unnecessary writes</li>
+        <li><strong>Prerequisite:</strong> Windhawk must be running. For installed mode, the service must be accessible. For portable mode, the path must be set in Settings.</li>
+      </ul>
+
+      <h2>Wallpaper</h2>
+      <ul>
+        <li><strong>What Kalam manages:</strong> Desktop wallpaper across all virtual desktops</li>
+        <li><strong>Profile field:</strong> Path to an image file (PNG/JPG)</li>
+        <li><strong>When applying:</strong> Sets the wallpaper on every virtual desktop using <code>pyvda</code></li>
+        <li><strong>Always applied</strong> if a path is provided — not gated behind an "enabled tools" checkbox</li>
+        <li><strong>Prerequisite:</strong> The image file must exist at the specified path</li>
+      </ul>
+
+      <h2>Tool Behavior Summary</h2>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Tool</th>
+              <th>Config Type</th>
+              <th>Restart Behavior</th>
+              <th>Kill When Disabled</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Rainmeter</td>
+              <td>Layout name</td>
+              <td>No restart (just loads layout)</td>
+              <td>Yes</td>
+            </tr>
+            <tr>
+              <td>YASB</td>
+              <td>YAML + CSS files</td>
+              <td>No restart (just writes files)</td>
+              <td>Yes</td>
+            </tr>
+            <tr>
+              <td>GlazeWM</td>
+              <td>YAML file</td>
+              <td>Graceful exit + relaunch</td>
+              <td>Yes</td>
+            </tr>
+            <tr>
+              <td>Zebar</td>
+              <td>JSON file</td>
+              <td>Kill + relaunch</td>
+              <td>Yes</td>
+            </tr>
+            <tr>
+              <td>Windhawk</td>
+              <td>Registry entries</td>
+              <td>Service restart (installed) or process restart (portable)</td>
+              <td>All mods disabled</td>
+            </tr>
+            <tr>
+              <td>Wallpaper</td>
+              <td>Image path</td>
+              <td>N/A (applied immediately)</td>
+              <td>N/A</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+
+  </div>
+
+  <footer class="footer">
+    <div class="footer__inner">
+      <p class="footer__text">&copy; 2026 Kalam &mdash; MIT License</p>
+      <ul class="footer__links">
+        <li><a href="https://github.com/Comp-Tech-Guy/Kalam" target="_blank" rel="noopener" class="footer__link">GitHub</a></li>
+        <li><a href="index.html" class="footer__link">Documentation</a></li>
+        <li><span class="footer__text">v0.1.0</span></li>
+      </ul>
+      <p class="footer__text">Built with Tauri + React + Python</p>
+    </div>
+  </footer>
+
+  <script src="../js/main.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+</body>
+</html>

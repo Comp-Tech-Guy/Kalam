@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>html{background:#0d0f12;color:#e2e8f0}</style>
+  <title>Troubleshooting — Kalam Documentation</title>
+  <meta name="description" content="Common issues and solutions for Kalam." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Lexend:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/style.css" />
+  <link rel="icon" type="image/png" href="../favicon.png" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-okaidia.min.css" rel="stylesheet" />
+</head>
+<body>
+
+  <nav class="nav" id="nav">
+    <div class="nav__inner">
+      <a href="../index.html" class="nav__logo">Kalam</a>
+      <ul class="nav__links" id="navLinks">
+        <li><a href="../index.html#features" class="nav__link">Features</a></li>
+        <li><a href="../index.html#download" class="nav__link">Download</a></li>
+        <li>
+          <a href="https://github.com/Comp-Tech-Guy/Kalam" target="_blank" rel="noopener" class="nav__link nav__link--icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+            GitHub
+          </a>
+        </li>
+        <li class="nav__item--right"><a href="index.html" class="nav__cta">Docs</a></li>
+      </ul>
+      <button class="nav__hamburger" id="hamburger" aria-label="Toggle menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </nav>
+
+  <div id="app-content">
+  <div class="mobile-overlay" id="mobileOverlay"></div>
+  <aside class="docs-sidebar docs-sidebar--mobile" id="mobileSidebar">
+    <nav class="docs-sidebar__nav">
+      <span class="docs-sidebar__section">User Guide</span>
+      <a href="getting-started.html" class="docs-sidebar__link">Getting Started</a>
+      <a href="profiles.html" class="docs-sidebar__link">Profiles</a>
+      <a href="settings.html" class="docs-sidebar__link">Settings</a>
+      <a href="import-export.html" class="docs-sidebar__link">Import / Export</a>
+      <a href="tools-reference.html" class="docs-sidebar__link">Tools Reference</a>
+      <a href="troubleshooting.html" class="docs-sidebar__link docs-sidebar__link--active">Troubleshooting</a>
+      <a href="ahk.html" class="docs-sidebar__link">AHK Integration</a>
+      <span class="docs-sidebar__section">Developer</span>
+      <a href="architecture.html" class="docs-sidebar__link">Architecture</a>
+      <a href="setup.html" class="docs-sidebar__link">Setup & Build</a>
+      <a href="frontend.html" class="docs-sidebar__link">Frontend</a>
+      <a href="sidecar.html" class="docs-sidebar__link">Python Sidecar</a>
+      <a href="auto-update.html" class="docs-sidebar__link">Auto-Update & CI</a>
+    </nav>
+  </aside>
+
+  <div class="docs-layout">
+    <aside class="docs-sidebar">
+      <nav class="docs-sidebar__nav">
+        <span class="docs-sidebar__section">User Guide</span>
+        <a href="getting-started.html" class="docs-sidebar__link">Getting Started</a>
+        <a href="profiles.html" class="docs-sidebar__link">Profiles</a>
+        <a href="settings.html" class="docs-sidebar__link">Settings</a>
+        <a href="import-export.html" class="docs-sidebar__link">Import / Export</a>
+        <a href="tools-reference.html" class="docs-sidebar__link">Tools Reference</a>
+        <a href="troubleshooting.html" class="docs-sidebar__link docs-sidebar__link--active">Troubleshooting</a>
+        <a href="ahk.html" class="docs-sidebar__link">AHK Integration</a>
+        <span class="docs-sidebar__section">Developer</span>
+        <a href="architecture.html" class="docs-sidebar__link">Architecture</a>
+        <a href="setup.html" class="docs-sidebar__link">Setup & Build</a>
+        <a href="frontend.html" class="docs-sidebar__link">Frontend</a>
+        <a href="sidecar.html" class="docs-sidebar__link">Python Sidecar</a>
+        <a href="auto-update.html" class="docs-sidebar__link">Auto-Update & CI</a>
+      </nav>
+    </aside>
+    <main class="docs-content">
+      <h1>Troubleshooting</h1>
+      <p>Common issues and fixes for Kalam.</p>
+
+      <h2>Tools Not Detected by Auto-Detect</h2>
+      <p><strong>Symptom:</strong> Clicking "Auto Detect Paths" doesn't find some or all tools.</p>
+      <p><strong>Fix:</strong></p>
+      <ul>
+        <li>Make sure the tool is installed and running at least once</li>
+        <li>Check if the tool is installed in a non-standard location</li>
+        <li>Enter the path manually in Settings</li>
+        <li>For YASB, GlazeWM, and Zebar: set the config directory path, not the exe path</li>
+      </ul>
+
+      <h2>Profile Doesn't Apply Correctly</h2>
+      <p><strong>Symptom:</strong> Clicking "Run" on a profile doesn't change anything or only partially applies.</p>
+      <p><strong>Fix:</strong></p>
+      <ul>
+        <li>Check that all tool paths are set correctly in Settings</li>
+        <li>Make sure the tool is installed and running</li>
+        <li>For Rainmeter: verify the layout name matches a folder in <code>%APPDATA%/Rainmeter/Layouts/</code></li>
+        <li>For YASB/GlazeWM/Zebar: ensure the config path points to the correct directory</li>
+        <li>Try the "Stop All" button first, then apply the profile again</li>
+      </ul>
+
+      <h2>Windhawk Mods Not Applying</h2>
+      <p><strong>Symptom:</strong> Windhawk mods don't toggle or settings don't change.</p>
+      <p><strong>Fix:</strong></p>
+      <ul>
+        <li>Make sure Windhawk is running before applying</li>
+        <li>For <strong>Installed mode</strong>: Kalam needs to write to the Windows Registry, which may require administrator privileges. The app will prompt for elevation automatically.</li>
+        <li>For <strong>Portable mode</strong>: Ensure the Windhawk Path is set correctly in Settings</li>
+        <li>Check that the mod IDs in the profile match your installed mods</li>
+        <li>Try restarting Windhawk manually, then apply the profile again</li>
+      </ul>
+
+      <h2>Wallpaper Not Changing</h2>
+      <p><strong>Symptom:</strong> Applying a profile doesn't change the desktop wallpaper.</p>
+      <p><strong>Fix:</strong></p>
+      <ul>
+        <li>Verify the image file path is correct and the file exists</li>
+        <li>Use absolute paths (e.g., <code>C:\Users\Name\Pictures\wallpaper.png</code>)</li>
+        <li>The image must be PNG or JPG format</li>
+        <li>If you have multiple monitors, Kalam sets the wallpaper on all virtual desktops</li>
+      </ul>
+
+      <h2>"Running..." Stuck Forever</h2>
+      <p><strong>Symptom:</strong> The Run button stays on "Running..." and never completes.</p>
+      <p><strong>Fix:</strong></p>
+      <ul>
+        <li>A tool process may be unresponsive. Try clicking "Stop All" to force-kill all managed tools</li>
+        <li>If the issue persists, restart the Kalam app</li>
+        <li>Check if the tool's process is stuck in Task Manager</li>
+      </ul>
+
+      <h2>Update Not Showing / Not Installing</h2>
+      <p><strong>Symptom:</strong> No update banner appears, or the download fails.</p>
+      <p><strong>Fix:</strong></p>
+      <ul>
+        <li>Go to Settings and click "Check for Updates" manually</li>
+        <li>Make sure you have an internet connection</li>
+        <li>Check if a firewall is blocking GitHub API access</li>
+        <li>If download fails, try downloading the installer manually from GitHub Releases</li>
+      </ul>
+
+      <h2>Profiles Lost After Reinstall</h2>
+      <p><strong>Symptom:</strong> After reinstalling Kalam, profiles are gone.</p>
+      <p><strong>Fix:</strong></p>
+      <ul>
+        <li>Profiles are stored in <code>%APPDATA%/Kalam/userProfiles.json</code></li>
+        <li>If you uninstall Kalam, this file may be deleted depending on the uninstaller</li>
+        <li>Always export your profiles before uninstalling (see Import / Export page)</li>
+        <li>You can manually copy <code>userProfiles.json</code> to the same location after reinstall</li>
+      </ul>
+
+      <h2>Onboarding Wizard Won't Appear</h2>
+      <p><strong>Symptom:</strong> The onboarding wizard doesn't show on first launch.</p>
+      <p><strong>Fix:</strong></p>
+      <ul>
+        <li>The wizard only appears when <code>onboardingComplete</code> is <code>false</code> in <code>%APPDATA%/Kalam/userSettings.json</code></li>
+        <li>If it was accidentally dismissed, delete the <code>userSettings.json</code> file to reset</li>
+        <li>Or manually set <code>"onboardingComplete": false</code> in the file</li>
+      </ul>
+
+      <h2>General Tips</h2>
+      <ul>
+        <li><strong>Restart after changes:</strong> Some tools need a restart to pick up new configs. Kalam handles this automatically for GlazeWM, Zebar, and Windhawk, but you may need to restart Rainmeter or YASB manually in some cases.</li>
+        <li><strong>Check tool versions:</strong> Make sure you're using a supported version of each tool. Kalam targets the latest stable releases.</li>
+        <li><strong>File paths:</strong> Always use absolute paths. Relative paths may not resolve correctly.</li>
+        <li><strong>Backup regularly:</strong> Use the Export feature to backup your profiles before making major changes.</li>
+      </ul>
+    </main>
+  </div>
+
+  </div>
+
+  <footer class="footer">
+    <div class="footer__inner">
+      <p class="footer__text">&copy; 2026 Kalam &mdash; MIT License</p>
+      <ul class="footer__links">
+        <li><a href="https://github.com/Comp-Tech-Guy/Kalam" target="_blank" rel="noopener" class="footer__link">GitHub</a></li>
+        <li><a href="index.html" class="footer__link">Documentation</a></li>
+        <li><span class="footer__text">v0.1.0</span></li>
+      </ul>
+      <p class="footer__text">Built with Tauri + React + Python</p>
+    </div>
+  </footer>
+
+  <script src="../js/main.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+</body>
+</html>

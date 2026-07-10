@@ -4,17 +4,17 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>html{background:#0d0f12;color:#e2e8f0}</style>
-  <title>Documentation — Kalam</title>
-  <meta name="description" content="Kalam documentation — learn how to install, configure, and use Kalam." />
+  <title>Profiles — Kalam Documentation</title>
+  <meta name="description" content="Learn how to create, edit, and apply profiles in Kalam." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Lexend:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../css/style.css" />
   <link rel="icon" type="image/png" href="../favicon.png" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-okaidia.min.css" rel="stylesheet" />
 </head>
 <body>
 
-  <!-- Nav -->
   <nav class="nav" id="nav">
     <div class="nav__inner">
       <a href="../index.html" class="nav__logo">Kalam</a>
@@ -43,7 +43,7 @@
     <nav class="docs-sidebar__nav">
       <span class="docs-sidebar__section">User Guide</span>
       <a href="getting-started.html" class="docs-sidebar__link">Getting Started</a>
-      <a href="profiles.html" class="docs-sidebar__link">Profiles</a>
+      <a href="profiles.html" class="docs-sidebar__link docs-sidebar__link--active">Profiles</a>
       <a href="settings.html" class="docs-sidebar__link">Settings</a>
       <a href="import-export.html" class="docs-sidebar__link">Import / Export</a>
       <a href="tools-reference.html" class="docs-sidebar__link">Tools Reference</a>
@@ -58,13 +58,12 @@
     </nav>
   </aside>
 
-  <!-- Docs layout -->
   <div class="docs-layout">
     <aside class="docs-sidebar">
       <nav class="docs-sidebar__nav">
         <span class="docs-sidebar__section">User Guide</span>
         <a href="getting-started.html" class="docs-sidebar__link">Getting Started</a>
-        <a href="profiles.html" class="docs-sidebar__link">Profiles</a>
+        <a href="profiles.html" class="docs-sidebar__link docs-sidebar__link--active">Profiles</a>
         <a href="settings.html" class="docs-sidebar__link">Settings</a>
         <a href="import-export.html" class="docs-sidebar__link">Import / Export</a>
         <a href="tools-reference.html" class="docs-sidebar__link">Tools Reference</a>
@@ -79,70 +78,93 @@
       </nav>
     </aside>
     <main class="docs-content">
-      <h1>Documentation</h1>
-      <p>Welcome to the Kalam documentation. Here you'll find everything you need to install, configure, build, and extend Kalam.</p>
+      <h1>Profiles</h1>
 
-      <h2>User Guide</h2>
-      <div class="docs-card-grid">
-        <a href="getting-started.html" class="docs-card">
-          <h3 class="docs-card__title">Getting Started</h3>
-          <p class="docs-card__desc">Installation, first launch, and onboarding wizard walkthrough.</p>
-        </a>
-        <a href="profiles.html" class="docs-card">
-          <h3 class="docs-card__title">Profiles</h3>
-          <p class="docs-card__desc">Create, edit, and apply desktop configuration profiles.</p>
-        </a>
-        <a href="settings.html" class="docs-card">
-          <h3 class="docs-card__title">Settings</h3>
-          <p class="docs-card__desc">Configure global tool paths and auto-detect settings.</p>
-        </a>
-        <a href="import-export.html" class="docs-card">
-          <h3 class="docs-card__title">Import / Export</h3>
-          <p class="docs-card__desc">Backup, share, and migrate your profiles.</p>
-        </a>
-        <a href="tools-reference.html" class="docs-card">
-          <h3 class="docs-card__title">Tools Reference</h3>
-          <p class="docs-card__desc">Deep dive into each supported tool and what Kalam manages.</p>
-        </a>
-        <a href="troubleshooting.html" class="docs-card">
-          <h3 class="docs-card__title">Troubleshooting</h3>
-          <p class="docs-card__desc">Common issues and how to fix them.</p>
-        </a>
-        <a href="ahk.html" class="docs-card">
-          <h3 class="docs-card__title">AHK Integration</h3>
-          <p class="docs-card__desc">Profile switching and CLI commands via AutoHotKey.</p>
-        </a>
-      </div>
+      <h2>What is a Profile?</h2>
+      <p>A profile is a saved snapshot of your desktop configuration. It bundles settings for one or more tools (Rainmeter, YASB, GlazeWM, Zebar, Windhawk, Wallpaper) into a single named preset. Apply a profile to switch your entire desktop environment in one click.</p>
 
-      <h2>Developer</h2>
-      <div class="docs-card-grid">
-        <a href="architecture.html" class="docs-card">
-          <h3 class="docs-card__title">Architecture</h3>
-          <p class="docs-card__desc">System overview, tech stack, and project structure.</p>
-        </a>
-        <a href="setup.html" class="docs-card">
-          <h3 class="docs-card__title">Setup & Build</h3>
-          <p class="docs-card__desc">Prerequisites, development setup, and build instructions.</p>
-        </a>
-        <a href="frontend.html" class="docs-card">
-          <h3 class="docs-card__title">Frontend</h3>
-          <p class="docs-card__desc">Routing, layout system, components, and CSS architecture.</p>
-        </a>
-        <a href="sidecar.html" class="docs-card">
-          <h3 class="docs-card__title">Python Sidecar</h3>
-          <p class="docs-card__desc">CLI reference, tool logic, Windhawk, and auto-detect.</p>
-        </a>
-        <a href="auto-update.html" class="docs-card">
-          <h3 class="docs-card__title">Auto-Update & CI</h3>
-          <p class="docs-card__desc">Signing, release workflow, and common pitfalls.</p>
-        </a>
-      </div>
+      <h2>The Dashboard</h2>
+      <ul>
+        <li>Header shows "My Profiles" with subtitle</li>
+        <li>Top-right buttons: Export, Import, Stop All
+          <ul>
+            <li><strong>Stop All</strong> — Kills all managed tools and disables all Windhawk mods. Use this to return to a clean state.</li>
+          </ul>
+        </li>
+        <li>Profile cards displayed in a grid</li>
+        <li>Empty state: "No profiles yet" with a prompt to create one</li>
+      </ul>
+
+      <h2>Profile Cards</h2>
+      <p>Each card shows:</p>
+      <ul>
+        <li>Profile name</li>
+        <li>Tool badges (icons for each configured tool)</li>
+        <li>Three action buttons:
+          <ul>
+            <li><strong>Run</strong> — Applies the profile. Shows "Running..." while processing, "Done!" on success.</li>
+            <li><strong>Edit</strong> — Opens the profile in the editor</li>
+            <li><strong>Remove</strong> — Deletes the profile (no confirmation dialog)</li>
+          </ul>
+        </li>
+      </ul>
+
+      <h2>Creating a New Profile</h2>
+      <p>Click "New Profile" in the sidebar. The form includes:</p>
+
+      <h3>Profile Name</h3>
+      <p>Give your profile a descriptive name (e.g., "Work Setup", "Gaming Mode").</p>
+
+      <h3>Wallpaper Image</h3>
+      <p>Click "Select File" to choose a PNG or JPG image. This wallpaper is applied across all virtual desktops.</p>
+
+      <h3>Enable Customization Tools</h3>
+      <p>Toggle checkboxes for each tool you want to include. Only enabled tools will be configured when the profile is applied.</p>
+
+      <h3>Tool Configuration (per tool)</h3>
+
+      <p><strong>Rainmeter</strong> — Select a layout from the dropdown (auto-detected from your Rainmeter layouts folder). If no layouts are detected, you can type the layout name manually.</p>
+
+      <p><strong>YASB</strong> — Two text areas:</p>
+      <ul>
+        <li>YAML config (<code>config.yaml</code>) — pre-filled with your current YASB config</li>
+        <li>CSS styles (<code>styles.css</code>) — pre-filled with your current YASB styles</li>
+      </ul>
+
+      <p><strong>GlazeWM</strong> — Text area for <code>config.yaml</code>, pre-filled with your current GlazeWM config.</p>
+
+      <p><strong>Zebar</strong> — Text area for <code>settings.json</code>, pre-filled with your current Zebar settings.</p>
+
+      <p><strong>Windhawk</strong> — Shows all installed Windhawk mods. For each mod:</p>
+      <ul>
+        <li>Toggle to enable/disable</li>
+        <li>When enabled, a JSON settings editor appears (pre-filled with current settings)</li>
+      </ul>
+
+      <h3>Saving</h3>
+      <p>Click "Add Profile" to save. You'll see a confirmation message.</p>
+
+      <h2>Editing a Profile</h2>
+      <p>Click the Edit button (pencil icon) on any profile card. The same form opens with all fields pre-populated. Make changes and click "Save Changes".</p>
+
+      <h2>Applying a Profile</h2>
+      <p>Click "Run" on any profile card. Kalam will:</p>
+      <ol>
+        <li>Write config files for each enabled tool</li>
+        <li>Launch or restart tools as needed</li>
+        <li>Kill tools that are NOT in the profile (if they're currently running)</li>
+        <li>Set your wallpaper across all virtual desktops</li>
+        <li>For Windhawk: write registry entries and restart the service</li>
+      </ol>
+      <p>If the profile is already active, Kalam skips tools that are already in the correct state.</p>
+
+      <h2>Deleting a Profile</h2>
+      <p>Click the Remove button (trash icon) on any profile card. The profile is permanently deleted.</p>
     </main>
   </div>
 
   </div>
 
-  <!-- Footer -->
   <footer class="footer">
     <div class="footer__inner">
       <p class="footer__text">&copy; 2026 Kalam &mdash; MIT License</p>
@@ -156,5 +178,6 @@
   </footer>
 
   <script src="../js/main.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
 </body>
 </html>

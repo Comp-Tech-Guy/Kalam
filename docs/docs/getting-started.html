@@ -4,17 +4,17 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>html{background:#0d0f12;color:#e2e8f0}</style>
-  <title>Documentation — Kalam</title>
-  <meta name="description" content="Kalam documentation — learn how to install, configure, and use Kalam." />
+  <title>Getting Started — Kalam Documentation</title>
+  <meta name="description" content="Get started with Kalam — installation, first launch, and your first profile." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Lexend:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../css/style.css" />
   <link rel="icon" type="image/png" href="../favicon.png" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-okaidia.min.css" rel="stylesheet" />
 </head>
 <body>
 
-  <!-- Nav -->
   <nav class="nav" id="nav">
     <div class="nav__inner">
       <a href="../index.html" class="nav__logo">Kalam</a>
@@ -42,7 +42,7 @@
   <aside class="docs-sidebar docs-sidebar--mobile" id="mobileSidebar">
     <nav class="docs-sidebar__nav">
       <span class="docs-sidebar__section">User Guide</span>
-      <a href="getting-started.html" class="docs-sidebar__link">Getting Started</a>
+      <a href="getting-started.html" class="docs-sidebar__link docs-sidebar__link--active">Getting Started</a>
       <a href="profiles.html" class="docs-sidebar__link">Profiles</a>
       <a href="settings.html" class="docs-sidebar__link">Settings</a>
       <a href="import-export.html" class="docs-sidebar__link">Import / Export</a>
@@ -58,12 +58,11 @@
     </nav>
   </aside>
 
-  <!-- Docs layout -->
   <div class="docs-layout">
     <aside class="docs-sidebar">
       <nav class="docs-sidebar__nav">
         <span class="docs-sidebar__section">User Guide</span>
-        <a href="getting-started.html" class="docs-sidebar__link">Getting Started</a>
+        <a href="getting-started.html" class="docs-sidebar__link docs-sidebar__link--active">Getting Started</a>
         <a href="profiles.html" class="docs-sidebar__link">Profiles</a>
         <a href="settings.html" class="docs-sidebar__link">Settings</a>
         <a href="import-export.html" class="docs-sidebar__link">Import / Export</a>
@@ -79,70 +78,44 @@
       </nav>
     </aside>
     <main class="docs-content">
-      <h1>Documentation</h1>
-      <p>Welcome to the Kalam documentation. Here you'll find everything you need to install, configure, build, and extend Kalam.</p>
+      <h1>Getting Started</h1>
 
-      <h2>User Guide</h2>
-      <div class="docs-card-grid">
-        <a href="getting-started.html" class="docs-card">
-          <h3 class="docs-card__title">Getting Started</h3>
-          <p class="docs-card__desc">Installation, first launch, and onboarding wizard walkthrough.</p>
-        </a>
-        <a href="profiles.html" class="docs-card">
-          <h3 class="docs-card__title">Profiles</h3>
-          <p class="docs-card__desc">Create, edit, and apply desktop configuration profiles.</p>
-        </a>
-        <a href="settings.html" class="docs-card">
-          <h3 class="docs-card__title">Settings</h3>
-          <p class="docs-card__desc">Configure global tool paths and auto-detect settings.</p>
-        </a>
-        <a href="import-export.html" class="docs-card">
-          <h3 class="docs-card__title">Import / Export</h3>
-          <p class="docs-card__desc">Backup, share, and migrate your profiles.</p>
-        </a>
-        <a href="tools-reference.html" class="docs-card">
-          <h3 class="docs-card__title">Tools Reference</h3>
-          <p class="docs-card__desc">Deep dive into each supported tool and what Kalam manages.</p>
-        </a>
-        <a href="troubleshooting.html" class="docs-card">
-          <h3 class="docs-card__title">Troubleshooting</h3>
-          <p class="docs-card__desc">Common issues and how to fix them.</p>
-        </a>
-        <a href="ahk.html" class="docs-card">
-          <h3 class="docs-card__title">AHK Integration</h3>
-          <p class="docs-card__desc">Profile switching and CLI commands via AutoHotKey.</p>
-        </a>
-      </div>
+      <h2>Installation</h2>
+      <ol>
+        <li>Download the latest <code>.msi</code> from <a href="https://github.com/Comp-Tech-Guy/Kalam/releases" target="_blank" rel="noopener">GitHub Releases</a>.</li>
+        <li>Run the installer.</li>
+        <li>Kalam installs to Program Files and stores data in <code>%APPDATA%/Kalam/</code>.</li>
+        <li>Kalam checks for updates automatically on startup.</li>
+      </ol>
 
-      <h2>Developer</h2>
-      <div class="docs-card-grid">
-        <a href="architecture.html" class="docs-card">
-          <h3 class="docs-card__title">Architecture</h3>
-          <p class="docs-card__desc">System overview, tech stack, and project structure.</p>
-        </a>
-        <a href="setup.html" class="docs-card">
-          <h3 class="docs-card__title">Setup & Build</h3>
-          <p class="docs-card__desc">Prerequisites, development setup, and build instructions.</p>
-        </a>
-        <a href="frontend.html" class="docs-card">
-          <h3 class="docs-card__title">Frontend</h3>
-          <p class="docs-card__desc">Routing, layout system, components, and CSS architecture.</p>
-        </a>
-        <a href="sidecar.html" class="docs-card">
-          <h3 class="docs-card__title">Python Sidecar</h3>
-          <p class="docs-card__desc">CLI reference, tool logic, Windhawk, and auto-detect.</p>
-        </a>
-        <a href="auto-update.html" class="docs-card">
-          <h3 class="docs-card__title">Auto-Update & CI</h3>
-          <p class="docs-card__desc">Signing, release workflow, and common pitfalls.</p>
-        </a>
-      </div>
+      <h2>First Launch — Onboarding Wizard</h2>
+      <p>The onboarding wizard guides you through the app in 5 steps. It only appears once; you can access settings and profiles at any time from the sidebar.</p>
+      <ol>
+        <li><strong>Welcome</strong> — Introduction to Kalam. Click "Get Started" or "Skip setup" to go straight to the dashboard.</li>
+        <li><strong>Tools You Can Manage</strong> — Shows the 6 supported tools: Rainmeter, YASB, GlazeWM, Zebar, Windhawk, Wallpaper. Click "Next" to continue.</li>
+        <li><strong>Need Help?</strong> — Links to Documentation and Discord. Click "Next".</li>
+        <li><strong>Your Workspace</strong> — Tour of the three main sections: Home (Dashboard), New Profile, Settings. Click "Next".</li>
+        <li><strong>Ready to Get Started</strong> — Choose "Create My First Profile" to go to the profile creator, or "Go to Dashboard" to see the main screen.</li>
+      </ol>
+
+      <h2>Navigating the App</h2>
+      <ul>
+        <li><strong>Sidebar</strong> — Three navigation links: Home (Dashboard), New Profile, Settings</li>
+        <li><strong>Custom titlebar</strong> — Minimize, maximize/restore, close buttons</li>
+        <li><strong>Update banner</strong> — Appears at the bottom when a new version is available</li>
+      </ul>
+
+      <h2>Next Steps</h2>
+      <ul>
+        <li><a href="profiles.html">Create your first profile</a></li>
+        <li><a href="settings.html">Configure tool paths</a></li>
+        <li><a href="tools-reference.html">Learn what each tool does</a></li>
+      </ul>
     </main>
   </div>
 
   </div>
 
-  <!-- Footer -->
   <footer class="footer">
     <div class="footer__inner">
       <p class="footer__text">&copy; 2026 Kalam &mdash; MIT License</p>
@@ -156,5 +129,6 @@
   </footer>
 
   <script src="../js/main.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
 </body>
 </html>
