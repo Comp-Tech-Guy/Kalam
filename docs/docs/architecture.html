@@ -6,9 +6,6 @@
   <style>html{background:#0d0f12;color:#e2e8f0}</style>
   <title>Architecture — Kalam Documentation</title>
   <meta name="description" content="Kalam architecture overview — tech stack, project structure, and system design." />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Lexend:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../css/style.css" />
   <link rel="icon" type="image/png" href="../favicon.png" />
   <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-okaidia.min.css" rel="stylesheet" />
@@ -19,7 +16,7 @@
     <div class="nav__inner">
       <a href="../index.html" class="nav__logo">Kalam</a>
       <ul class="nav__links" id="navLinks">
-        <li><a href="../index.html#features" class="nav__link">Features</a></li>
+        <li><a href="../index.html#features" class="nav__link">Supported Tools</a></li>
         <li><a href="../index.html#download" class="nav__link">Download</a></li>
         <li>
           <a href="https://github.com/Comp-Tech-Guy/Kalam" target="_blank" rel="noopener" class="nav__link nav__link--icon">
@@ -41,40 +38,52 @@
   <div class="mobile-overlay" id="mobileOverlay"></div>
   <aside class="docs-sidebar docs-sidebar--mobile" id="mobileSidebar">
     <nav class="docs-sidebar__nav">
-      <span class="docs-sidebar__section">User Guide</span>
-      <a href="getting-started.html" class="docs-sidebar__link">Getting Started</a>
-      <a href="profiles.html" class="docs-sidebar__link">Profiles</a>
-      <a href="settings.html" class="docs-sidebar__link">Settings</a>
-      <a href="import-export.html" class="docs-sidebar__link">Import / Export</a>
-      <a href="tools-reference.html" class="docs-sidebar__link">Tools Reference</a>
-      <a href="troubleshooting.html" class="docs-sidebar__link">Troubleshooting</a>
-      <a href="ahk.html" class="docs-sidebar__link">AHK Integration</a>
-      <span class="docs-sidebar__section">Developer</span>
-      <a href="architecture.html" class="docs-sidebar__link docs-sidebar__link--active">Architecture</a>
-      <a href="setup.html" class="docs-sidebar__link">Setup & Build</a>
-      <a href="frontend.html" class="docs-sidebar__link">Frontend</a>
-      <a href="sidecar.html" class="docs-sidebar__link">Python Sidecar</a>
-      <a href="auto-update.html" class="docs-sidebar__link">Auto-Update & CI</a>
+      <div class="docs-sidebar__group"><div class="docs-sidebar__section">User Guide</div>
+        <div class="docs-sidebar__links">
+          <a href="getting-started.html" class="docs-sidebar__link">Getting Started</a>
+          <a href="profiles.html" class="docs-sidebar__link">Profiles</a>
+          <a href="settings.html" class="docs-sidebar__link">Settings</a>
+          <a href="import-export.html" class="docs-sidebar__link">Import / Export</a>
+          <a href="tools-reference.html" class="docs-sidebar__link">Tools Reference</a>
+          <a href="troubleshooting.html" class="docs-sidebar__link">Troubleshooting</a>
+          <a href="ahk.html" class="docs-sidebar__link">AHK Integration</a>
+        </div>
+      </div>
+      <div class="docs-sidebar__group"><div class="docs-sidebar__section">Developer</div>
+        <div class="docs-sidebar__links">
+          <a href="architecture.html" class="docs-sidebar__link docs-sidebar__link--active">Architecture</a>
+          <a href="setup.html" class="docs-sidebar__link">Setup & Build</a>
+          <a href="frontend.html" class="docs-sidebar__link">Frontend</a>
+          <a href="sidecar.html" class="docs-sidebar__link">Python Sidecar</a>
+          <a href="auto-update.html" class="docs-sidebar__link">Auto-Update & CI</a>
+        </div>
+      </div>
     </nav>
   </aside>
 
   <div class="docs-layout">
     <aside class="docs-sidebar">
       <nav class="docs-sidebar__nav">
-        <span class="docs-sidebar__section">User Guide</span>
-        <a href="getting-started.html" class="docs-sidebar__link">Getting Started</a>
-        <a href="profiles.html" class="docs-sidebar__link">Profiles</a>
-        <a href="settings.html" class="docs-sidebar__link">Settings</a>
-        <a href="import-export.html" class="docs-sidebar__link">Import / Export</a>
-        <a href="tools-reference.html" class="docs-sidebar__link">Tools Reference</a>
-        <a href="troubleshooting.html" class="docs-sidebar__link">Troubleshooting</a>
-        <a href="ahk.html" class="docs-sidebar__link">AHK Integration</a>
-        <span class="docs-sidebar__section">Developer</span>
-        <a href="architecture.html" class="docs-sidebar__link docs-sidebar__link--active">Architecture</a>
-        <a href="setup.html" class="docs-sidebar__link">Setup & Build</a>
-        <a href="frontend.html" class="docs-sidebar__link">Frontend</a>
-        <a href="sidecar.html" class="docs-sidebar__link">Python Sidecar</a>
-        <a href="auto-update.html" class="docs-sidebar__link">Auto-Update & CI</a>
+        <div class="docs-sidebar__group"><div class="docs-sidebar__section">User Guide</div>
+          <div class="docs-sidebar__links">
+            <a href="getting-started.html" class="docs-sidebar__link">Getting Started</a>
+            <a href="profiles.html" class="docs-sidebar__link">Profiles</a>
+            <a href="settings.html" class="docs-sidebar__link">Settings</a>
+            <a href="import-export.html" class="docs-sidebar__link">Import / Export</a>
+            <a href="tools-reference.html" class="docs-sidebar__link">Tools Reference</a>
+            <a href="troubleshooting.html" class="docs-sidebar__link">Troubleshooting</a>
+            <a href="ahk.html" class="docs-sidebar__link">AHK Integration</a>
+          </div>
+        </div>
+        <div class="docs-sidebar__group"><div class="docs-sidebar__section">Developer</div>
+          <div class="docs-sidebar__links">
+            <a href="architecture.html" class="docs-sidebar__link docs-sidebar__link--active">Architecture</a>
+            <a href="setup.html" class="docs-sidebar__link">Setup & Build</a>
+            <a href="frontend.html" class="docs-sidebar__link">Frontend</a>
+            <a href="sidecar.html" class="docs-sidebar__link">Python Sidecar</a>
+            <a href="auto-update.html" class="docs-sidebar__link">Auto-Update & CI</a>
+          </div>
+        </div>
       </nav>
     </aside>
     <main class="docs-content">

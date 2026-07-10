@@ -75,6 +75,7 @@
     });
   }
 
+
   function initScrollReveal() {
     var observer = new IntersectionObserver(function (entries) {
       entries.forEach(function (entry) {
@@ -82,10 +83,15 @@
           entry.target.classList.add('animate--visible');
         }
       });
-    }, { threshold: 0.15 });
+    }, { threshold: 0.05 });
 
     document.querySelectorAll('.animate').forEach(function (el) {
-      observer.observe(el);
+      var rect = el.getBoundingClientRect();
+      if (rect.top < window.innerHeight && rect.bottom > 0) {
+        el.classList.add('animate--visible');
+      } else {
+        observer.observe(el);
+      }
     });
   }
 
