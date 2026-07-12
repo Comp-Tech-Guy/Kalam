@@ -125,6 +125,16 @@ img {
   font-weight: 700;
   color: var(--accent);
   letter-spacing: 0.02em;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nav__logo-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  object-fit: contain;
 }
 
 .nav__links {
@@ -232,6 +242,20 @@ img {
   position: relative;
   z-index: 1;
   max-width: 720px;
+}
+
+.hero__icon {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+.hero__icon img {
+  width: 72px;
+  height: 72px;
+  border-radius: 18px;
+  border: 1px solid var(--border-light);
+  object-fit: contain;
 }
 
 .hero__title {
