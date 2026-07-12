@@ -11,7 +11,9 @@ Bundle configurations for Rainmeter, YASB, GlazeWM, Zebar, Wallpaper, and Windha
 
 ## Why the name "Kalam"?
 
-**Kalam** is derived from the Tamil word **களம்**, which translates to **"field"** or **"space"** in English. In the context of this app, it represents the screen real estate of your desktop—a dedicated canvas where you have the space to shape, customize, and build something truly beautiful.
+**Kalam** comes from the Tamil word **களம்**, which means **"field"** or **"space"**. 
+
+Think of it like switching between different desktop environments in Linux. Kalam treats your monitor as a blank canvas—a dedicated digital *space*—giving you the freedom to seamlessly store, manage, and switch between completely different customized Windows setups in a single click.
 
 ---
 
