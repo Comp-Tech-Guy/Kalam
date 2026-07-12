@@ -9,6 +9,10 @@
 
 Bundle configurations for Rainmeter, YASB, GlazeWM, Zebar, Wallpaper, and Windhawk into profiles. Apply any profile with one click.
 
+## Why the name "Kalam"?
+
+**Kalam** is derived from the Tamil word **களம்**, which translates to **"field"** or **"space"** in English. In the context of this app, it represents the screen real estate of your desktop—a dedicated canvas where you have the space to shape, customize, and build something truly beautiful.
+
 ---
 
 ## Features
