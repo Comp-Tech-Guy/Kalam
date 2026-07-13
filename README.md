@@ -115,3 +115,4 @@ cd app
 npm install
 npm run tauri dev
 ```
+
