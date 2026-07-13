@@ -1,9 +1,5 @@
 # Kalam
 
-<p align="center">
-  <img src="docs/kalam-icon.png" alt="Kalam" width="96">
-</p>
-
 ![Version](https://img.shields.io/badge/version-0.1.0-blue)
 ![Platform](https://img.shields.io/badge/platform-Windows-0078d4)
 ![Tauri](https://img.shields.io/badge/Tauri-v2-24C8DB)
