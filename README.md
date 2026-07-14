@@ -102,6 +102,12 @@ AppData := A_AppData . "\Kalam"
 - **[Website](https://comp-tech-guy.github.io/Kalam/)** — landing page and full documentation
 - **[Internals](INTERNALS.md)** — architecture, sidecar logic, build guide, CI/CD
 
+## Community
+
+[![Discord](https://img.shields.io/badge/Discord-Join%20Server-5865F2)](https://discord.gg/EApJY56M8h)
+
+Have questions, feedback, or want to share your desktop setups? Join the [Kalam Discord server](https://discord.gg/EApJY56M8h).
+
 ## Contributing
 
 See [INTERNALS.md](INTERNALS.md) for project structure, build instructions, and development setup.
