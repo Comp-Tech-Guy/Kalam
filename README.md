@@ -106,7 +106,7 @@ AppData := A_AppData . "\Kalam"
 
 [![Discord](https://img.shields.io/badge/Discord-Join%20Server-5865F2)](https://discord.gg/EApJY56M8h)
 
-Have questions, feedback, or want to share your desktop setups? Join the [Kalam Discord server](https://discord.gg/EApJY56M8h).
+Have questions or feedback, Join the [Kalam Discord server](https://discord.gg/EApJY56M8h).
 
 ## Contributing
 
