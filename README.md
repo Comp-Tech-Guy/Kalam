@@ -4,6 +4,7 @@
 ![Platform](https://img.shields.io/badge/platform-Windows-0078d4)
 ![Tauri](https://img.shields.io/badge/Tauri-v2-24C8DB)
 ![License](https://img.shields.io/badge/license-MIT-green)
+[![Discord](https://img.shields.io/badge/Discord-Join%20Server-5865F2)](https://discord.gg/EApJY56M8h)
 
 <p align="center">
   <img src="docs/MainPageScreenShot.png" alt="Kalam main interface" width="720">
@@ -20,6 +21,12 @@ Bundle configurations for Rainmeter, YASB, GlazeWM, Zebar, Wallpaper, and Windha
 Think of it like switching between different desktop environments in Linux. Kalam treats your monitor as a blank canvas—a dedicated digital *space*—giving you the freedom to seamlessly store, manage, and switch between completely different customized Windows setups in a single click.
 
 ---
+
+
+## Documentation
+
+- **[Website](https://comp-tech-guy.github.io/Kalam/)** — landing page and full documentation
+- **[Internals](INTERNALS.md)** — architecture, sidecar logic, build guide, CI/CD
 
 ## Features
 
@@ -96,17 +103,6 @@ AppData := A_AppData . "\Kalam"
 ; Ctrl+Win+S → Stop all
 ^#s:: RunWait %Sidecar% %AppData% stop-all
 ```
-
-## Documentation
-
-- **[Website](https://comp-tech-guy.github.io/Kalam/)** — landing page and full documentation
-- **[Internals](INTERNALS.md)** — architecture, sidecar logic, build guide, CI/CD
-
-## Community
-
-[![Discord](https://img.shields.io/badge/Discord-Join%20Server-5865F2)](https://discord.gg/EApJY56M8h)
-
-Have questions or feedback, Join the [Kalam Discord server](https://discord.gg/EApJY56M8h).
 
 ## Contributing
 
