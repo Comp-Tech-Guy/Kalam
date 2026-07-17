@@ -22,6 +22,10 @@ Think of it like switching between different desktop environments in Linux. Kala
 
 ---
 
+## ToDo List
+- [ ] Additional tool supports: MyDockFinder and Wallpaper Engine
+- [ ] Changing some design elements in the app
+- [ ] Updating docs website for clear and understandable for users to go through
 
 ## Documentation
 
