@@ -244,17 +244,17 @@ img {
   max-width: 720px;
 }
 
-.hero__icon {
+.hero__banner {
   display: flex;
   justify-content: center;
+  border-radius: 76px;
   margin-bottom: 24px;
 }
 
-.hero__icon img {
-  width: 72px;
-  height: 72px;
-  border-radius: 18px;
-  border: 1px solid var(--border-light);
+.hero__banner img {
+  height: 300px;
+  border-radius: 65px;
+  border: 3px solid white;
   object-fit: contain;
 }
 
@@ -1004,6 +1004,11 @@ a.feature-card:hover .feature-card__arrow {
   .download__title {
     font-size: 1.75rem;
   }
+
+  .hero__banner img {
+    height: 220px;
+    border-radius: 50px;
+  }
 }
 
 @media (max-width: 500px) {
@@ -1036,6 +1041,18 @@ a.feature-card:hover .feature-card__arrow {
   .hero__actions .btn {
     width: 100%;
     justify-content: center;
+  }
+
+  .hero__banner {
+    width: 100%;
+    padding: 0 8px;
+  }
+
+  .hero__banner img {
+    height: auto;
+    max-height: 180px;
+    max-width: 100%;
+    border-radius: 40px;
   }
 }
 

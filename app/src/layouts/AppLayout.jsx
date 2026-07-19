@@ -1,5 +1,6 @@
 import { useState, useEffect, Suspense, lazy } from "react";
 import "./AppLayout.css";
+import logo from "../assets/kalam-icon.png";
 import { getCurrentWindow } from '@tauri-apps/api/window';
 import { initializeFS, getData } from '../services/storage';
 import { NavLink, Outlet } from "react-router-dom";
@@ -63,12 +64,7 @@ function AppLayout() {
       )}
       <div className="titlebar" data-tauri-drag-region>
         <div className="app-icon">
-          <svg width="24" height="24" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M200 350L40 270L200 190L360 270L200 350Z" fill="#1A1D23" />
-            <path d="M200 295L40 215L200 135L360 215L200 295Z" fill="#334155" />
-            <path d="M200 240L55 167.5L200 95L345 167.5L200 240Z" stroke="#19f5de" strokeWidth="8" strokeLinejoin="round" />
-            <path d="M200 190L40 110L200 30L360 110L200 190Z" fill="#E2E8F0" />
-          </svg>
+          <img src={logo} height={25} alt="kalam" />
         </div>
         <div className="controls">
           <button onClick={onMinimize} title="minimize">
