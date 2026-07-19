@@ -1,14 +1,21 @@
-# Kalam
+<p align="center">
+  <img height="300" alt="kalambanner" src="https://github.com/user-attachments/assets/05f34212-3716-497e-9c5c-25afee9546a6" />
+</p>
 
-![Version](https://img.shields.io/badge/version-0.1.0-blue)
-![Platform](https://img.shields.io/badge/platform-Windows-0078d4)
-![Tauri](https://img.shields.io/badge/Tauri-v2-24C8DB)
-![License](https://img.shields.io/badge/license-MIT-green)
-[![Discord](https://img.shields.io/badge/Discord-Join%20Server-5865F2)](https://discord.gg/EApJY56M8h)
+<div align="center">
+
+  ![Version](https://img.shields.io/badge/version-0.1.0-blue)
+  ![Platform](https://img.shields.io/badge/platform-Windows-0078d4)
+  ![Tauri](https://img.shields.io/badge/Tauri-v2-24C8DB)
+  ![License](https://img.shields.io/badge/license-MIT-green)
+  [![Discord](https://img.shields.io/badge/Discord-Join%20Server-5865F2)](https://discord.gg/EApJY56M8h)
+
+</div>
 
 <p align="center">
   <img src="docs/MainPageScreenShot.png" alt="Kalam main interface" width="720">
 </p>
+
 
 **Profile-based desktop environment manager for Windows.**
 
@@ -22,6 +29,11 @@ Think of it like switching between different desktop environments in Linux. Kala
 
 ---
 
+## ToDo List
+- [ ] Additional tool supports: MyDockFinder and Wallpaper Engine
+- [ ] Changing some design elements in the app
+- [ ] Updating docs website for clear and understandable for users to go through
+- [ ] Full support to windhawk portable version
 
 ## Documentation
 
