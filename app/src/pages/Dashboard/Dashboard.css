@@ -4,11 +4,11 @@
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
-    margin-bottom: 32px;
+    margin-bottom: 28px;
 }
 
 .dashboard-header-text h1 {
-    font-size: 1.75rem;
+    font-size: 1.6rem;
     margin-bottom: 4px;
     color: var(--text-main);
 }
@@ -16,7 +16,7 @@
 .dashboard-header-text p {
     color: var(--text-muted);
     margin: 0;
-    font-size: 0.9rem;
+    font-size: 0.88rem;
 }
 
 /* Header Actions Row */
@@ -35,8 +35,8 @@
     background: transparent;
     color: var(--text-muted);
     border: 1px solid var(--border-light);
-    padding: 9px 16px;
-    border-radius: 8px;
+    padding: 8px 14px;
+    border-radius: 6px;
     font-weight: 500;
     font-size: 0.82rem;
     cursor: pointer;
@@ -49,18 +49,18 @@
 .btn-header-import:hover {
     color: var(--accent);
     border-color: var(--accent);
-    background: var(--accent-glow);
+    background: var(--accent-subtle);
 }
 
 .btn-stop-all {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    background: rgba(239, 68, 68, 0.1);
+    background: rgba(239, 68, 68, 0.08);
     color: var(--danger);
-    border: 1px solid rgba(239, 68, 68, 0.2);
-    padding: 9px 18px;
-    border-radius: 8px;
+    border: 1px solid rgba(239, 68, 68, 0.15);
+    padding: 8px 16px;
+    border-radius: 6px;
     font-weight: 600;
     font-size: 0.82rem;
     cursor: pointer;
@@ -73,12 +73,10 @@
     background: var(--danger);
     color: white;
     border-color: var(--danger);
-    box-shadow: 0 4px 16px rgba(239, 68, 68, 0.3);
 }
 
 .btn-stop-all:disabled {
     opacity: 0.5;
     cursor: not-allowed;
     transform: none;
-    box-shadow: none;
 }

@@ -1,20 +1,20 @@
 .update-banner-stack {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
   position: fixed;
-  bottom: 24px;
-  right: 24px;
+  bottom: 20px;
+  right: 20px;
   z-index: 100;
 }
 
 .update-banner {
-  background: var(--bg-sidebar);
+  background: var(--bg-nav);
   border: 1px solid var(--border-light);
-  border-radius: 10px;
-  padding: 14px 18px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-  max-width: 420px;
+  border-radius: 8px;
+  padding: 12px 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  max-width: 400px;
   transition: transform 0.25s ease, opacity 0.25s ease;
 }
 
@@ -72,13 +72,13 @@
 }
 
 .update-banner-text strong {
-  font-size: 0.82rem;
+  font-size: 0.8rem;
   color: var(--text-main);
   font-weight: 600;
 }
 
 .update-banner-text span {
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   color: var(--text-muted);
   white-space: nowrap;
   overflow: hidden;
@@ -88,9 +88,9 @@
 .update-btn {
   appearance: none;
   border: none;
-  padding: 6px 14px;
-  border-radius: 6px;
-  font-size: 0.78rem;
+  padding: 5px 12px;
+  border-radius: 4px;
+  font-size: 0.76rem;
   font-weight: 500;
   cursor: pointer;
   font-family: inherit;
@@ -104,7 +104,7 @@
 }
 
 .update-btn-primary:hover {
-  box-shadow: 0 2px 12px var(--accent-glow);
+  opacity: 0.85;
 }
 
 .update-btn-dismiss {

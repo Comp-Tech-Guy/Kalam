@@ -22,6 +22,7 @@ export async function initializeFS(){
     });
     const defaultSettings = {
         "onboardingComplete": false,
+        "theme": "dark",
         "rainmeter-Path": "",
         "Yasb-Config-Path": "",
         "Yasb-Exe-Path": "",
@@ -131,6 +132,10 @@ export async function setOnboardingComplete(value = true) {
     const filePath = await join(appDataPath, '', 'userSettings.json');
     await writeTextFile(filePath, JSON.stringify(updated, null, 2));
     bustCache('userSettings.json');
+}
+
+export async function setTheme(theme) {
+    await editData('userSettings.json', { theme });
 }
 
 export function exportProfile(profile) {

@@ -1,44 +1,52 @@
-.profile-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 20px;
-}
-
-.profile-card {
-    background: rgba(255, 255, 255, 0.025);
-    border: 1px solid var(--border-light);
-    border-radius: 14px;
-    padding: 22px;
+/* ─── Profile List ─────────────────────────────────────────── */
+.profile-list {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    gap: 2px;
+}
+
+/* ─── Profile Row ──────────────────────────────────────────── */
+.profile-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 14px 18px;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 6px;
     transition: var(--trans-smooth);
     position: relative;
 }
 
-.profile-card:hover {
-    border-color: var(--border-active);
-    transform: translateY(-3px);
-    background: rgba(255, 255, 255, 0.04);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+.profile-row:hover {
+    background: var(--bg-card);
+    border-color: var(--border-light);
 }
 
-.card-content {
-    margin-bottom: 18px;
+/* Name column */
+.profile-row-name {
+    min-width: 160px;
+    max-width: 240px;
+    flex-shrink: 0;
 }
 
-.profile-name {
-    margin: 0 0 12px 0;
+.profile-row-name h3 {
+    margin: 0;
     color: var(--text-main);
-    font-weight: 600;
-    font-size: 1.15rem;
-    letter-spacing: -0.01em;
+    font-weight: 500;
+    font-size: 0.92rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-.profile-tools {
+/* Tool badges column */
+.profile-row-tools {
+    flex: 1;
     display: flex;
     flex-wrap: wrap;
-    gap: 6px;
+    gap: 5px;
+    min-width: 0;
 }
 
 .tool-badge {
@@ -48,39 +56,38 @@
     font-size: 0.72rem;
     font-weight: 500;
     color: var(--text-muted);
-    background: rgba(255, 255, 255, 0.04);
+    background: var(--bg-card);
     border: 1px solid var(--border-light);
-    padding: 3px 9px 3px 7px;
-    border-radius: 6px;
+    padding: 2px 8px;
+    border-radius: 4px;
     letter-spacing: -0.01em;
 }
 
 .tool-badge-icon {
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     line-height: 1;
 }
 
-.profile-error {
-    color: var(--danger, #ef4444);
-    font-size: 0.82rem;
-    margin: 12px 0 0 0;
-    padding: 8px 12px;
-    background: rgba(239, 68, 68, 0.08);
-    border-radius: 8px;
-    border: 1px solid rgba(239, 68, 68, 0.15);
-}
-
-.card-actions {
+/* Actions column */
+.profile-row-actions {
     display: flex;
     gap: 6px;
+    flex-shrink: 0;
 }
 
+.profile-row-error {
+    color: var(--danger);
+    font-size: 0.78rem;
+    margin-left: 8px;
+}
+
+/* ─── Buttons ──────────────────────────────────────────────── */
 .btn {
     font-family: inherit;
-    padding: 8px 14px;
-    border-radius: 8px;
+    padding: 6px 14px;
+    border-radius: 6px;
     cursor: pointer;
-    font-size: 0.82rem;
+    font-size: 0.8rem;
     font-weight: 500;
     border: 1px solid transparent;
     transition: var(--trans-smooth);
@@ -101,25 +108,31 @@
     gap: 7px;
 }
 
-.btn-edit,
-.btn-remove,
-.btn-start {
-    flex: 1;
-    min-width: 70px;
-}
-
 .btn-start:hover {
-    background: #22d1bc;
-    box-shadow: 0 4px 16px var(--accent-glow);
-    transform: translateY(-1px);
+    opacity: 0.85;
 }
 
 .btn-start:active {
-    transform: translateY(0);
+    opacity: 1;
+}
+
+.btn-edit {
+    background: transparent;
+    color: var(--text-muted);
+    border: 1px solid var(--border-light);
+}
+
+.btn-edit:hover {
+    color: var(--text-main);
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+[data-theme="light"] .btn-edit:hover {
+    border-color: rgba(0, 0, 0, 0.15);
 }
 
 .btn-remove {
-    background: rgba(255, 255, 255, 0.03);
+    background: transparent;
     color: var(--text-muted);
     border: 1px solid var(--border-light);
 }
@@ -130,36 +143,35 @@
     border-color: rgba(239, 68, 68, 0.2);
 }
 
-.btn-edit {
-    background: rgba(255, 255, 255, 0.03);
-    color: var(--text-muted);
-    border: 1px solid var(--border-light);
-}
-
-.btn-edit:hover {
-    background: rgba(255, 255, 255, 0.08);
-    color: var(--text-main);
-    border-color: rgba(255, 255, 255, 0.18);
-}
-
-/* Responsive card */
-@media (max-width: 600px) {
-  .profile-card {
-    padding: 16px;
+/* ─── Responsive ───────────────────────────────────────────── */
+@media (max-width: 700px) {
+  .profile-row {
+    flex-wrap: wrap;
+    gap: 10px;
   }
 
-  .card-actions {
-    flex-direction: column;
+  .profile-row-name {
+    min-width: 0;
+    max-width: none;
+    flex-basis: 100%;
+  }
+
+  .profile-row-tools {
+    flex-basis: 100%;
+  }
+
+  .profile-row-actions {
+    flex-basis: 100%;
   }
 
   .btn {
+    flex: 1;
     min-width: 0;
   }
 }
 
-/* Loading/Empty States */
+/* ─── Loading / Empty States ──────────────────────────────── */
 .empty-state {
-    grid-column: 1 / -1;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -168,12 +180,12 @@
     color: var(--text-muted);
     text-align: center;
     border: 1px dashed var(--border-light);
-    border-radius: 16px;
+    border-radius: 8px;
     background: var(--bg-card);
 }
 
 .empty-state h3 {
-    font-size: 1.1rem;
+    font-size: 1.05rem;
     font-weight: 600;
     color: var(--text-main);
     margin-bottom: 6px;
@@ -188,7 +200,6 @@
 }
 
 .loading-container {
-    grid-column: 1 / -1;
     display: flex;
     flex-direction: column;
     align-items: center;

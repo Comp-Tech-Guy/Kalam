@@ -63,7 +63,7 @@ function Dashboard() {
                 </div>
             </header>
             
-            <div className="profile-grid">
+            <div className="profile-list">
                 {data ? (
                     hasProfiles ? (
                         data.profiles.map((profile) => (
