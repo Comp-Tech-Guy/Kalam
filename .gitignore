@@ -24,6 +24,7 @@ dist-ssr
 *.sw?
 *.txt
 opencode.md
+plans.md
 
 
 # Python

@@ -88,18 +88,18 @@
   overflow: hidden;
 }
 
-.accordion-section.open .accordion-content {
-  padding: 0 16px 16px;
+.accordion-inner {
+  padding: 12px 16px 16px;
 }
 
 /* Accordion form groups inside */
-.accordion-content .form-group {
+.accordion-inner .form-group {
   display: flex;
   flex-direction: column;
   gap: 6px;
 }
 
-.accordion-content .form-group > label {
+.accordion-inner .form-group > label {
   padding-top: 0;
 }
 

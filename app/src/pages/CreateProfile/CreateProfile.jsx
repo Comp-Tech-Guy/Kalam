@@ -20,7 +20,9 @@ function AccordionSection({ title, icon, expanded, onToggle, children }) {
       </button>
       <div className="accordion-body">
         <div className="accordion-content">
-          {children}
+          <div className="accordion-inner">
+            {children}
+          </div>
         </div>
       </div>
     </div>
