@@ -30,7 +30,7 @@ Think of it like switching between different desktop environments in Linux. Kala
 ---
 
 ## ToDo List
-- [ ] Additional tool supports: MyDockFinder and Wallpaper Engine
+- [ ] Additional tool supports: MyDockFinder, Wallpaper Engine (I don't have MDF and WE from steam so if anyone can gift me please do so from USA) and Komorebi.
 - [ ] Changing some design elements in the app
 - [ ] Updating docs website for clear and understandable for users to go through
 - [ ] Full support to windhawk portable version
