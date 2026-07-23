@@ -880,6 +880,125 @@ a.feature-card:hover .feature-card__arrow {
   line-height: 1.6;
 }
 
+/* ── Docs Card Icons ── */
+
+.docs-card__icon {
+  width: 44px;
+  height: 44px;
+  margin-bottom: 4px;
+  color: var(--accent);
+  transition: transform 0.3s ease;
+}
+
+.docs-card__icon svg {
+  width: 100%;
+  height: 100%;
+  transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+  overflow: visible;
+}
+
+.docs-card__icon svg, 
+.docs-card__icon path, 
+.docs-card__icon circle, 
+.docs-card__icon polyline, 
+.docs-card__icon rect {
+  transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.docs-card__icon .anim-flame {
+  transform-origin: top center;
+  transform-box: fill-box;
+}
+
+.docs-card__icon .anim-book-page {
+  transform-origin: center left;
+  transform-box: fill-box;
+}
+
+.docs-card:hover .docs-card__icon {
+  transform: translateY(-2px);
+}
+
+/* Animations (Smooth Transitions) */
+
+/* Rocket */
+.docs-card:hover .svg-anim-rocket svg {
+  transform: translate(2px, -2px) rotate(8deg);
+}
+.docs-card:hover .svg-anim-rocket .anim-flame {
+  opacity: 0.6;
+  transform: scale(0.85);
+}
+
+/* Users */
+.docs-card:hover .svg-anim-users .anim-user2 {
+  transform: translateX(4px);
+}
+
+/* Gear */
+.docs-card:hover .svg-anim-gear svg {
+  transform: rotate(180deg);
+}
+
+/* Arrows */
+.docs-card:hover .svg-anim-arrows .anim-arrow-left {
+  transform: translateX(-4px);
+}
+.docs-card:hover .svg-anim-arrows .anim-arrow-right {
+  transform: translateX(4px);
+}
+
+/* Book */
+.docs-card:hover .svg-anim-book .anim-book-page {
+  transform: rotateY(-45deg);
+}
+
+/* Lifebuoy */
+.docs-card:hover .svg-anim-lifebuoy svg {
+  transform: rotate(180deg);
+}
+
+/* Code */
+.docs-card:hover .svg-anim-code .anim-code-left {
+  transform: translateX(-3px);
+}
+.docs-card:hover .svg-anim-code .anim-code-right {
+  transform: translateX(3px);
+}
+
+/* Network */
+.docs-card__icon .anim-network-line {
+  stroke-dasharray: 4;
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+}
+.docs-card:hover .svg-anim-network .anim-network-line {
+  stroke-dashoffset: -8;
+}
+
+/* Hammer */
+.docs-card:hover .svg-anim-hammer svg {
+  transform: rotate(-25deg) translate(-2px, 2px);
+}
+
+/* Layout */
+.docs-card:hover .svg-anim-layout .anim-layout-line {
+  opacity: 0.3;
+}
+
+/* Terminal */
+.docs-card:hover .svg-anim-terminal .anim-terminal-cursor {
+  opacity: 0;
+}
+.docs-card:hover .svg-anim-terminal .anim-terminal-arrow {
+  transform: translateX(2px);
+}
+
+/* Sync */
+.docs-card:hover .svg-anim-sync svg {
+  transform: rotate(180deg);
+}
+
 /* ── Mobile Nav Overlay ── */
 
 .mobile-overlay {
