@@ -18,8 +18,9 @@ Kalam does access and store the following data **locally on your device only**:
 
 | Data | Location | Purpose |
 |------|----------|---------|
-| Application settings | `%APPDATA%/Kalam/userSettings.json` | Stores your theme preference, onboarding state, and paths to managed tools (e.g., Rainmeter, YASB, GlazeWM, Zebar, Windhawk, Komorebi) |
+| Application settings | `%APPDATA%/Kalam/userSettings.json` | Stores your theme preference, onboarding state, and paths to managed tools (e.g., Rainmeter, YASB, GlazeWM, Zebar, Windhawk) |
 | Desktop profiles | `%APPDATA%/Kalam/userProfiles.json` | Stores the profiles you create — profile names, enabled tools, tool-specific configurations, and wallpaper paths |
+| Tool manifest cache | `rainmeterManifest.json`, `yasbManifest.json`, `glazewmManifest.json`, `zebarManifest.json`, `windhawkManifest.json` in `%APPDATA%/Kalam/` | Cached copies of tool configurations written during scan to track the current state of each tool |
 
 ### Data Read from Your Device
 
@@ -33,8 +34,6 @@ To apply desktop profiles, Kalam reads configuration files from the following to
 | **Zebar** | `settings.json` from `%APPDATA%/zebar` or `~/.zebar/` |
 | **Windhawk** | Mod enabled/disabled state and per-mod settings from the Windows registry or a portable directory |
 | **Wallpaper** | Image files from paths you specify in your profiles |
-| **Komorebi** *(planned)* | Configuration files — not yet supported |
-| **Bloom** *(planned)* | Configuration files — not yet supported |
 
 None of this data leaves your device. Kalam reads and writes these files solely to apply and manage your desktop profiles.
 
@@ -82,8 +81,6 @@ Kalam interacts with the following third-party tools to apply your desktop profi
 - [GlazeWM](https://github.com/glzr-io/glazewm)
 - [Zebar](https://github.com/glzr-io/zebar)
 - [Windhawk](https://windhawk.net/)
-- **Komorebi** *(planned)* — [https://github.com/LGUG2Z/komorebi](https://github.com/LGUG2Z/komorebi)
-- **Bloom** *(planned)*
 
 Kalam does not share data with these tools beyond what is necessary to apply configurations (e.g., writing a config file to the tool's designated directory).
 

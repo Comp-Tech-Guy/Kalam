@@ -192,6 +192,7 @@
           <tr><th>Data</th><th>Location</th><th>Purpose</th></tr>
           <tr><td>Application settings</td><td><code>%APPDATA%/Kalam/userSettings.json</code></td><td>Stores your theme preference, onboarding state, and paths to managed tools</td></tr>
           <tr><td>Desktop profiles</td><td><code>%APPDATA%/Kalam/userProfiles.json</code></td><td>Stores the profiles you create — profile names, enabled tools, tool-specific configurations, and wallpaper paths</td></tr>
+          <tr><td>Tool manifest cache</td><td><code>rainmeterManifest.json</code>, <code>yasbManifest.json</code>, <code>glazewmManifest.json</code>, <code>zebarManifest.json</code>, <code>windhawkManifest.json</code></td><td>Cached copies of tool configurations written during scan to track the current state of each tool</td></tr>
         </table>
         <h3>Data Read from Your Device</h3>
         <p>To apply desktop profiles, Kalam reads configuration files from the following tools installed on your system:</p>
@@ -203,8 +204,6 @@
           <tr><td><strong>Zebar</strong></td><td><code>settings.json</code> from <code>%APPDATA%/zebar</code> or <code>~/.zebar/</code></td></tr>
           <tr><td><strong>Windhawk</strong></td><td>Mod enabled/disabled state and per-mod settings from the Windows registry or a portable directory</td></tr>
           <tr><td><strong>Wallpaper</strong></td><td>Image files from paths you specify in your profiles</td></tr>
-          <tr><td><strong>Komorebi</strong> <em>(planned)</em></td><td>Configuration files — not yet supported</td></tr>
-          <tr><td><strong>Bloom</strong> <em>(planned)</em></td><td>Configuration files — not yet supported</td></tr>
         </table>
         <p>None of this data leaves your device. Kalam reads and writes these files solely to apply and manage your desktop profiles.</p>
 
@@ -246,8 +245,6 @@
           <li><a href="https://github.com/glzr-io/glazewm" target="_blank" rel="noopener">GlazeWM</a></li>
           <li><a href="https://github.com/glzr-io/zebar" target="_blank" rel="noopener">Zebar</a></li>
           <li><a href="https://windhawk.net/" target="_blank" rel="noopener">Windhawk</a></li>
-          <li><strong>Komorebi</strong> <em>(planned)</em></li>
-          <li><strong>Bloom</strong> <em>(planned)</em></li>
         </ul>
         <p>Kalam does not share data with these tools beyond what is necessary to apply configurations.</p>
 

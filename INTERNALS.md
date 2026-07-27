@@ -201,6 +201,18 @@ The sidecar (`sidecar/kalam-core.py`, compiled to `kalam-core-x86_64-pc-windows-
 | `autodetect` | — | JSON paths | Auto-detect tool install paths |
 | `stop-all` | — | Status text | Stop all managed tools |
 
+### Tool Manifest Files
+
+During each `scan` command, the sidecar writes JSON manifest files to `%APPDATA%/Kalam/`. These cache the current state of each managed tool so the frontend can display it without re-reading external config files.
+
+| Manifest File | Contents | Written By |
+|---------------|----------|------------|
+| `rainmeterManifest.json` | Available layout names (from `%APPDATA%/Rainmeter/Layouts/`) + current active layout (parsed from `Rainmeter.ini`) | `scan_rainmeter_layouts()` |
+| `yasbManifest.json` | Full content of `config.yaml` and `styles.css` | `scan_yasb_configs()` |
+| `glazewmManifest.json` | Full content of GlazeWM `config.yaml` | `scan_glazewm_configs()` |
+| `zebarManifest.json` | Full content of Zebar `settings.json` | `scan_zebar_configs()` |
+| `windhawkManifest.json` | List of installed mods with enabled/disabled state and per-mod settings (from registry or portable `.ini` files) | `scan_windhawk_registry()` |
+
 ### Profile Application Flow
 
 `apply_profile()` orchestrates the full sequence:
