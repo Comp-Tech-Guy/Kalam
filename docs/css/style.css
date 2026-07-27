@@ -1175,6 +1175,171 @@ a.feature-card:hover .feature-card__arrow {
   }
 }
 
+/* ── Privacy Modal ── */
+
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 200;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.modal-overlay--open {
+  display: flex;
+}
+
+.modal {
+  background: var(--bg-main);
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  width: 100%;
+  max-width: 680px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  animation: modalIn 0.2s ease;
+}
+
+@keyframes modalIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border-light);
+  flex-shrink: 0;
+}
+
+.modal__title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.modal__close {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 4px;
+  line-height: 1;
+  font-size: 1.25rem;
+  transition: var(--trans-smooth);
+}
+
+.modal__close:hover {
+  color: var(--text-main);
+}
+
+.modal__body {
+  padding: 24px;
+  overflow-y: auto;
+  flex: 1;
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  line-height: 1.75;
+}
+
+.modal__body h2 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text-main);
+  margin-top: 28px;
+  margin-bottom: 12px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.modal__body h2:first-child {
+  margin-top: 0;
+}
+
+.modal__body h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-main);
+  margin-top: 20px;
+  margin-bottom: 8px;
+}
+
+.modal__body p {
+  margin-bottom: 12px;
+}
+
+.modal__body ul {
+  padding-left: 20px;
+  margin-bottom: 12px;
+}
+
+.modal__body li {
+  margin-bottom: 4px;
+}
+
+.modal__body a {
+  color: var(--accent);
+}
+
+.modal__body table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 16px;
+  font-size: 0.8125rem;
+}
+
+.modal__body th {
+  text-align: left;
+  font-weight: 600;
+  padding: 8px 12px;
+  border-bottom: 2px solid var(--border-light);
+  color: var(--text-main);
+}
+
+.modal__body td {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.modal__body tr:nth-child(even) td {
+  background: var(--bg-card);
+}
+
+.modal__body strong {
+  color: var(--text-main);
+}
+
+@media (max-width: 768px) {
+  .modal-overlay {
+    padding: 16px;
+  }
+
+  .modal {
+    max-height: 90vh;
+  }
+
+  .modal__header {
+    padding: 16px 20px;
+  }
+
+  .modal__body {
+    padding: 20px;
+  }
+}
+
 /* ── Prism.js Overrides ── */
 
 code[class*="language-"],

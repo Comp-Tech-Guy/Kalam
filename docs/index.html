@@ -172,6 +172,109 @@
 
   </div>
 
+  <!-- Privacy Modal -->
+  <div class="modal-overlay" id="privacyModalOverlay">
+    <div class="modal">
+      <div class="modal__header">
+        <h2 class="modal__title">Privacy Policy</h2>
+        <button class="modal__close" aria-label="Close">&times;</button>
+      </div>
+      <div class="modal__body">
+        <h2>Introduction</h2>
+        <p>Kalam is an open-source, profile-based desktop environment manager for Windows. This Privacy Policy explains what data Kalam accesses, how it is used, and what it does <strong>not</strong> do with your information.</p>
+        <p>We believe in transparency. Kalam is designed to work entirely on your device. Your data stays yours.</p>
+
+        <h2>Information We Collect</h2>
+        <p>Kalam does <strong>not</strong> collect, transmit, or sell any personal data. There is no account system, no analytics, no telemetry, and no user tracking of any kind.</p>
+        <p>Kalam does access and store the following data <strong>locally on your device only</strong>:</p>
+        <h3>Data Stored by Kalam</h3>
+        <table>
+          <tr><th>Data</th><th>Location</th><th>Purpose</th></tr>
+          <tr><td>Application settings</td><td><code>%APPDATA%/Kalam/userSettings.json</code></td><td>Stores your theme preference, onboarding state, and paths to managed tools</td></tr>
+          <tr><td>Desktop profiles</td><td><code>%APPDATA%/Kalam/userProfiles.json</code></td><td>Stores the profiles you create — profile names, enabled tools, tool-specific configurations, and wallpaper paths</td></tr>
+        </table>
+        <h3>Data Read from Your Device</h3>
+        <p>To apply desktop profiles, Kalam reads configuration files from the following tools installed on your system:</p>
+        <table>
+          <tr><th>Tool</th><th>What Kalam Reads</th></tr>
+          <tr><td><strong>Rainmeter</strong></td><td>Layout files in <code>%APPDATA%/Rainmeter/Layouts/</code></td></tr>
+          <tr><td><strong>YASB</strong></td><td><code>config.yaml</code> and <code>styles.css</code> from <code>~/.config/yasb/</code> or <code>~/.yasb/</code></td></tr>
+          <tr><td><strong>GlazeWM</strong></td><td><code>config.yaml</code> from <code>~/.glzr/glazewm/</code> or <code>~/.glzewm/</code></td></tr>
+          <tr><td><strong>Zebar</strong></td><td><code>settings.json</code> from <code>%APPDATA%/zebar</code> or <code>~/.zebar/</code></td></tr>
+          <tr><td><strong>Windhawk</strong></td><td>Mod enabled/disabled state and per-mod settings from the Windows registry or a portable directory</td></tr>
+          <tr><td><strong>Wallpaper</strong></td><td>Image files from paths you specify in your profiles</td></tr>
+          <tr><td><strong>Komorebi</strong> <em>(planned)</em></td><td>Configuration files — not yet supported</td></tr>
+          <tr><td><strong>Bloom</strong> <em>(planned)</em></td><td>Configuration files — not yet supported</td></tr>
+        </table>
+        <p>None of this data leaves your device. Kalam reads and writes these files solely to apply and manage your desktop profiles.</p>
+
+        <h2>How Your Data Is Used</h2>
+        <p>All data accessed or stored by Kalam is used exclusively for the following purposes:</p>
+        <ul>
+          <li><strong>Profile management</strong> — Creating, editing, storing, and applying desktop configuration profiles</li>
+          <li><strong>Tool configuration</strong> — Reading and writing configuration files for managed tools on your local system</li>
+          <li><strong>Application preferences</strong> — Remembering your theme choice, tool paths, and onboarding state</li>
+        </ul>
+        <p>Kalam does not use your data for advertising, analytics, profiling, or any purpose other than those described above.</p>
+
+        <h2>Network Activity</h2>
+        <p>Kalam makes <strong>one type</strong> of network request: an automatic update check.</p>
+        <h3>Auto-Update Check</h3>
+        <ul>
+          <li><strong>What it does:</strong> On startup and when manually triggered from Settings, Kalam contacts the GitHub Releases API to check if a newer version is available</li>
+          <li><strong>What is sent:</strong> The current version number of Kalam installed on your device. No personal data, no device identifiers, no usage data</li>
+          <li><strong>What is received:</strong> A JSON response indicating whether a newer release exists, along with release notes and download URLs</li>
+          <li><strong>When it happens:</strong> Automatically on app launch, or manually when you click "Check for Updates" in Settings</li>
+        </ul>
+        <p>If you choose to download an update, the download is served directly from GitHub Releases. Kalam does not proxy, log, or track this download.</p>
+        <h3>No Other Network Activity</h3>
+        <p>Kalam does not:</p>
+        <ul>
+          <li>Connect to any servers other than GitHub's release API</li>
+          <li>Send telemetry or usage statistics</li>
+          <li>Use any analytics services</li>
+          <li>Communicate with any third-party tracking services</li>
+          <li>Use cookies, web beacons, or similar technologies</li>
+        </ul>
+
+        <h2>Third-Party Services</h2>
+        <h3>Managed Tools</h3>
+        <p>Kalam interacts with several third-party tools to apply your desktop profiles. Each tool is independent and has its own privacy policy:</p>
+        <ul>
+          <li><a href="https://www.rainmeter.net/" target="_blank" rel="noopener">Rainmeter</a></li>
+          <li><a href="https://github.com/amnweb/yasb" target="_blank" rel="noopener">YASB</a></li>
+          <li><a href="https://github.com/glzr-io/glazewm" target="_blank" rel="noopener">GlazeWM</a></li>
+          <li><a href="https://github.com/glzr-io/zebar" target="_blank" rel="noopener">Zebar</a></li>
+          <li><a href="https://windhawk.net/" target="_blank" rel="noopener">Windhawk</a></li>
+          <li><strong>Komorebi</strong> <em>(planned)</em></li>
+          <li><strong>Bloom</strong> <em>(planned)</em></li>
+        </ul>
+        <p>Kalam does not share data with these tools beyond what is necessary to apply configurations.</p>
+
+        <h2>Data Sharing</h2>
+        <p><strong>We do not sell, rent, trade, or share your data with anyone.</strong></p>
+        <p>Kalam does not transmit any user data to us, to advertisers, to analytics providers, or to any third party. The only network communication from Kalam is the version check with GitHub, which does not involve any personal data.</p>
+
+        <h2>Data Storage and Security</h2>
+        <ul>
+          <li>All Kalam data is stored locally on your Windows device in <code>%APPDATA%/Kalam/</code></li>
+          <li>Data files are standard JSON files protected by your operating system's file permissions</li>
+          <li>Kalam does not encrypt these files separately — they are protected by the same access controls as the rest of your user profile directory</li>
+          <li>No data is stored on external servers or in the cloud by Kalam</li>
+        </ul>
+
+        <h2>Changes to This Privacy Policy</h2>
+        <p>We may update this Privacy Policy from time to time. Any changes will be reflected in the "Last Updated" date at the top of this document. Significant changes will be communicated through the in-app update banner and the GitHub repository.</p>
+
+        <h2>Open Source</h2>
+        <p>Kalam is open-source software released under the MIT License. You can review the full source code at any time to verify how your data is handled: <a href="https://github.com/Comp-Tech-Guy/Kalam" target="_blank" rel="noopener">https://github.com/Comp-Tech-Guy/Kalam</a></p>
+
+        <h2>Contact</h2>
+        <p>If you have questions or concerns about this Privacy Policy, please open an issue on our GitHub repository: <a href="https://github.com/Comp-Tech-Guy/Kalam/issues" target="_blank" rel="noopener">https://github.com/Comp-Tech-Guy/Kalam/issues</a></p>
+      </div>
+    </div>
+  </div>
+
   <!-- Footer -->
   <footer class="footer">
     <div class="footer__inner">
@@ -179,6 +282,7 @@
       <ul class="footer__links">
         <li><a href="https://github.com/Comp-Tech-Guy/Kalam" target="_blank" rel="noopener" class="footer__link">GitHub</a></li>
         <li><a href="docs/index.html" class="footer__link">Documentation</a></li>
+        <li><a href="#" class="footer__link" data-privacy-trigger>Privacy Policy</a></li>
         <li><span class="footer__text">v0.1.0</span></li>
       </ul>
       <p class="footer__text">Built with Tauri + React + Python</p>

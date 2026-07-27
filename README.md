@@ -39,6 +39,7 @@ Think of it like switching between different desktop environments in Linux. Kala
 
 - **[Website](https://comp-tech-guy.github.io/Kalam/)** — landing page and full documentation
 - **[Internals](INTERNALS.md)** — architecture, sidecar logic, build guide, CI/CD
+- **[Privacy Policy](PRIVACY.md)** — how Kalam handles your data
 
 ## Features
 

@@ -153,6 +153,7 @@
     initSidebarActive();
     initScrollReveal();
     initPrism();
+    initPrivacyModal();
   }
 
   function finishLoad() {
@@ -212,6 +213,53 @@
         window.location.href = url;
         isTransitioning = false;
       });
+  }
+
+  function initPrivacyModal() {
+    var overlay = $id('privacyModalOverlay');
+    if (!overlay) return;
+
+    var closeBtn = overlay.querySelector('.modal__close');
+    var triggers = document.querySelectorAll('[data-privacy-trigger]');
+
+    function openModal() {
+      overlay.classList.add('modal-overlay--open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+      overlay.classList.remove('modal-overlay--open');
+      document.body.style.overflow = '';
+    }
+
+    triggers.forEach(function (trigger) {
+      trigger.removeEventListener('click', openModal);
+      trigger.addEventListener('click', function (e) {
+        e.preventDefault();
+        openModal();
+      });
+    });
+
+    if (closeBtn) {
+      closeBtn.removeEventListener('click', closeModal);
+      closeBtn.addEventListener('click', closeModal);
+    }
+
+    overlay.removeEventListener('click', function (e) {
+      if (e.target === overlay) closeModal();
+    });
+    overlay.addEventListener('click', function (e) {
+      if (e.target === overlay) closeModal();
+    });
+
+    document.removeEventListener('keydown', function (e) {
+      if (e.key === 'Escape') closeModal();
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && overlay.classList.contains('modal-overlay--open')) {
+        closeModal();
+      }
+    });
   }
 
   function initRouter() {
