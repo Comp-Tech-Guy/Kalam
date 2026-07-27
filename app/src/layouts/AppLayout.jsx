@@ -5,12 +5,14 @@ import { getCurrentWindow } from '@tauri-apps/api/window';
 import { initializeFS, getData } from '../services/storage';
 import { NavLink, Outlet } from "react-router-dom";
 import UpdateBanner from '../components/UpdateBanner/UpdateBanner';
+import About from '../components/About/About';
 
 const Onboarding = lazy(() => import('../pages/Onboarding/Onboarding'));
 
 function AppLayout() {
   const [isMaximized, setIsMaximized] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(null);
+  const [showAbout, setShowAbout] = useState(false);
 
   useEffect(() => {
     async function init() {
@@ -70,7 +72,7 @@ function AppLayout() {
 
       {/* ─── Top Bar ────────────────────────────────────────── */}
       <div className="topbar">
-        <div className="topbar-brand">
+        <div className="topbar-brand" onClick={() => setShowAbout(true)}>
           <img src={logo} height={22} alt="kalam" />
         </div>
 
@@ -110,6 +112,7 @@ function AppLayout() {
       </main>
 
       <UpdateBanner />
+      <About open={showAbout} onClose={() => setShowAbout(false)} />
     </main>
   );
 }

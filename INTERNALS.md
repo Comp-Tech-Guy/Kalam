@@ -53,6 +53,7 @@ Technical reference for how Kalam works under the hood.
 | ResizableTextarea | `app/src/components/ResizableTextarea/ResizableTextarea.jsx` |
 | ImportExportModal | `app/src/components/ImportExportModal/ImportExportModal.jsx` |
 | UpdateBanner | `app/src/components/UpdateBanner/UpdateBanner.jsx` |
+| About | `app/src/components/About/About.jsx` |
 | ProfileCard | `app/src/components/ProfileCard/ProfileCard.jsx` |
 | Tauri config | `app/src-tauri/tauri.conf.json` |
 | Capabilities | `app/src-tauri/capabilities/default.json` |
@@ -80,23 +81,26 @@ const Settings = React.lazy(() => import("./pages/Settings/Settings"));
 ### Layout System
 
 ```
-┌─────────────────────────────────────┐
-│  Titlebar (40px, sticky, z-index 10)│
-├────────┬────────────────────────────┤
-│ Nav    │  PageContainer (flex: 1)   │
-│ 200px  │  ┌──────────────────────┐  │
-│ (56px  │  │  <AppPg>             │  │
-│ narrow)│  │  padding: 32px 40px  │  │
-│        │  │  24px 20px @800px    │  │
-│        │  │  16px 12px @500px    │  │
-│        │  └──────────────────────┘  │
-├────────┴────────────────────────────┤
-│  height: calc(100vh - 40px)         │
-└─────────────────────────────────────┘
+┌─────────────────────────────────────────────┐
+│  Top Bar (44px, sticky, z-index 10)         │
+│  [icon] | Home  New Profile  Settings | [−][□][×] │
+├─────────────────────────────────────────────┤
+│  PageContainer (flex: 1, overflow-y: auto)  │
+│  ┌──────────────────────────────────────┐   │
+│  │  <MainPg>                            │   │
+│  │  padding: 32px 40px                  │   │
+│  │  24px 20px @800px                    │   │
+│  │  16px 12px @500px                    │   │
+│  └──────────────────────────────────────┘   │
+├─────────────────────────────────────────────┤
+│  height: calc(100vh - 44px)                 │
+└─────────────────────────────────────────────┘
 ```
 
-- **Nav collapses** from `200px` to `56px` at `800px` window width — text labels hide via `max-width: 0; opacity: 0` (no layout reflow)
-- **Anti-jitter rule:** No CSS transitions on layout properties (width, padding). Only visual-only properties (opacity, max-width) transition.
+- **Top bar** merges titlebar and navigation into a single horizontal bar
+- **App icon (brand)** is clickable — opens the About modal overlay
+- **Nav links** are text-only, 0.78rem font. Active link: teal color + `::after` underline (no font-weight change, no layout shift)
+- **Drag region:** `.topbar-nav` div has `data-tauri-drag-region` for window dragging
 - **Content padding** steps down: `32px 40px` → `24px 20px` @800px → `16px 12px` @500px
 
 ### Vite Build Config

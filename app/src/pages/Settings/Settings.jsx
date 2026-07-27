@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import "../../styles/forms.css"
 import { editData, getData, setTheme as saveTheme } from "../../services/storage";
 import { autoDetectPaths as detectSidecarPaths } from "../../services/sidecar";
-import { requestManualCheck } from "../../services/useUpdateChecker";
 
 function Settings() {
     const [rainPath, setRainPath] = useState('');
@@ -16,7 +15,6 @@ function Settings() {
     const [saved, setSaved] = useState(false);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
-    const [checkUpdateStatus, setCheckUpdateStatus] = useState('');
     const [theme, setTheme] = useState('dark');
 
     const loadData = async () => {
@@ -88,12 +86,6 @@ function Settings() {
             setError("Failed to save settings");
         }
     }
-
-    const triggerCheck = () => {
-        requestManualCheck();
-        setCheckUpdateStatus('Checking...');
-        setTimeout(() => setCheckUpdateStatus(''), 3000);
-    };
 
     const handleThemeChange = async (newTheme) => {
         setTheme(newTheme);
@@ -224,13 +216,6 @@ function Settings() {
                         disabled={detecting}
                     >
                         {detecting ? "Scanning..." : "Auto Detect Paths"}
-                    </button>
-                    <button
-                        className="btn-detect"
-                        onClick={triggerCheck}
-                        disabled={!!checkUpdateStatus}
-                    >
-                        {checkUpdateStatus || "Check for Updates"}
                     </button>
                     <button className="btn-submit" onClick={storeData} disabled={saved}>
                         {saved ? "Settings Saved!" : "Save Changes"}

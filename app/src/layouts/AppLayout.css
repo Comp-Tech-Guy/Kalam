@@ -24,6 +24,7 @@
   padding-right: 16px;
   border-right: 1px solid var(--border-light);
   margin-right: 4px;
+  cursor: pointer;
 }
 
 .topbar-brand img {
