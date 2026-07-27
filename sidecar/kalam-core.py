@@ -9,6 +9,7 @@ import psutil
 import time
 import yaml
 import winreg
+import configparser
 
 _NO_WINDOW = subprocess.CREATE_NO_WINDOW
 
@@ -175,6 +176,193 @@ def _scan_portable_mods(windhawk_path):
     return mods
 
 
+def _read_text_auto_enc(path):
+    with open(path, "rb") as f:
+        raw = f.read()
+    if raw[:2] == b'\xff\xfe':
+        return raw.decode('utf-16-le').lstrip('\ufeff')
+    if raw[:2] == b'\xfe\xff':
+        return raw.decode('utf-16-be')
+    return raw.decode('utf-8-sig')
+
+
+def _resolve_portable_appdata(windhawk_dir):
+    ini_path = os.path.join(windhawk_dir, "windhawk.ini")
+    if not os.path.exists(ini_path):
+        return os.path.join(windhawk_dir, "AppData")
+    content = _read_text_auto_enc(ini_path)
+    app_data = "AppData"
+    for line in content.splitlines():
+        if line.startswith("AppDataPath="):
+            val = line.split("=", 1)[1].strip()
+            if os.path.isabs(val):
+                app_data = val
+            else:
+                app_data = os.path.normpath(os.path.join(windhawk_dir, val))
+            break
+    return app_data
+
+
+def _parse_portable_mod_ini(content, mod_id):
+    entry = {"id": mod_id, "name": mod_id, "enabled": 1, "settings": {}}
+    try:
+        cp = configparser.ConfigParser()
+        cp.optionxform = str
+        cp.read_string(content)
+        if cp.has_section("Mod"):
+            disabled = cp.getint("Mod", "Disabled", fallback=0)
+            entry["enabled"] = 0 if disabled else 1
+            entry["version"] = cp.get("Mod", "Version", fallback="")
+            entry["settingsChangeTime"] = cp.get("Mod", "SettingsChangeTime", fallback="")
+        if cp.has_section("Settings"):
+            settings = {}
+            for k, v in cp.items("Settings"):
+                settings[k] = v
+            entry["settings"] = settings
+    except (configparser.Error, KeyError):
+        pass
+    return entry
+
+
+def _scan_portable_mods_ini(windhawk_path):
+    mods = []
+    windhawk_dir = os.path.dirname(windhawk_path) if windhawk_path else ""
+    if not windhawk_dir:
+        return mods
+    if not os.path.isdir(windhawk_dir):
+        return mods
+    app_data = _resolve_portable_appdata(windhawk_dir)
+    mods_dir = os.path.join(app_data, "Engine", "Mods")
+    if not os.path.isdir(mods_dir):
+        return mods
+    for entry_name in os.listdir(mods_dir):
+        if entry_name.endswith(".ini"):
+            mod_id = entry_name[:-4]
+            ini_path = os.path.join(mods_dir, entry_name)
+            try:
+                with open(ini_path, "r", encoding="utf-8") as f:
+                    content = f.read()
+                mods.append(_parse_portable_mod_ini(content, mod_id))
+            except Exception:
+                mods.append({"id": mod_id, "name": mod_id, "enabled": 1, "settings": {}})
+    return mods
+
+
+def _build_mod_ini_content(mod, existing_content=""):
+    if not existing_content:
+        return existing_content
+
+    mod_id = mod.get("id", "")
+    enabled = mod.get("enabled", 1)
+    settings = mod.get("settings", {})
+    change_time = mod.get("settingsChangeTime", str(int(time.time())))
+
+    disabled_val = str(0 if enabled else 1)
+    mod_overrides = {"Disabled": disabled_val, "SettingsChangeTime": change_time}
+
+    result = []
+    current_section = None
+
+    for line in existing_content.splitlines():
+        stripped = line.strip()
+        if stripped.startswith("[") and stripped.endswith("]"):
+            current_section = stripped[1:-1]
+            result.append(line)
+            continue
+
+        if "=" in stripped:
+            key = stripped.split("=", 1)[0].strip()
+            if current_section == "Mod" and key in mod_overrides:
+                result.append(f"{key}={mod_overrides[key]}")
+                continue
+            if current_section == "Settings" and isinstance(settings, dict) and key in settings:
+                result.append(f"{key}={settings[key]}")
+                continue
+
+        result.append(line)
+
+    return "\r\n".join(result) + "\r\n"
+
+
+def _get_current_portable_settings(windhawk_path):
+    windhawk_dir = os.path.dirname(windhawk_path) if windhawk_path else ""
+    if not windhawk_dir:
+        return {}
+    app_data = _resolve_portable_appdata(windhawk_dir)
+    mods_dir = os.path.join(app_data, "Engine", "Mods")
+    current = {}
+    if not os.path.isdir(mods_dir):
+        return current
+    for entry_name in os.listdir(mods_dir):
+        if entry_name.endswith(".ini"):
+            mod_id = entry_name[:-4]
+            ini_path = os.path.join(mods_dir, entry_name)
+            try:
+                content = _read_text_auto_enc(ini_path)
+                current[mod_id] = _parse_portable_mod_ini(content, mod_id)
+            except Exception:
+                pass
+    return current
+
+
+def _portable_settings_changed(mods, current):
+    for mod in mods:
+        mod_id = mod.get("id", "")
+        if mod_id not in current:
+            return True
+        cur = current[mod_id]
+        if cur.get("enabled", 0) != mod.get("enabled", 0):
+            return True
+        desired_settings = mod.get("settings", {})
+        if desired_settings:
+            if cur.get("settings", {}) != desired_settings:
+                return True
+    for cur_id in current:
+        cur_ids = {m.get("id", "") for m in mods}
+        if cur_id not in cur_ids:
+            return True
+    return False
+
+
+def _apply_windhawk_portable(mods, windhawk_path):
+    windhawk_dir = os.path.dirname(windhawk_path) if windhawk_path else ""
+    if not windhawk_dir:
+        print("WARNING: Windhawk directory not resolved for portable apply")
+        return
+
+    current = _get_current_portable_settings(windhawk_path)
+    if not _portable_settings_changed(mods, current):
+        return
+
+    app_data = _resolve_portable_appdata(windhawk_dir)
+    mods_dir = os.path.join(app_data, "Engine", "Mods")
+
+    for mod in mods:
+        mod_id = mod.get("id", "")
+        if not mod_id:
+            continue
+        ini_path = os.path.join(mods_dir, f"{mod_id}.ini")
+        existing_content = ""
+        try:
+            existing_content = _read_text_auto_enc(ini_path)
+        except Exception:
+            pass
+        ini_content = _build_mod_ini_content(mod, existing_content)
+        try:
+            with open(ini_path, "wb") as f:
+                f.write(b'\xff\xfe')
+                f.write(ini_content.encode('utf-16-le'))
+        except Exception as e:
+            print(f"WARNING: Failed to write portable mod config for {mod_id}: {e}")
+
+    kill_process("windhawk.exe")
+    time.sleep(1)
+    if os.path.exists(windhawk_path):
+        subprocess.Popen([windhawk_path, "-tray-only"], creationflags=_NO_WINDOW)
+    else:
+        print(f"WARNING: windhawk.exe not found at {windhawk_path}, cannot restart")
+
+
 def _enumerate_windhawk_registry():
     seen_ids = set()
     entries = []
@@ -212,13 +400,17 @@ def _enumerate_windhawk_registry():
 
 def scan_windhawk_registry(folder_path, user_settings=None):
     manifest_path = os.path.join(folder_path, "windhawkManifest.json")
-    mods = _enumerate_windhawk_registry()
 
-    if not mods and user_settings:
+    wh_type = "Installed"
+    wh_path = ""
+    if user_settings:
         wh_type = user_settings.get("Windhawk-Type", "Installed")
         wh_path = user_settings.get("Windhawk-Path", "")
-        if wh_type == "Portable" and wh_path:
-            mods = _scan_portable_mods(wh_path)
+
+    if wh_type == "Portable" and wh_path:
+        mods = _scan_portable_mods_ini(wh_path)
+    else:
+        mods = _enumerate_windhawk_registry()
 
     with open(manifest_path, 'w') as f:
         json.dump({"installedMods": mods}, f, indent=2)
@@ -382,24 +574,10 @@ def apply_windhawk_profile(profile, user_settings, folder_path):
         _apply_windhawk_hklm(mods)
     else:
         wh_path = user_settings.get("Windhawk-Path", "")
-        windhawk_dir = os.path.dirname(wh_path) if wh_path else ""
-
-        # Portable Windhawk stores mod settings in files under AppData/, not in registry.
-        # The exact file format is undocumented, so we apply changes directly via HKLM
-        # (the officially documented mechanism per the Windhawk maintainer).
-        try:
-            _apply_windhawk_hklm(mods)
-        except PermissionError:
-            print("WARNING: Could not write Windhawk settings to registry (not admin). "
-                  "For portable mode, pre-configure mods in Windhawk UI.")
-        except Exception as e:
-            print(f"WARNING: Failed to apply Windhawk settings: {e}")
-
-        if wh_path and os.path.exists(wh_path):
-            kill_process("windhawk.exe")
-            subprocess.Popen([wh_path], creationflags=_NO_WINDOW)
+        if wh_path:
+            _apply_windhawk_portable(mods, wh_path)
         else:
-            print("WARNING: Windhawk path not configured or not found for portable mode")
+            print("WARNING: Windhawk path not configured for portable mode")
 
 
 def _parse_rainmeter_ini(ini_path):
@@ -534,14 +712,30 @@ def autodetect_paths():
         paths["Windhawk-Path"] = found
 
     wh_type = "Portable"
-    for root_key in [winreg.HKEY_LOCAL_MACHINE]:
-        try:
-            key = winreg.OpenKey(root_key, r"SOFTWARE\Windhawk\Engine")
-            winreg.CloseKey(key)
-            wh_type = "Installed"
-            break
-        except (FileNotFoundError, PermissionError, OSError):
-            pass
+    if found:
+        wh_dir = os.path.dirname(found)
+        ini_check = os.path.join(wh_dir, "windhawk.ini")
+        if os.path.exists(ini_check):
+            try:
+                with open(ini_check) as f:
+                    for line in f:
+                        if line.strip() == "Portable=1":
+                            wh_type = "Portable"
+                            break
+                        if line.strip().startswith("Portable="):
+                            wh_type = "Installed"
+                            break
+            except OSError:
+                wh_type = "Portable"
+        else:
+            for root_key in [winreg.HKEY_LOCAL_MACHINE]:
+                try:
+                    key = winreg.OpenKey(root_key, r"SOFTWARE\Windhawk\Engine")
+                    winreg.CloseKey(key)
+                    wh_type = "Installed"
+                    break
+                except (FileNotFoundError, PermissionError, OSError):
+                    pass
     paths["Windhawk-Type"] = wh_type
 
     user_home = os.path.expanduser("~")
@@ -759,9 +953,10 @@ if __name__ == "__main__":
                         mods = [{"id": m["id"], "enabled": 0, "settings": {}} for m in installed_mods]
                         _apply_windhawk_hklm(mods)
                         stopped.append("Windhawk-mods")
-                    elif wh_path and os.path.exists(wh_path):
-                        kill_process("windhawk.exe", names)
-                        stopped.append("Windhawk")
+                    elif wh_path:
+                        disabled_mods = [{"id": m["id"], "enabled": 0, "settings": m.get("settings", {})} for m in installed_mods]
+                        _apply_windhawk_portable(disabled_mods, wh_path)
+                        stopped.append("Windhawk-mods")
             except (FileNotFoundError, json.JSONDecodeError, KeyError):
                 pass
 
