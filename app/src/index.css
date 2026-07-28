@@ -29,7 +29,7 @@
   --bg-card: rgba(0, 0, 0, 0.03);
   --bg-nav: #ffffff;
 
-  --accent: #1eb8a5;
+  --accent: #137d70;
   --accent-subtle: rgba(30, 184, 165, 0.08);
   --text-main: #1a1d23;
   --text-muted: #6b7280;
@@ -41,10 +41,57 @@
   color-scheme: light;
 }
 
-/* Global theme transition */
-*,
-*::before,
-*::after {
+/* ─── Theme transitions (targeted to avoid wave effect) ────── */
+
+/* Layout containers — background + border fade */
+body,
+.container,
+.topbar,
+.topbar-brand,
+.topbar-nav,
+.MainPg,
+.PageContainer,
+.AppPg,
+.onboarding-overlay,
+.onboarding-card {
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Text elements — color fade */
+h1, h2, h3, p, label, span, a,
+.welcome-title,
+.welcome-subtitle,
+.welcome-desc,
+.step-title,
+.tool-info h3,
+.tour-info h3,
+.tour-info p,
+.help-info h3,
+.help-info p,
+.final-desc,
+.loading-container,
+.empty-state,
+.empty-state h3,
+.empty-state p,
+.profile-row-name h3,
+.error-banner {
+  transition: color 0.3s ease;
+}
+
+/* Interactive elements — full theme property transition */
+button, input, textarea, select,
+.btn, .btn-submit, .btn-detect, .btn-refresh,
+.btn-start, .btn-edit, .btn-remove,
+.btn-header-export, .btn-header-import, .btn-stop-all,
+.btn-ob-primary, .btn-ob-secondary, .btn-ob-back,
+.theme-toggle-btn,
+.tool-badge,
+.checkbox-card,
+.tool-card, .help-card, .tour-item,
+.windhawk-mod-item,
+.profile-row,
+.footer-skip,
+.topbar-controls button {
   transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
 

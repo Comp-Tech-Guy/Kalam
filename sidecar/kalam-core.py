@@ -409,6 +409,8 @@ def scan_windhawk_registry(folder_path, user_settings=None):
 
     if wh_type == "Portable" and wh_path:
         mods = _scan_portable_mods_ini(wh_path)
+        if not mods:
+            mods = _enumerate_windhawk_registry()
     else:
         mods = _enumerate_windhawk_registry()
 
@@ -574,10 +576,10 @@ def apply_windhawk_profile(profile, user_settings, folder_path):
         _apply_windhawk_hklm(mods)
     else:
         wh_path = user_settings.get("Windhawk-Path", "")
-        if wh_path:
+        if wh_path and os.path.exists(wh_path):
             _apply_windhawk_portable(mods, wh_path)
         else:
-            print("WARNING: Windhawk path not configured for portable mode")
+            _apply_windhawk_hklm(mods)
 
 
 def _parse_rainmeter_ini(ini_path):
@@ -711,32 +713,33 @@ def autodetect_paths():
     if found:
         paths["Windhawk-Path"] = found
 
-    wh_type = "Portable"
     if found:
         wh_dir = os.path.dirname(found)
         ini_check = os.path.join(wh_dir, "windhawk.ini")
+
         if os.path.exists(ini_check):
             try:
                 with open(ini_check) as f:
                     for line in f:
-                        if line.strip() == "Portable=1":
-                            wh_type = "Portable"
+                        stripped = line.strip()
+                        if stripped == "Portable=1":
+                            paths["Windhawk-Type"] = "Portable"
                             break
-                        if line.strip().startswith("Portable="):
-                            wh_type = "Installed"
+                        if stripped == "Portable=0":
+                            paths["Windhawk-Type"] = "Installed"
                             break
             except OSError:
-                wh_type = "Portable"
-        else:
+                pass
+
+        if "Windhawk-Type" not in paths:
             for root_key in [winreg.HKEY_LOCAL_MACHINE]:
                 try:
                     key = winreg.OpenKey(root_key, r"SOFTWARE\Windhawk\Engine")
                     winreg.CloseKey(key)
-                    wh_type = "Installed"
+                    paths["Windhawk-Type"] = "Installed"
                     break
                 except (FileNotFoundError, PermissionError, OSError):
                     pass
-    paths["Windhawk-Type"] = wh_type
 
     user_home = os.path.expanduser("~")
     appdata = os.environ.get("APPDATA", "")
@@ -793,13 +796,9 @@ def autodetect_paths():
     if os.path.isdir(glaze_config):
         paths["GlazeWM-Config-Path"] = glaze_config
 
-    zebar_config = os.path.join(appdata, "zebar") if appdata else ""
-    if zebar_config and os.path.isdir(zebar_config):
+    zebar_config = os.path.join(user_home, ".glzr", "zebar")
+    if os.path.isdir(zebar_config):
         paths["Zebar-Config-Path"] = zebar_config
-    else:
-        zebar_config2 = os.path.join(user_home, ".zebar")
-        if os.path.isdir(zebar_config2):
-            paths["Zebar-Config-Path"] = zebar_config2
 
     return paths
 
@@ -953,9 +952,13 @@ if __name__ == "__main__":
                         mods = [{"id": m["id"], "enabled": 0, "settings": {}} for m in installed_mods]
                         _apply_windhawk_hklm(mods)
                         stopped.append("Windhawk-mods")
-                    elif wh_path:
+                    elif wh_path and os.path.exists(wh_path):
                         disabled_mods = [{"id": m["id"], "enabled": 0, "settings": m.get("settings", {})} for m in installed_mods]
                         _apply_windhawk_portable(disabled_mods, wh_path)
+                        stopped.append("Windhawk-mods")
+                    else:
+                        mods = [{"id": m["id"], "enabled": 0, "settings": {}} for m in installed_mods]
+                        _apply_windhawk_hklm(mods)
                         stopped.append("Windhawk-mods")
             except (FileNotFoundError, json.JSONDecodeError, KeyError):
                 pass
