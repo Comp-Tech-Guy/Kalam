@@ -10,6 +10,7 @@ const TOOL_ICONS = {
   "GlazeWM-Config": { label: "GlazeWM", icon: "🪟" },
   "Zebar-Config": { label: "Zebar", icon: "📌" },
   "Windhawk-Mods": { label: "Windhawk", icon: "🔧" },
+  "Komorebi-Config": { label: "Komorebi", icon: "🟪" },
 };
 
 function ProfileCard({ data, onRecieve }) {

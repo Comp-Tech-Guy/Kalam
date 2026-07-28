@@ -29,7 +29,8 @@ export async function initializeFS(){
         "GlazeWM-Config-Path": "",
         "Zebar-Config-Path": "",
         "Windhawk-Type": "Installed",
-        "Windhawk-Path": ""
+        "Windhawk-Path": "",
+        "Komorebi-Config-Path": ""
     };
 
     if(!fileExist){

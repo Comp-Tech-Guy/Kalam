@@ -1,14 +1,12 @@
 # -*- mode: python ; coding: utf-8 -*-
 
+
 a = Analysis(
     ['kalam-core.py'],
     pathex=[],
     binaries=[],
     datas=[],
-    hiddenimports=[
-        'pyvda', 'pyvda.build', 'pyvda.com_base', 'pyvda.com_defns',
-        'pyvda.const', 'pyvda.pyvda', 'pyvda.utils', 'pyvda.winstring',
-    ],
+    hiddenimports=[],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
@@ -24,18 +22,17 @@ exe = EXE(
     a.binaries,
     a.datas,
     [],
-    name='kalam-core-x86_64-pc-windows-msvc',
+    name='kalam-core',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
-    upx=False,
-    console=False,
+    upx=True,
+    upx_exclude=[],
+    runtime_tmpdir=None,
+    console=True,
     disable_windowed_traceback=False,
     argv_emulation=False,
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    version='version_info.txt',
-    uac_admin=False,
-    manifest='kalam-core.manifest',
 )

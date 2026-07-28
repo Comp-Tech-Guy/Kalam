@@ -46,7 +46,8 @@ function CreateProfile() {
     yasb: false,
     glazewm: false,
     zebar: false,
-    windhawk: false
+    windhawk: false,
+    komorebi: false
   });
 
   // Tool configs
@@ -55,6 +56,8 @@ function CreateProfile() {
   const [yasbCSS, setYasbCSS] = useState("");
   const [glazeWm, setGlazeWm] = useState("");
   const [zebar, setZebar] = useState("");
+  const [komorebiConfig, setKomorebiConfig] = useState("");
+  const [komorebiApps, setKomorebiApps] = useState("");
 
   // Windhawk
   const [installedMods, setInstalledMods] = useState([]);
@@ -84,12 +87,13 @@ function CreateProfile() {
         try {
           await sidecar("scan");
 
-          const [rmManifest, yasbManifest, glazeManifest, zebarManifest, whManifest] = await Promise.all([
+          const [rmManifest, yasbManifest, glazeManifest, zebarManifest, whManifest, komManifest] = await Promise.all([
             loadManifest("rainmeterManifest.json"),
             loadManifest("yasbManifest.json"),
             loadManifest("glazewmManifest.json"),
             loadManifest("zebarManifest.json"),
             loadManifest("windhawkManifest.json"),
+            loadManifest("komorebiManifest.json"),
           ]);
 
           if (rmManifest) {
@@ -104,6 +108,10 @@ function CreateProfile() {
 
           if (glazeManifest && glazeManifest.config) setGlazeWm(glazeManifest.config);
           if (zebarManifest && zebarManifest.config) setZebar(zebarManifest.config);
+          if (komManifest) {
+            if (komManifest.config) setKomorebiConfig(komManifest.config);
+            if (komManifest.applications) setKomorebiApps(komManifest.applications);
+          }
 
           if (whManifest && whManifest.installedMods) {
             setInstalledMods(whManifest.installedMods);
@@ -137,6 +145,8 @@ function CreateProfile() {
       setYasbCSS(p["Yasb-CSS"] || "");
       setGlazeWm(p["GlazeWM-Config"] || "");
       setZebar(p["Zebar-Config"] || "");
+      setKomorebiConfig(p["Komorebi-Config"] || "");
+      setKomorebiApps(p["Komorebi-Applications"] || "");
 
       const whMods = p["Windhawk-Mods"] || [];
       setWindhawkMods(whMods);
@@ -146,7 +156,8 @@ function CreateProfile() {
         yasb: !!(p["Yasb-Yaml"] || p["Yasb-CSS"]),
         glazewm: !!p["GlazeWM-Config"],
         zebar: !!p["Zebar-Config"],
-        windhawk: whMods.length > 0
+        windhawk: whMods.length > 0,
+        komorebi: !!(p["Komorebi-Config"] || p["Komorebi-Applications"])
       };
       setEnabledApps(enabled);
 
@@ -157,6 +168,7 @@ function CreateProfile() {
       if (enabled.glazewm) sections.glazewm = true;
       if (enabled.zebar) sections.zebar = true;
       if (enabled.windhawk) sections.windhawk = true;
+      if (enabled.komorebi) sections.komorebi = true;
       setExpandedSections(sections);
     } else {
       reset();
@@ -242,7 +254,9 @@ function CreateProfile() {
       "Yasb-CSS": enabledApps.yasb ? yasbCSS : "",
       "GlazeWM-Config": enabledApps.glazewm ? glazeWm : "",
       "Zebar-Config": enabledApps.zebar ? zebar : "",
-      "Windhawk-Mods": enabledApps.windhawk ? formattedWindhawkMods : []
+      "Windhawk-Mods": enabledApps.windhawk ? formattedWindhawkMods : [],
+      "Komorebi-Config": enabledApps.komorebi ? komorebiConfig : "",
+      "Komorebi-Applications": enabledApps.komorebi ? komorebiApps : ""
     };
 
     try {
@@ -268,10 +282,12 @@ function CreateProfile() {
     setRainLayout("");
     setGlazeWm("");
     setZebar("");
+    setKomorebiConfig("");
+    setKomorebiApps("");
     setName("");
     setWindhawkMods([]);
     setAvailableRainmeterLayouts([]);
-    setEnabledApps({ rainmeter: false, yasb: false, glazewm: false, zebar: false, windhawk: false });
+    setEnabledApps({ rainmeter: false, yasb: false, glazewm: false, zebar: false, windhawk: false, komorebi: false });
     setExpandedSections({});
     hasAutoPopulated.current = false;
   };
@@ -336,6 +352,7 @@ function CreateProfile() {
                 { key: "glazewm", label: "GlazeWM" },
                 { key: "zebar", label: "Zebar" },
                 { key: "windhawk", label: "Windhawk" },
+                { key: "komorebi", label: "Komorebi" },
               ].map(({ key, label }) => (
                 <label className="checkbox-card" key={key}>
                   <input
@@ -441,6 +458,34 @@ function CreateProfile() {
                   rows={5}
                   onChange={(e) => setZebar(e.target.value)}
                   placeholder="Zebar configuration..."
+                />
+              </div>
+            </AccordionSection>
+          )}
+
+          {enabledApps.komorebi && (
+            <AccordionSection
+              title="Komorebi"
+              icon="🟪"
+              expanded={!!expandedSections.komorebi}
+              onToggle={() => toggleSection("komorebi")}
+            >
+              <div className="form-group">
+                <label>komorebi.json</label>
+                <ResizableTextarea
+                  value={komorebiConfig}
+                  rows={5}
+                  onChange={(e) => setKomorebiConfig(e.target.value)}
+                  placeholder="Komorebi configuration..."
+                />
+              </div>
+              <div className="form-group">
+                <label>applications.json</label>
+                <ResizableTextarea
+                  value={komorebiApps}
+                  rows={5}
+                  onChange={(e) => setKomorebiApps(e.target.value)}
+                  placeholder="Application-specific configuration..."
                 />
               </div>
             </AccordionSection>

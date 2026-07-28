@@ -679,6 +679,42 @@ def scan_zebar_configs(folder_path, user_settings):
     return result
 
 
+def scan_komorebi_configs(folder_path, user_settings):
+    manifest_path = os.path.join(folder_path, "komorebiManifest.json")
+    result = {"config": "", "applications": ""}
+
+    komorebi_path = user_settings.get("Komorebi-Config-Path", "")
+    if komorebi_path and os.path.isdir(komorebi_path):
+        config_file = os.path.join(komorebi_path, "komorebi.json")
+        apps_file = os.path.join(komorebi_path, "applications.json")
+        for key, filepath in [("config", config_file), ("applications", apps_file)]:
+            if os.path.exists(filepath):
+                try:
+                    with open(filepath) as f:
+                        result[key] = f.read()
+                except OSError:
+                    pass
+
+    with open(manifest_path, 'w') as f:
+        json.dump(result, f, indent=2)
+    return result
+
+
+def komorebi_apply(config_json, apps_json, config_path, running_names=None):
+    if config_json:
+        config_file = os.path.join(config_path, "komorebi.json")
+        with open(config_file, 'w') as f:
+            f.write(config_json.strip())
+    if apps_json:
+        apps_file = os.path.join(config_path, "applications.json")
+        with open(apps_file, 'w') as f:
+            f.write(apps_json.strip())
+
+    kill_process("komorebi.exe", running_names)
+    time.sleep(0.5)
+    subprocess.Popen(["komorebi.exe"], creationflags=_NO_WINDOW)
+
+
 def _first_existing(paths_iter):
     for p in paths_iter:
         if p and os.path.exists(p):
@@ -800,6 +836,10 @@ def autodetect_paths():
     if os.path.isdir(zebar_config):
         paths["Zebar-Config-Path"] = zebar_config
 
+    komorebi_config = os.environ.get("KOMOREBI_CONFIG_HOME", "") or user_home
+    if os.path.isfile(os.path.join(komorebi_config, "komorebi.json")):
+        paths["Komorebi-Config-Path"] = komorebi_config
+
     return paths
 
 
@@ -824,6 +864,7 @@ def apply_profile(folder_path, profile, user_settings):
             ("RainmeterLayoutName", "Rainmeter.exe"),
             ("GlazeWM-Config", "glazewm.exe"),
             ("Zebar-Config", "zebar.exe"),
+            ("Komorebi-Config", "komorebi.exe"),
         ]:
             has_it = field in profile and profile[field]
             running = exe.lower() in running_names
@@ -890,6 +931,17 @@ def apply_profile(folder_path, profile, user_settings):
     elif "zebar.exe" in running_names:
         kill_process("zebar.exe", running_names)
 
+    komorebi_config = profile.get("Komorebi-Config", "")
+    komorebi_apps = profile.get("Komorebi-Applications", "")
+    if komorebi_config or komorebi_apps:
+        komorebi_config_path = user_settings.get("Komorebi-Config-Path", "")
+        if komorebi_config_path:
+            komorebi_apply(komorebi_config, komorebi_apps, komorebi_config_path, running_names)
+        else:
+            print("WARNING: Komorebi config path not configured in settings")
+    elif "komorebi.exe" in running_names:
+        kill_process("komorebi.exe", running_names)
+
     apply_windhawk_profile(profile, user_settings, folder_path)
 
     user_settings["activeProfile"] = profile["id"]
@@ -916,6 +968,7 @@ if __name__ == "__main__":
                 scan_yasb_configs(folder_path, scan_settings)
                 scan_glazewm_configs(folder_path, scan_settings)
                 scan_zebar_configs(folder_path, scan_settings)
+                scan_komorebi_configs(folder_path, scan_settings)
             sys.exit(0)
 
         if target_arg == "autodetect":
@@ -926,7 +979,7 @@ if __name__ == "__main__":
         if target_arg == "stop-all":
             stopped = []
             names = get_running_processes()
-            for exe in ["Rainmeter.exe", "yasb.exe", "glazewm.exe", "zebar.exe"]:
+            for exe in ["Rainmeter.exe", "yasb.exe", "glazewm.exe", "zebar.exe", "komorebi.exe"]:
                 if exe.lower() in names:
                     kill_process(exe, names)
                     stopped.append(exe)

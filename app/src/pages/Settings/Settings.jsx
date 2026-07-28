@@ -11,6 +11,7 @@ function Settings() {
     const [zebarPath, setZebarPath] = useState('');
     const [windhawkType, setWindhawkType] = useState('Installed');
     const [windhawkPath, setWindhawkPath] = useState('');
+    const [komorebiPath, setKomorebiPath] = useState('');
     const [detecting, setDetecting] = useState(false);
     const [saved, setSaved] = useState(false);
     const [loading, setLoading] = useState(true);
@@ -30,6 +31,7 @@ function Settings() {
                 setZebarPath(data["Zebar-Config-Path"] || "");
                 setWindhawkType(data["Windhawk-Type"] || "Installed");
                 setWindhawkPath(data["Windhawk-Path"] || "");
+                setKomorebiPath(data["Komorebi-Config-Path"] || "");
                 setTheme(data["theme"] || "dark");
             }
         } catch (e) {
@@ -56,6 +58,7 @@ function Settings() {
             if (found['Zebar-Config-Path']) setZebarPath(found['Zebar-Config-Path']);
             if (found['Windhawk-Path']) setWindhawkPath(found['Windhawk-Path']);
             if (found['Windhawk-Type']) setWindhawkType(found['Windhawk-Type']);
+            if (found['Komorebi-Config-Path']) setKomorebiPath(found['Komorebi-Config-Path']);
 
             if (Object.keys(found).length === 0) {
                 setError("No tool installations detected. Please set paths manually.");
@@ -76,7 +79,8 @@ function Settings() {
             "GlazeWM-Config-Path": glazePath,
             "Zebar-Config-Path": zebarPath,
             "Windhawk-Type": windhawkType,
-            "Windhawk-Path": windhawkPath
+            "Windhawk-Path": windhawkPath,
+            "Komorebi-Config-Path": komorebiPath
         }
         try {
             await editData("userSettings.json", data);
@@ -114,7 +118,7 @@ function Settings() {
                 <h1>Settings</h1>
                 <p>Global paths and application configurations.</p>
             </header>
-            
+
             <div className="settingCont">
                 {error && <div className="error-banner">{error}</div>}
 
@@ -140,58 +144,58 @@ function Settings() {
 
                 <div className="form-group">
                     <label>Rainmeter Path</label>
-                    <input 
-                        type="text" 
-                        value={rainPath} 
-                        onChange={(e) => setRainPath(e.target.value)} 
+                    <input
+                        type="text"
+                        value={rainPath}
+                        onChange={(e) => setRainPath(e.target.value)}
                         placeholder="C:\Program Files\Rainmeter\Rainmeter.exe"
                     />
                 </div>
 
                 <div className="form-group">
                     <label>YASB Exe Path</label>
-                    <input 
-                        type="text" 
-                        value={yasbExe} 
-                        onChange={(e) => setYasbExe(e.target.value)} 
+                    <input
+                        type="text"
+                        value={yasbExe}
+                        onChange={(e) => setYasbExe(e.target.value)}
                         placeholder="C:\Path\To\yasb.exe"
                     />
                 </div>
 
                 <div className="form-group">
                     <label>YASB Config Path</label>
-                    <input 
-                        type="text" 
-                        value={yasbPath} 
-                        onChange={(e) => setYasbPath(e.target.value)} 
+                    <input
+                        type="text"
+                        value={yasbPath}
+                        onChange={(e) => setYasbPath(e.target.value)}
                         placeholder="C:\Users\Name\.config\yasb"
                     />
                 </div>
 
                 <div className="form-group">
                     <label>GlazeWM Config Path</label>
-                    <input 
-                        type="text" 
-                        value={glazePath} 
-                        onChange={(e) => setGlazePath(e.target.value)} 
+                    <input
+                        type="text"
+                        value={glazePath}
+                        onChange={(e) => setGlazePath(e.target.value)}
                         placeholder="C:\Users\Name\.glzr\glazewm"
                     />
                 </div>
 
                 <div className="form-group">
                     <label>Zebar Config Path</label>
-                    <input 
-                        type="text" 
-                        value={zebarPath} 
-                        onChange={(e) => setZebarPath(e.target.value)} 
+                    <input
+                        type="text"
+                        value={zebarPath}
+                        onChange={(e) => setZebarPath(e.target.value)}
                         placeholder="C:\Users\Name\AppData\Roaming\zebar"
                     />
                 </div>
 
                 <div className="form-group">
                     <label>Windhawk Type</label>
-                    <select 
-                        value={windhawkType} 
+                    <select
+                        value={windhawkType}
                         onChange={(e) => setWindhawkType(e.target.value)}
                     >
                         <option value="Installed">Installed (Service)</option>
@@ -201,11 +205,21 @@ function Settings() {
 
                 <div className="form-group">
                     <label>Windhawk Path</label>
-                    <input 
-                        type="text" 
-                        value={windhawkPath} 
-                        onChange={(e) => setWindhawkPath(e.target.value)} 
+                    <input
+                        type="text"
+                        value={windhawkPath}
+                        onChange={(e) => setWindhawkPath(e.target.value)}
                         placeholder="C:\Path\To\windhawk.exe"
+                    />
+                </div>
+
+                <div className="form-group">
+                    <label>Komorebi Config Path</label>
+                    <input
+                        type="text"
+                        value={komorebiPath}
+                        onChange={(e) => setKomorebiPath(e.target.value)}
+                        placeholder="C:\Users\Name"
                     />
                 </div>
 
