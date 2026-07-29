@@ -155,8 +155,8 @@ def _scan_portable_mods(windhawk_path):
     app_data = "AppData"
     if os.path.exists(ini_path):
         try:
-            with open(ini_path) as f:
-                for line in f:
+            content = _read_text_auto_enc(ini_path)
+            for line in content.splitlines():
                     if line.startswith("AppDataPath="):
                         val = line.split("=", 1)[1].strip()
                         if os.path.isabs(val):
@@ -183,7 +183,10 @@ def _read_text_auto_enc(path):
         return raw.decode('utf-16-le').lstrip('\ufeff')
     if raw[:2] == b'\xfe\xff':
         return raw.decode('utf-16-be')
-    return raw.decode('utf-8-sig')
+    try:
+        return raw.decode('utf-8-sig')
+    except UnicodeDecodeError:
+        return raw.decode('utf-8-sig', errors='replace')
 
 
 def _resolve_portable_appdata(windhawk_dir):
@@ -557,7 +560,7 @@ def apply_windhawk_profile(profile, user_settings, folder_path):
     manifest_path = os.path.join(folder_path, "windhawkManifest.json")
     installed_ids = []
     try:
-        with open(manifest_path) as f:
+        with open(manifest_path, encoding="utf-8") as f:
             installed_ids = [m["id"] for m in json.load(f).get("installedMods", [])]
     except (FileNotFoundError, json.JSONDecodeError, KeyError):
         pass
@@ -633,11 +636,17 @@ def scan_yasb_configs(folder_path, user_settings):
         yaml_file = os.path.join(yasb_path, "config.yaml")
         css_file = os.path.join(yasb_path, "styles.css")
         if os.path.exists(yaml_file):
-            with open(yaml_file) as f:
-                result["yaml"] = f.read()
+            try:
+                with open(yaml_file, encoding="utf-8") as f:
+                    result["yaml"] = f.read()
+            except (OSError, UnicodeDecodeError):
+                pass
         if os.path.exists(css_file):
-            with open(css_file) as f:
-                result["css"] = f.read()
+            try:
+                with open(css_file, encoding="utf-8") as f:
+                    result["css"] = f.read()
+            except (OSError, UnicodeDecodeError):
+                pass
 
     with open(manifest_path, 'w') as f:
         json.dump(result, f, indent=2)
@@ -652,8 +661,11 @@ def scan_glazewm_configs(folder_path, user_settings):
     if glaze_path and os.path.isdir(glaze_path):
         config_file = os.path.join(glaze_path, "config.yaml")
         if os.path.exists(config_file):
-            with open(config_file) as f:
-                result["config"] = f.read()
+            try:
+                with open(config_file, encoding="utf-8") as f:
+                    result["config"] = f.read()
+            except (OSError, UnicodeDecodeError):
+                pass
 
     with open(manifest_path, 'w') as f:
         json.dump(result, f, indent=2)
@@ -669,9 +681,9 @@ def scan_zebar_configs(folder_path, user_settings):
         config_file = os.path.join(zebar_path, "settings.json")
         if os.path.exists(config_file):
             try:
-                with open(config_file) as f:
+                with open(config_file, encoding="utf-8") as f:
                     result["config"] = f.read()
-            except OSError:
+            except (OSError, UnicodeDecodeError):
                 pass
 
     with open(manifest_path, 'w') as f:
@@ -690,9 +702,9 @@ def scan_komorebi_configs(folder_path, user_settings):
         for key, filepath in [("config", config_file), ("applications", apps_file)]:
             if os.path.exists(filepath):
                 try:
-                    with open(filepath) as f:
+                    with open(filepath, encoding="utf-8") as f:
                         result[key] = f.read()
-                except OSError:
+                except (OSError, UnicodeDecodeError):
                     pass
 
     with open(manifest_path, 'w') as f:
@@ -755,16 +767,16 @@ def autodetect_paths():
 
         if os.path.exists(ini_check):
             try:
-                with open(ini_check) as f:
-                    for line in f:
-                        stripped = line.strip()
-                        if stripped == "Portable=1":
-                            paths["Windhawk-Type"] = "Portable"
-                            break
-                        if stripped == "Portable=0":
-                            paths["Windhawk-Type"] = "Installed"
-                            break
-            except OSError:
+                content = _read_text_auto_enc(ini_check)
+                for line in content.splitlines():
+                    stripped = line.strip()
+                    if stripped == "Portable=1":
+                        paths["Windhawk-Type"] = "Portable"
+                        break
+                    if stripped == "Portable=0":
+                        paths["Windhawk-Type"] = "Installed"
+                        break
+            except (OSError, UnicodeDecodeError):
                 pass
 
         if "Windhawk-Type" not in paths:
@@ -844,7 +856,7 @@ def autodetect_paths():
 
 
 def load_json(file_path):
-    with open(file_path, 'r') as f:
+    with open(file_path, 'r', encoding="utf-8") as f:
         return json.load(f)
 
 
@@ -958,7 +970,7 @@ if __name__ == "__main__":
             settings_path = os.path.join(folder_path, "userSettings.json")
             scan_settings = None
             try:
-                with open(settings_path) as f:
+                with open(settings_path, encoding="utf-8") as f:
                     scan_settings = json.load(f)
             except (FileNotFoundError, json.JSONDecodeError):
                 pass
@@ -988,7 +1000,7 @@ if __name__ == "__main__":
             wh_type = "Installed"
             wh_path = ""
             try:
-                with open(settings_path) as f:
+                with open(settings_path, encoding="utf-8") as f:
                     s = json.load(f)
                 wh_type = s.get("Windhawk-Type", "Installed")
                 wh_path = s.get("Windhawk-Path", "")
@@ -997,7 +1009,7 @@ if __name__ == "__main__":
 
             manifest_path = os.path.join(folder_path, "windhawkManifest.json")
             try:
-                with open(manifest_path) as f:
+                with open(manifest_path, encoding="utf-8") as f:
                     manifest = json.load(f)
                 installed_mods = manifest.get("installedMods", [])
                 if installed_mods:
