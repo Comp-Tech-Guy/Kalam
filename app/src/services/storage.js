@@ -39,7 +39,7 @@ export async function initializeFS(){
         });
     } else {
         const appDataPath = await appDataDir();
-        const settingsPath = await join(appDataPath, '', files[0]);
+        const settingsPath = await join(appDataPath, files[0]);
         const contents = await readTextFile(settingsPath);
         const existing = JSON.parse(contents);
         const merged = { ...defaultSettings, ...existing };
@@ -56,16 +56,16 @@ export async function initializeFS(){
 
 async function update(fileName, updatedData){
     const appDataPath = await appDataDir();
-    const filePath = await join(appDataPath, '', fileName);
+    const filePath = await join(appDataPath, fileName);
     await writeTextFile(filePath, JSON.stringify(updatedData, null, 2));
 }
 
 export async function getData(fileName, forceRefresh = false){
-    if (!forceRefresh && cache[fileName]) {
+    if (!forceRefresh && cache[fileName] !== undefined) {
         return cache[fileName];
     }
     const appDataPath = await appDataDir();
-    const filePath = await join(appDataPath, '', fileName);
+    const filePath = await join(appDataPath, fileName);
     const contents = await readTextFile(filePath);
     const data = JSON.parse(contents);
     cache[fileName] = data;
@@ -93,12 +93,12 @@ export async function removeData(fileName, target_id){
     if(fileName === "userProfiles.json"){
         const currentData = await getData(fileName, true);
         const updatedData = {
-            profiles: currentData.profiles.filter(p => p.id != target_id)
+            profiles: currentData.profiles.filter(p => p.id !== target_id)
         }
         await update(fileName, updatedData);
     }else{
         const currentData = await getData(fileName, true);
-        if(currentData.hasOwnProperty(target_id) && currentData[target_id] != ""){
+        if(Object.hasOwn(currentData, target_id) && currentData[target_id] !== ""){
             currentData[target_id] = "";
             await update(fileName, currentData);
         }
@@ -111,7 +111,7 @@ export async function editData(fileName, targetedData){
         const currentData = await getData(fileName, true);
         const updatedData  = {
             profiles: currentData.profiles.map((p) =>{
-                if(p.id == targetedData.id){
+                if(p.id === targetedData.id){
                     return targetedData;
                 }
                 return p;
@@ -130,7 +130,7 @@ export async function setOnboardingComplete(value = true) {
     const currentData = await getData('userSettings.json', true);
     const updated = { ...currentData, onboardingComplete: value };
     const appDataPath = await appDataDir();
-    const filePath = await join(appDataPath, '', 'userSettings.json');
+    const filePath = await join(appDataPath, 'userSettings.json');
     await writeTextFile(filePath, JSON.stringify(updated, null, 2));
     bustCache('userSettings.json');
 }

@@ -13,7 +13,7 @@ const TOOL_ICONS = {
   "Komorebi-Config": { label: "Komorebi", icon: "🟪" },
 };
 
-function ProfileCard({ data, onRecieve }) {
+function ProfileCard({ data, onReceive }) {
   const [started, setStarted] = useState("Run");
   const [error, setError] = useState("");
   const navigate = useNavigate();
@@ -40,7 +40,7 @@ function ProfileCard({ data, onRecieve }) {
   const onRemove = async (id) => {
     try {
       await removeData("userProfiles.json", id);
-      await onRecieve();
+      await onReceive();
     } catch (e) {
       alert(`Failed to remove profile: ${e.message}`);
     }

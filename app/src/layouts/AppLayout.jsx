@@ -16,8 +16,9 @@ function AppLayout() {
 
   useEffect(() => {
     async function init() {
-      await initializeFS();
-      const settings = await getData('userSettings.json', true);
+      try {
+        await initializeFS();
+        const settings = await getData('userSettings.json', true);
       
       // Apply theme
       const theme = settings?.theme || 'dark';
@@ -26,6 +27,10 @@ function AppLayout() {
       if (settings && settings.onboardingComplete === false) {
         setShowOnboarding(true);
       } else {
+        setShowOnboarding(false);
+      }
+      } catch (e) {
+        console.warn("App init failed:", e);
         setShowOnboarding(false);
       }
     }

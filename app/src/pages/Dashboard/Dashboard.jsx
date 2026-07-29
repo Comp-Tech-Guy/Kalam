@@ -11,16 +11,16 @@ function Dashboard() {
     const [stopping, setStopping] = useState(false);
     const [modalMode, setModalMode] = useState(null);
     
-    const dataRecieve = useCallback(async (forceRefresh) => {
+    const dataReceive = useCallback(async (forceRefresh) => {
         const json = await getData("userProfiles.json", forceRefresh);
         setData(json);
     }, []);
 
     useEffect(() => {
-        dataRecieve();
-    }, [dataRecieve]);
+        dataReceive();
+    }, [dataReceive]);
 
-    const refresh = () => dataRecieve(true);
+    const refresh = () => dataReceive(true);
 
     const hasProfiles = data && data.profiles && data.profiles.length > 0;
 
@@ -67,7 +67,7 @@ function Dashboard() {
                 {data ? (
                     hasProfiles ? (
                         data.profiles.map((profile) => (
-                            <ProfileCard key={profile.id} data={profile} onRecieve={refresh} />
+                            <ProfileCard key={profile.id} data={profile} onReceive={refresh} />
                         ))
                     ) : (
                         <div className="empty-state">

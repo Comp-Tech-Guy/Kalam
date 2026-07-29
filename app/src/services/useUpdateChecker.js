@@ -49,11 +49,18 @@ export function useUpdateChecker() {
     try {
       setStatus("downloading");
       setProgress(0);
+      let downloadedSoFar = 0;
+      let totalLength = 0;
       await update.download((event) => {
         if (event.event === "Started") {
           setProgress(0);
+          downloadedSoFar = 0;
+          totalLength = event.data.contentLength ?? 0;
         } else if (event.event === "Progress") {
-          setProgress(event.data.chunkLength / event.data.contentLength);
+          downloadedSoFar += event.data.chunkLength;
+          if (totalLength > 0) {
+            setProgress(Math.min(downloadedSoFar / totalLength, 1));
+          }
         } else if (event.event === "Finished") {
           setProgress(1);
         }

@@ -36,7 +36,8 @@ function ResizableTextarea({ value, onChange, rows, placeholder, className }) {
     };
   }, [onMouseMove, onMouseUp, stopDrag]);
 
-  const onHandleMouseDown = useCallback((e) => {
+    const onHandleMouseDown = useCallback((e) => {
+    if (e.button !== 0) return;
     dragging.current = true;
     startY.current = e.clientY;
     startH.current = wrapperRef.current?.offsetHeight || 160;
@@ -55,7 +56,7 @@ function ResizableTextarea({ value, onChange, rows, placeholder, className }) {
         placeholder={placeholder}
         className={className}
       />
-      <div className="resizable-textarea-handle" onMouseDown={onHandleMouseDown}>
+      <div className="resizable-textarea-handle" onMouseDown={onHandleMouseDown} role="separator" aria-label="Resize textarea" aria-orientation="vertical" tabIndex={0}>
         <svg width="10" height="6" viewBox="0 0 10 6" fill="none">
           <path d="M1 1L5 5L9 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
         </svg>

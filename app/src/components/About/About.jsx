@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { getVersion } from "@tauri-apps/api/app";
 import { open } from "@tauri-apps/plugin-shell";
 import { requestManualCheck } from "../../services/useUpdateChecker";
@@ -18,10 +18,20 @@ function AboutModal({ open: show, onClose }) {
 
     if (!show) return null;
 
+    const timeoutRef = useRef(null);
+
+    useEffect(() => {
+        return () => {
+            if (timeoutRef.current) clearTimeout(timeoutRef.current);
+        };
+    }, []);
+
     const handleCheck = () => {
         requestManualCheck();
         setCheckStatus("checking");
-        setTimeout(() => setCheckStatus("uptodate"), 3000);
+        timeoutRef.current = setTimeout(() => {
+            setCheckStatus(prev => prev === "checking" ? "uptodate" : prev);
+        }, 8000);
     };
 
     const handleBackdropClick = (e) => {

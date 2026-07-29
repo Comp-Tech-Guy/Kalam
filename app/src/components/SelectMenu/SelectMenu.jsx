@@ -51,6 +51,8 @@ function SelectMenu({ value, onChange, options, placeholder }) {
         type="button"
         className={`custom-select-trigger${open ? " custom-select-trigger--open" : ""}`}
         onClick={toggle}
+        aria-expanded={open}
+        aria-haspopup="listbox"
       >
         <span className={value ? "" : "custom-select-placeholder"}>
           {selected || placeholder || "Select..."}
