@@ -60,9 +60,6 @@
         },
         {
           "path": "$DOCUMENT/**"
-        },
-        {
-          "path": "$HOME/**"
         }
       ]
     }

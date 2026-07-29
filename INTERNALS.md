@@ -161,7 +161,7 @@ Full-screen modal overlay with backdrop blur for importing/exporting profiles.
 
 **Import flow:** Tauri `open` dialog → read JSON → auto-detect single vs `{ profiles: [...] }` wrapper → merge into `userProfiles.json`
 
-Requires `fs:allow-read-text-file` and broad fs scopes (`$DESKTOP/**`, `$DOWNLOAD/**`, `$DOCUMENT/**`, `$HOME/**`) in capabilities.
+Requires `fs:allow-read-text-file` and broad fs scopes (`$DESKTOP/**`, `$DOWNLOAD/**`, `$DOCUMENT/**`) in capabilities.
 
 ### UpdateBanner (`app/src/components/UpdateBanner/`)
 

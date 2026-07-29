@@ -22,15 +22,23 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-*.txt
-opencode.md
-plans.md
-
-
 # Python
 __pycache__/
 *.pyc
 sidecar/build/
+sidecar/dist/
+
+# Sidecar binaries (must be built locally or from CI)
+app/src-tauri/binaries/
 
 # Temp test files
 sidecar/test_*.py
+
+# OS files
+Thumbs.db
+
+# Project context/scratch (not checked in)
+opencode.md
+plans.md
+v1-plan.md
+codebase-map.md
