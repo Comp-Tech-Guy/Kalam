@@ -36,6 +36,7 @@ export default defineConfig(async () => ({
           if (id.includes('node_modules/react-dom')) return 'vendor';
           if (id.includes('node_modules/react') && !id.includes('react-dom')) return 'vendor';
           if (id.includes('node_modules/react-router-dom')) return 'router';
+          if (id.includes('node_modules/@tauri-apps')) return 'tauri';
         }
       }
     }

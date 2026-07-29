@@ -1911,6 +1911,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "kalam"
+version = "0.1.0"
+dependencies = [
+ "serde_json",
+ "tauri",
+ "tauri-build",
+ "tauri-plugin-dialog",
+ "tauri-plugin-fs",
+ "tauri-plugin-process",
+ "tauri-plugin-shell",
+ "tauri-plugin-single-instance",
+ "tauri-plugin-updater",
+]
+
+[[package]]
 name = "keyboard-types"
 version = "0.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3615,22 +3630,6 @@ checksum = "61c41af27dd6d1e27b1b16b489db798443478cef1f06a660c96db617ba5de3b1"
 
 [[package]]
 name = "tauri"
-version = "0.1.0"
-dependencies = [
- "serde",
- "serde_json",
- "tauri 2.11.5",
- "tauri-build",
- "tauri-plugin-dialog",
- "tauri-plugin-fs",
- "tauri-plugin-process",
- "tauri-plugin-shell",
- "tauri-plugin-single-instance",
- "tauri-plugin-updater",
-]
-
-[[package]]
-name = "tauri"
 version = "2.11.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "667b20e2726d572dea2de7370da16e188eb06008faf9a92fab7cdc46791190b5"
@@ -3769,7 +3768,7 @@ dependencies = [
  "rfd",
  "serde",
  "serde_json",
- "tauri 2.11.5",
+ "tauri",
  "tauri-plugin",
  "tauri-plugin-fs",
  "thiserror 2.0.19",
@@ -3792,7 +3791,7 @@ dependencies = [
  "serde",
  "serde_json",
  "serde_repr",
- "tauri 2.11.5",
+ "tauri",
  "tauri-plugin",
  "tauri-utils",
  "thiserror 2.0.19",
@@ -3806,7 +3805,7 @@ version = "2.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d55511a7bf6cd70c8767b02c97bf8134fa434daf3926cfc1be0a0f94132d165a"
 dependencies = [
- "tauri 2.11.5",
+ "tauri",
  "tauri-plugin",
 ]
 
@@ -3825,7 +3824,7 @@ dependencies = [
  "serde",
  "serde_json",
  "shared_child",
- "tauri 2.11.5",
+ "tauri",
  "tauri-plugin",
  "thiserror 2.0.19",
  "tokio",
@@ -3839,7 +3838,7 @@ checksum = "b3214becf9ef5783c0ae99a3bb25adf5353a7a16ebf53e74b909e29205735c6c"
 dependencies = [
  "serde",
  "serde_json",
- "tauri 2.11.5",
+ "tauri",
  "thiserror 2.0.19",
  "tokio",
  "tracing",
@@ -3869,7 +3868,7 @@ dependencies = [
  "serde",
  "serde_json",
  "tar",
- "tauri 2.11.5",
+ "tauri",
  "tauri-plugin",
  "tempfile",
  "thiserror 2.0.19",
