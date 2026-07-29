@@ -145,36 +145,6 @@ def _read_mod_subkey(mod_subkey, mod_id):
     return entry
 
 
-def _scan_portable_mods(windhawk_path):
-    mods = []
-    windhawk_dir = os.path.dirname(windhawk_path) if windhawk_path else ""
-    if not windhawk_dir or not os.path.isdir(windhawk_dir):
-        return mods
-
-    ini_path = os.path.join(windhawk_dir, "windhawk.ini")
-    app_data = "AppData"
-    if os.path.exists(ini_path):
-        try:
-            content = _read_text_auto_enc(ini_path)
-            for line in content.splitlines():
-                    if line.startswith("AppDataPath="):
-                        val = line.split("=", 1)[1].strip()
-                        if os.path.isabs(val):
-                            app_data = val
-                        else:
-                            app_data = os.path.normpath(os.path.join(windhawk_dir, val))
-                        break
-        except OSError:
-            pass
-
-    mods_dir = os.path.join(app_data, "Mods")
-    if os.path.isdir(mods_dir):
-        for mod_id in os.listdir(mods_dir):
-            mod_path = os.path.join(mods_dir, mod_id)
-            if os.path.isdir(mod_path):
-                mods.append({"id": mod_id, "name": mod_id, "enabled": 1})
-    return mods
-
 
 def _read_text_auto_enc(path):
     with open(path, "rb") as f:
@@ -252,9 +222,6 @@ def _scan_portable_mods_ini(windhawk_path):
 
 
 def _build_mod_ini_content(mod, existing_content=""):
-    if not existing_content:
-        return existing_content
-
     mod_id = mod.get("id", "")
     enabled = mod.get("enabled", 1)
     settings = mod.get("settings", {})
@@ -262,6 +229,18 @@ def _build_mod_ini_content(mod, existing_content=""):
 
     disabled_val = str(0 if enabled else 1)
     mod_overrides = {"Disabled": disabled_val, "SettingsChangeTime": change_time}
+
+    if not existing_content:
+        lines = ["[Mod]"]
+        for k, v in mod_overrides.items():
+            lines.append(f"{k}={v}")
+        if settings:
+            lines.append("")
+            lines.append("[Settings]")
+            for k, v in settings.items():
+                lines.append(f"{k}={v}")
+        lines.append("")
+        return "\r\n".join(lines)
 
     result = []
     current_section = None
@@ -308,25 +287,6 @@ def _get_current_portable_settings(windhawk_path):
     return current
 
 
-def _portable_settings_changed(mods, current):
-    for mod in mods:
-        mod_id = mod.get("id", "")
-        if mod_id not in current:
-            return True
-        cur = current[mod_id]
-        if cur.get("enabled", 0) != mod.get("enabled", 0):
-            return True
-        desired_settings = mod.get("settings", {})
-        if desired_settings:
-            if cur.get("settings", {}) != desired_settings:
-                return True
-    for cur_id in current:
-        cur_ids = {m.get("id", "") for m in mods}
-        if cur_id not in cur_ids:
-            return True
-    return False
-
-
 def _apply_windhawk_portable(mods, windhawk_path):
     windhawk_dir = os.path.dirname(windhawk_path) if windhawk_path else ""
     if not windhawk_dir:
@@ -334,7 +294,7 @@ def _apply_windhawk_portable(mods, windhawk_path):
         return
 
     current = _get_current_portable_settings(windhawk_path)
-    if not _portable_settings_changed(mods, current):
+    if not _windhawk_settings_changed(mods, current):
         return
 
     app_data = _resolve_portable_appdata(windhawk_dir)
@@ -344,7 +304,7 @@ def _apply_windhawk_portable(mods, windhawk_path):
         mod_id = mod.get("id", "")
         if not mod_id:
             continue
-        ini_path = os.path.join(mods_dir, f"{mod_id}.ini")
+        ini_path = os.path.join(mods_dir, f"{os.path.basename(mod_id)}.ini")
         existing_content = ""
         try:
             existing_content = _read_text_auto_enc(ini_path)
@@ -497,9 +457,8 @@ def _windhawk_settings_changed(mods, current_mods):
         if cur.get("enabled", 0) != mod.get("enabled", 0):
             return True
         desired_settings = mod.get("settings", {})
-        if desired_settings:
-            if cur.get("settings", {}) != desired_settings:
-                return True
+        if desired_settings is not None and cur.get("settings", {}) != desired_settings:
+            return True
 
     for cur_id in current_mods:
         if cur_id not in mod_ids:
