@@ -16,8 +16,6 @@ function AboutModal({ open: show, onClose }) {
         }
     }, [show]);
 
-    if (!show) return null;
-
     const timeoutRef = useRef(null);
 
     useEffect(() => {
@@ -25,6 +23,8 @@ function AboutModal({ open: show, onClose }) {
             if (timeoutRef.current) clearTimeout(timeoutRef.current);
         };
     }, []);
+
+    if (!show) return null;
 
     const handleCheck = () => {
         requestManualCheck();
