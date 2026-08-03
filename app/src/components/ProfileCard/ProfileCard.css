@@ -81,6 +81,12 @@
     margin-left: 8px;
 }
 
+.profile-row-notice {
+    color: var(--text-muted);
+    font-size: 0.78rem;
+    margin-left: 8px;
+}
+
 /* ─── Buttons ──────────────────────────────────────────────── */
 .btn {
     font-family: inherit;

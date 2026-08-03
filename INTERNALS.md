@@ -25,6 +25,7 @@ Technical reference for how Kalam works under the hood.
 ├───────────────────────┴───────────────────────────────────┤
 │                     Tool Configs                          │
 │   Rainmeter · YASB · GlazeWM · Zebar · Windhawk · Wall.   │
+│   Komorebi · Bloom                                        │
 └───────────────────────────────────────────────────────────┘
 ```
 
@@ -216,13 +217,15 @@ During each `scan` command, the sidecar writes JSON manifest files to `%APPDATA%
 | `glazewmManifest.json` | Full content of GlazeWM `config.yaml` | `scan_glazewm_configs()` |
 | `zebarManifest.json` | Full content of Zebar `settings.json` | `scan_zebar_configs()` |
 | `windhawkManifest.json` | List of installed mods with enabled/disabled state and per-mod settings (from registry or portable `.ini` files) | `scan_windhawk_registry()` |
+| `komorebiManifest.json` | Full content of `komorebi.json` + `applications.json` | `scan_komorebi_configs()` |
+| `bloomManifest.json` | Full content of Bloom `settings.json` | `scan_bloom_configs()` |
 
 ### Profile Application Flow
 
 `apply_profile()` orchestrates the full sequence:
 
 1. Fetch running processes once (cached as `running_names` set)
-2. Apply each tool in order: Rainmeter → Wallpaper → YASB → GlazeWM → Zebar → Windhawk
+2. Apply each tool in order: Rainmeter → Wallpaper → YASB → GlazeWM → Zebar → Komorebi → Bloom → Windhawk
 3. For each tool: check if config exists → write config → start/restart process
 4. If a tool is not in the profile but is running → kill it
 5. Set `activeProfile` in settings
@@ -239,12 +242,24 @@ During each `scan` command, the sidecar writes JSON manifest files to `%APPDATA%
 | YASB | `yasb_code_inject()` | Writes `config.yaml` + `styles.css`, starts exe if needed |
 | GlazeWM | `glaze_wm_apply()` | Writes `config.yaml`, kills with graceful `exit` command, restarts |
 | Zebar | `zebar_apply()` | Writes `settings.json`, kills and restarts |
-| Windhawk | `apply_windhawk_profile()` | Installed: writes `.reg` file, runs elevated via `ShellExecuteExU` with `runas`; Portable: kills and restarts |
+| Windhawk | `apply_windhawk_profile()` | Adaptive presence check via `_windhawk_presence()`. Installed: writes `.reg` file, runs elevated via `ShellExecuteExU` with `runas` (only when settings changed); Portable: kills and restarts. Skips entirely (no UAC) when Windhawk isn't detected or the profile doesn't select it |
+| Komorebi | `komorebi_apply()` | Writes `komorebi.json` + `applications.json`, kills and restarts |
+| Bloom | `bloom_apply()` | Writes `settings.json`, kills and restarts `bloom.exe` |
 | Wallpaper | `set_wallpaper_all_desktops()` | Uses `pyvda` to set wallpaper across virtual desktops |
 
 ### Windhawk Smart Restart
 
 When applying profiles with `Windhawk-Mods`, the sidecar compares desired settings against current registry via `_windhawk_settings_changed()`. If nothing changed — re-applying the same profile or switching between profiles with identical Windhawk configs — the registry write, elevation, and service restart are skipped entirely.
+
+### Adaptive Windhawk Presence
+
+`apply_windhawk_profile()` only runs when the profile actually selects Windhawk. `_windhawk_presence()` then decides what to do:
+
+- **Not detected** → skip with a `WARNING` on stdout, no UAC prompt (Windhawk absent, stale `Installed` settings, or invalid portable path — no silent HKLM fallback)
+- **Portable** (configured path exists) → write `.ini` files, restart, no admin needed
+- **Installed** (`HKLM\SOFTWARE\Windhawk\Engine` present or exe found) → write HKLM via `runas`; UAC fires only when `_windhawk_settings_changed()` reports a real change
+
+Windhawk is no longer auto-disabled when a profile omits it — if a profile doesn't select Windhawk, its mods are left untouched.
 
 Both `scan_windhawk_registry()` and `_get_current_windhawk_settings()` share `_enumerate_windhawk_registry()`, which reads from `HKLM` and `HKCU` under `SOFTWARE\Windhawk\Engine\Mods` and `SOFTWARE\Windhawk\Mods`, returning a deduplicated list.
 
@@ -263,6 +278,8 @@ Both `scan_windhawk_registry()` and `_get_current_windhawk_settings()` share `_e
 - **YASB:** `YASB_CONFIG_HOME` env → `~/.config/yasb/` → `~/.yasb/`
 - **GlazeWM:** `~/.glzr/glazewm/` → `~/.glzewm/`
 - **Zebar:** `%APPDATA%/zebar` → `~/.zebar/`
+- **Komorebi:** `KOMOREBI_CONFIG_HOME` → `~`
+- **Bloom:** config `%APPDATA%/com.sehaz.bloom` (if `settings.json` present), exe `shutil.which("bloom")` → `%LOCALAPPDATA%/bloom/bloom.exe` → `%LOCALAPPDATA%/Programs/bloom/bloom.exe`
 
 ### Sidecar Internal Refactors
 

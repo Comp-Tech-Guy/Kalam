@@ -75,6 +75,31 @@ const TOOLS = [
       </svg>
     ),
   },
+  {
+    name: "Komorebi",
+    icon: (
+      <span className="feature-card__icon">
+        <svg width="40" height="40" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+          <rect x="5" y="5" width="40" height="40" rx="6" fill="#b041ff"/>
+          <rect x="55" y="5" width="40" height="40" rx="6" fill="#b041ff" opacity="0.6"/>
+          <rect x="5" y="55" width="40" height="40" rx="6" fill="#b041ff" opacity="0.6"/>
+          <rect x="55" y="55" width="40" height="40" rx="6" fill="#b041ff"/>
+        </svg>
+      </span>
+    ),
+  },
+  {
+    name: "Bloom",
+    icon: (
+      <span className="feature-card__icon">
+        <svg width="40" height="40" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="50" cy="50" r="30" fill="#1eb8a5"/>
+          <circle cx="50" cy="50" r="16" fill="#0d0f12"/>
+          <rect x="36" y="20" width="28" height="12" rx="6" fill="#1eb8a5"/>
+        </svg>
+      </span>
+    ),
+  },
 ];
 
 const TOUR_ITEMS = [

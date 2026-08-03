@@ -12,6 +12,8 @@ function Settings() {
     const [windhawkType, setWindhawkType] = useState('Installed');
     const [windhawkPath, setWindhawkPath] = useState('');
     const [komorebiPath, setKomorebiPath] = useState('');
+    const [bloomConfigPath, setBloomConfigPath] = useState('');
+    const [bloomExePath, setBloomExePath] = useState('');
     const [detecting, setDetecting] = useState(false);
     const [saved, setSaved] = useState(false);
     const [loading, setLoading] = useState(true);
@@ -32,6 +34,8 @@ function Settings() {
                 setWindhawkType(data["Windhawk-Type"] || "Installed");
                 setWindhawkPath(data["Windhawk-Path"] || "");
                 setKomorebiPath(data["Komorebi-Config-Path"] || "");
+                setBloomConfigPath(data["Bloom-Config-Path"] || "");
+                setBloomExePath(data["Bloom-Exe-Path"] || "");
                 setTheme(data["theme"] || "dark");
             }
         } catch (e) {
@@ -59,6 +63,8 @@ function Settings() {
             if (found['Windhawk-Path']) setWindhawkPath(found['Windhawk-Path']);
             if (found['Windhawk-Type']) setWindhawkType(found['Windhawk-Type']);
             if (found['Komorebi-Config-Path']) setKomorebiPath(found['Komorebi-Config-Path']);
+            if (found['Bloom-Config-Path']) setBloomConfigPath(found['Bloom-Config-Path']);
+            if (found['Bloom-Exe-Path']) setBloomExePath(found['Bloom-Exe-Path']);
 
             if (Object.keys(found).length === 0) {
                 setError("No tool installations detected. Please set paths manually.");
@@ -80,7 +86,9 @@ function Settings() {
             "Zebar-Config-Path": zebarPath,
             "Windhawk-Type": windhawkType,
             "Windhawk-Path": windhawkPath,
-            "Komorebi-Config-Path": komorebiPath
+            "Komorebi-Config-Path": komorebiPath,
+            "Bloom-Config-Path": bloomConfigPath,
+            "Bloom-Exe-Path": bloomExePath
         }
         try {
             await editData("userSettings.json", data);
@@ -220,6 +228,26 @@ function Settings() {
                         value={komorebiPath}
                         onChange={(e) => setKomorebiPath(e.target.value)}
                         placeholder="C:\Users\Name"
+                    />
+                </div>
+
+                <div className="form-group">
+                    <label>Bloom Config Path</label>
+                    <input
+                        type="text"
+                        value={bloomConfigPath}
+                        onChange={(e) => setBloomConfigPath(e.target.value)}
+                        placeholder="C:\Users\Name\AppData\Roaming\com.sehaz.bloom"
+                    />
+                </div>
+
+                <div className="form-group">
+                    <label>Bloom Exe Path</label>
+                    <input
+                        type="text"
+                        value={bloomExePath}
+                        onChange={(e) => setBloomExePath(e.target.value)}
+                        placeholder="C:\Users\Name\AppData\Local\bloom\bloom.exe"
                     />
                 </div>
 

@@ -512,36 +512,47 @@ def _apply_windhawk_hklm(mods):
                 pass
 
 
-def apply_windhawk_profile(profile, user_settings, folder_path):
-    profile_mods = profile.get("Windhawk-Mods", [])
-    profile_ids = {m["id"] for m in profile_mods}
+def _windhawk_presence(user_settings):
+    """Return "Portable", "Installed", or None based on what is actually present."""
+    wh_type = user_settings.get("Windhawk-Type", "Installed")
+    wh_path = user_settings.get("Windhawk-Path", "")
 
-    manifest_path = os.path.join(folder_path, "windhawkManifest.json")
-    installed_ids = []
+    if wh_type == "Portable":
+        if wh_path and os.path.exists(wh_path):
+            return "Portable"
+        return None
+
     try:
-        with open(manifest_path, encoding="utf-8") as f:
-            installed_ids = [m["id"] for m in json.load(f).get("installedMods", [])]
-    except (FileNotFoundError, json.JSONDecodeError, KeyError):
+        winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, r"SOFTWARE\Windhawk\Engine")
+        return "Installed"
+    except (FileNotFoundError, PermissionError, OSError):
         pass
 
-    mods = list(profile_mods)
-    for iid in installed_ids:
-        if iid not in profile_ids:
-            mods.append({"id": iid, "enabled": 0, "settings": {}})
+    exe_checks = [wh_path] if wh_path else []
+    exe_checks.append(shutil.which("windhawk.exe"))
+    for pf in _program_files_dirs():
+        exe_checks.append(os.path.join(pf, "Windhawk", "Windhawk.exe"))
+    exe_checks.append(os.path.join(os.environ.get("LOCALAPPDATA", ""), "Windhawk", "windhawk.exe"))
+    if _first_existing(exe_checks):
+        return "Installed"
+    return None
 
-    if not mods:
+
+def apply_windhawk_profile(profile, user_settings, folder_path):
+    profile_mods = profile.get("Windhawk-Mods", [])
+    if not profile_mods:
         return
 
-    wh_type = user_settings.get("Windhawk-Type", "Installed")
+    presence = _windhawk_presence(user_settings)
+    if presence is None:
+        print("WARNING: Windhawk not detected on this system, skipping")
+        return
 
-    if wh_type == "Installed":
-        _apply_windhawk_hklm(mods)
-    else:
+    if presence == "Portable":
         wh_path = user_settings.get("Windhawk-Path", "")
-        if wh_path and os.path.exists(wh_path):
-            _apply_windhawk_portable(mods, wh_path)
-        else:
-            _apply_windhawk_hklm(mods)
+        _apply_windhawk_portable(profile_mods, wh_path)
+    else:
+        _apply_windhawk_hklm(profile_mods)
 
 
 def _parse_rainmeter_ini(ini_path):
@@ -671,6 +682,25 @@ def scan_komorebi_configs(folder_path, user_settings):
     return result
 
 
+def scan_bloom_configs(folder_path, user_settings):
+    manifest_path = os.path.join(folder_path, "bloomManifest.json")
+    result = {"config": ""}
+
+    bloom_path = user_settings.get("Bloom-Config-Path", "")
+    if bloom_path and os.path.isdir(bloom_path):
+        config_file = os.path.join(bloom_path, "settings.json")
+        if os.path.exists(config_file):
+            try:
+                with open(config_file, encoding="utf-8") as f:
+                    result["config"] = f.read()
+            except (OSError, UnicodeDecodeError):
+                pass
+
+    with open(manifest_path, 'w') as f:
+        json.dump(result, f, indent=2)
+    return result
+
+
 def komorebi_apply(config_json, apps_json, config_path, running_names=None):
     if config_json:
         config_file = os.path.join(config_path, "komorebi.json")
@@ -684,6 +714,17 @@ def komorebi_apply(config_json, apps_json, config_path, running_names=None):
     kill_process("komorebi.exe", running_names)
     time.sleep(0.5)
     subprocess.Popen(["komorebi.exe"], creationflags=_NO_WINDOW)
+
+
+def bloom_apply(config_json, config_path, exe_path="", running_names=None):
+    config_file = os.path.join(config_path, "settings.json")
+    formatted = json.loads(config_json)
+    with open(config_file, 'w') as f:
+        json.dump(formatted, f, indent=2)
+
+    bloom_exe = exe_path or "bloom.exe"
+    kill_process("bloom.exe", running_names)
+    subprocess.Popen([bloom_exe], creationflags=_NO_WINDOW)
 
 
 def _first_existing(paths_iter):
@@ -811,6 +852,19 @@ def autodetect_paths():
     if os.path.isfile(os.path.join(komorebi_config, "komorebi.json")):
         paths["Komorebi-Config-Path"] = komorebi_config
 
+    bloom_exe = shutil.which("bloom.exe")
+    if not bloom_exe:
+        bloom_exe = _first_existing([
+            os.path.join(os.environ.get("LOCALAPPDATA", ""), "bloom", "bloom.exe"),
+            os.path.join(os.environ.get("LOCALAPPDATA", ""), "Programs", "bloom", "bloom.exe"),
+        ])
+    if bloom_exe:
+        paths["Bloom-Exe-Path"] = bloom_exe
+
+    bloom_config = os.path.join(appdata, "com.sehaz.bloom")
+    if os.path.isdir(bloom_config):
+        paths["Bloom-Config-Path"] = bloom_config
+
     return paths
 
 
@@ -836,6 +890,7 @@ def apply_profile(folder_path, profile, user_settings):
             ("GlazeWM-Config", "glazewm.exe"),
             ("Zebar-Config", "zebar.exe"),
             ("Komorebi-Config", "komorebi.exe"),
+            ("Bloom-Config", "bloom.exe"),
         ]:
             has_it = field in profile and profile[field]
             running = exe.lower() in running_names
@@ -913,6 +968,17 @@ def apply_profile(folder_path, profile, user_settings):
     elif "komorebi.exe" in running_names:
         kill_process("komorebi.exe", running_names)
 
+    bloom_config = profile.get("Bloom-Config", "")
+    if bloom_config:
+        bloom_config_path = user_settings.get("Bloom-Config-Path", "")
+        bloom_exe = user_settings.get("Bloom-Exe-Path", "")
+        if bloom_config_path:
+            bloom_apply(bloom_config, bloom_config_path, bloom_exe, running_names)
+        else:
+            print("WARNING: Bloom config path not configured in settings")
+    elif "bloom.exe" in running_names:
+        kill_process("bloom.exe", running_names)
+
     apply_windhawk_profile(profile, user_settings, folder_path)
 
     user_settings["activeProfile"] = profile["id"]
@@ -940,6 +1006,7 @@ if __name__ == "__main__":
                 scan_glazewm_configs(folder_path, scan_settings)
                 scan_zebar_configs(folder_path, scan_settings)
                 scan_komorebi_configs(folder_path, scan_settings)
+                scan_bloom_configs(folder_path, scan_settings)
             sys.exit(0)
 
         if target_arg == "autodetect":
@@ -950,7 +1017,7 @@ if __name__ == "__main__":
         if target_arg == "stop-all":
             stopped = []
             names = get_running_processes()
-            for exe in ["Rainmeter.exe", "yasb.exe", "glazewm.exe", "zebar.exe", "komorebi.exe"]:
+            for exe in ["Rainmeter.exe", "yasb.exe", "glazewm.exe", "zebar.exe", "komorebi.exe", "bloom.exe"]:
                 if exe.lower() in names:
                     kill_process(exe, names)
                     stopped.append(exe)

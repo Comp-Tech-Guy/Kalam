@@ -47,7 +47,8 @@ function CreateProfile() {
     glazewm: false,
     zebar: false,
     windhawk: false,
-    komorebi: false
+    komorebi: false,
+    bloom: false
   });
 
   // Tool configs
@@ -58,6 +59,7 @@ function CreateProfile() {
   const [zebar, setZebar] = useState("");
   const [komorebiConfig, setKomorebiConfig] = useState("");
   const [komorebiApps, setKomorebiApps] = useState("");
+  const [bloomConfig, setBloomConfig] = useState("");
 
   // Windhawk
   const [installedMods, setInstalledMods] = useState([]);
@@ -87,13 +89,14 @@ function CreateProfile() {
         try {
           await sidecar("scan");
 
-          const [rmManifest, yasbManifest, glazeManifest, zebarManifest, whManifest, komManifest] = await Promise.all([
+          const [rmManifest, yasbManifest, glazeManifest, zebarManifest, whManifest, komManifest, bloomManifest] = await Promise.all([
             loadManifest("rainmeterManifest.json"),
             loadManifest("yasbManifest.json"),
             loadManifest("glazewmManifest.json"),
             loadManifest("zebarManifest.json"),
             loadManifest("windhawkManifest.json"),
             loadManifest("komorebiManifest.json"),
+            loadManifest("bloomManifest.json"),
           ]);
 
           if (rmManifest) {
@@ -112,6 +115,8 @@ function CreateProfile() {
             if (komManifest.config) setKomorebiConfig(komManifest.config);
             if (komManifest.applications) setKomorebiApps(komManifest.applications);
           }
+
+          if (bloomManifest && bloomManifest.config) setBloomConfig(bloomManifest.config);
 
           if (whManifest && whManifest.installedMods) {
             setInstalledMods(whManifest.installedMods);
@@ -147,6 +152,7 @@ function CreateProfile() {
       setZebar(p["Zebar-Config"] || "");
       setKomorebiConfig(p["Komorebi-Config"] || "");
       setKomorebiApps(p["Komorebi-Applications"] || "");
+      setBloomConfig(p["Bloom-Config"] || "");
 
       const whMods = p["Windhawk-Mods"] || [];
       setWindhawkMods(whMods);
@@ -157,7 +163,8 @@ function CreateProfile() {
         glazewm: !!p["GlazeWM-Config"],
         zebar: !!p["Zebar-Config"],
         windhawk: whMods.length > 0,
-        komorebi: !!(p["Komorebi-Config"] || p["Komorebi-Applications"])
+        komorebi: !!(p["Komorebi-Config"] || p["Komorebi-Applications"]),
+        bloom: !!p["Bloom-Config"]
       };
       setEnabledApps(enabled);
 
@@ -169,6 +176,7 @@ function CreateProfile() {
       if (enabled.zebar) sections.zebar = true;
       if (enabled.windhawk) sections.windhawk = true;
       if (enabled.komorebi) sections.komorebi = true;
+      if (enabled.bloom) sections.bloom = true;
       setExpandedSections(sections);
     } else {
       reset();
@@ -256,7 +264,8 @@ function CreateProfile() {
       "Zebar-Config": enabledApps.zebar ? zebar : "",
       "Windhawk-Mods": enabledApps.windhawk ? formattedWindhawkMods : [],
       "Komorebi-Config": enabledApps.komorebi ? komorebiConfig : "",
-      "Komorebi-Applications": enabledApps.komorebi ? komorebiApps : ""
+      "Komorebi-Applications": enabledApps.komorebi ? komorebiApps : "",
+      "Bloom-Config": enabledApps.bloom ? bloomConfig : ""
     };
 
     try {
@@ -284,10 +293,11 @@ function CreateProfile() {
     setZebar("");
     setKomorebiConfig("");
     setKomorebiApps("");
+    setBloomConfig("");
     setName("");
     setWindhawkMods([]);
     setAvailableRainmeterLayouts([]);
-    setEnabledApps({ rainmeter: false, yasb: false, glazewm: false, zebar: false, windhawk: false, komorebi: false });
+    setEnabledApps({ rainmeter: false, yasb: false, glazewm: false, zebar: false, windhawk: false, komorebi: false, bloom: false });
     setExpandedSections({});
     hasAutoPopulated.current = false;
   };
@@ -353,6 +363,7 @@ function CreateProfile() {
                 { key: "zebar", label: "Zebar" },
                 { key: "windhawk", label: "Windhawk" },
                 { key: "komorebi", label: "Komorebi" },
+                { key: "bloom", label: "Bloom" },
               ].map(({ key, label }) => (
                 <label className="checkbox-card" key={key}>
                   <input
@@ -486,6 +497,25 @@ function CreateProfile() {
                   rows={5}
                   onChange={(e) => setKomorebiApps(e.target.value)}
                   placeholder="Application-specific configuration..."
+                />
+              </div>
+            </AccordionSection>
+          )}
+
+          {enabledApps.bloom && (
+            <AccordionSection
+              title="Bloom"
+              icon="🌺"
+              expanded={!!expandedSections.bloom}
+              onToggle={() => toggleSection("bloom")}
+            >
+              <div className="form-group">
+                <label>settings.json</label>
+                <ResizableTextarea
+                  value={bloomConfig}
+                  rows={5}
+                  onChange={(e) => setBloomConfig(e.target.value)}
+                  placeholder="Bloom configuration..."
                 />
               </div>
             </AccordionSection>

@@ -11,11 +11,13 @@ const TOOL_ICONS = {
   "Zebar-Config": { label: "Zebar", icon: "📌" },
   "Windhawk-Mods": { label: "Windhawk", icon: "🔧" },
   "Komorebi-Config": { label: "Komorebi", icon: "🟪" },
+  "Bloom-Config": { label: "Bloom", icon: "🌺" },
 };
 
 function ProfileCard({ data, onReceive }) {
   const [started, setStarted] = useState("Run");
   const [error, setError] = useState("");
+  const [notice, setNotice] = useState("");
   const navigate = useNavigate();
 
   const activeTools = Object.entries(TOOL_ICONS).filter(([key]) => {
@@ -27,8 +29,14 @@ function ProfileCard({ data, onReceive }) {
   const onStart = async (id) => {
     setStarted("Running...");
     setError("");
+    setNotice("");
     try {
-      await sidecar(id);
+      const output = await sidecar(id);
+      const warnings = output
+        .split("\n")
+        .map((line) => line.trim())
+        .filter((line) => line.startsWith("WARNING:"));
+      if (warnings.length > 0) setNotice(warnings.join(" "));
       setStarted("Done!");
       setTimeout(() => setStarted("Run"), 2000);
     } catch (e) {
@@ -66,6 +74,7 @@ function ProfileCard({ data, onReceive }) {
       </div>
 
       {error && <span className="profile-row-error">{error}</span>}
+      {!error && notice && <span className="profile-row-notice">{notice}</span>}
 
       <div className="profile-row-actions">
         <button className="btn btn-start" onClick={() => onStart(data.id)}>

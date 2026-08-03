@@ -30,7 +30,9 @@ export async function initializeFS(){
         "Zebar-Config-Path": "",
         "Windhawk-Type": "Installed",
         "Windhawk-Path": "",
-        "Komorebi-Config-Path": ""
+        "Komorebi-Config-Path": "",
+        "Bloom-Config-Path": "",
+        "Bloom-Exe-Path": ""
     };
 
     if(!fileExist){

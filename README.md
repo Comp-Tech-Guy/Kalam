@@ -30,7 +30,7 @@ Think of it like switching between different desktop environments in Linux. Kala
 ---
 
 ## ToDo List
-- [ ] Additional tool supports: MyDockFinder, Wallpaper Engine (I don't have MDF and WE from steam so if anyone can gift me please do so from USA), Komorebi and Bloom.
+- [ ] Additional tool supports: MyDockFinder, Wallpaper Engine (I don't have MDF and WE from steam so if anyone can gift me please do so from USA).
 - [ ] Changing some design elements in the app
 - [ ] Updating docs website for clear and understandable for users to go through
 - [ ] Full support to windhawk portable version
@@ -51,6 +51,8 @@ Think of it like switching between different desktop environments in Linux. Kala
 | **Zebar** | Status bar settings |
 | **Wallpaper** | Desktop background (across virtual desktops) |
 | **Windhawk** | Mod enable/disable + per-mod settings via registry |
+| **Komorebi** | Tiling window manager config |
+| **Bloom** | Dynamic Island notch + dock settings |
 
 - **One-click profile switching** — apply a full desktop layout instantly
 - **Auto-detect paths** — finds installed tools automatically
@@ -83,6 +85,8 @@ Profiles are stored in `%APPDATA%/Kalam/` as JSON files.
 | GlazeWM | `~/.glzr/glazewm/` or `~/.glazewm/` | `config.yaml` |
 | Zebar | `%APPDATA%/zebar` or `~/.zebar/` | `settings.json` |
 | Windhawk | Registry (Installed) or portable path | Mod enabled state + settings |
+| Komorebi | `KOMOREBI_CONFIG_HOME` or home | `komorebi.json` + `applications.json` |
+| Bloom | `%APPDATA%/com.sehaz.bloom` | `settings.json` (notch + dock config) |
 | Wallpaper | Any image path | Desktop wallpaper across all virtual desktops |
 
 ## AutoHotKey Integration
