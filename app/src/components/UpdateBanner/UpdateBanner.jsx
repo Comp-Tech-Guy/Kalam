@@ -17,7 +17,7 @@ function UpdateBanner() {
   const [removed, setRemoved] = useState(false);
 
   useEffect(() => {
-    if (status === "available" || status === "downloading" || status === "downloaded") {
+    if (status === "checking" || status === "available" || status === "downloading" || status === "downloaded") {
       setRemoved(false);
       setExiting(false);
     }
@@ -34,7 +34,7 @@ function UpdateBanner() {
     }
   }, [exiting, dismiss]);
 
-  if (dismissed || removed || status === "idle" || status === "uptodate" || status === "checking" || status === "error") {
+  if (dismissed || removed || status === "idle" || status === "uptodate" || status === "error") {
     return null;
   }
 
@@ -45,11 +45,25 @@ function UpdateBanner() {
         style={{ position: "relative" }}
         onTransitionEnd={handleTransitionEnd}
       >
-        <button className="update-banner-close" onClick={handleDismiss}>
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
-          </svg>
-        </button>
+        {status !== "checking" && (
+          <button className="update-banner-close" onClick={handleDismiss}>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        )}
+
+        {status === "checking" && (
+          <div className="update-banner-content">
+            <svg className="update-banner-spin" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+            </svg>
+            <div className="update-banner-text">
+              <strong>Checking for updates...</strong>
+              <span>Contacting the update server.</span>
+            </div>
+          </div>
+        )}
 
         {status === "available" && (
           <div className="update-banner-content">

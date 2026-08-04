@@ -63,6 +63,15 @@
   color: var(--accent);
 }
 
+.update-banner-spin {
+  animation: updateBannerSpin 1s linear infinite;
+}
+
+@keyframes updateBannerSpin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
 .update-banner-text {
   flex: 1;
   display: flex;

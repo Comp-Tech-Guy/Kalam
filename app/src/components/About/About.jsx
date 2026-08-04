@@ -1,9 +1,11 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { getVersion } from "@tauri-apps/api/app";
 import { open } from "@tauri-apps/plugin-shell";
-import { requestManualCheck } from "../../services/useUpdateChecker";
+import { check } from "@tauri-apps/plugin-updater";
 import kalamIcon from "../../assets/kalam-icon.png";
 import "./About.css";
+
+const CHECK_TIMEOUT_MS = 5_000;
 
 function AboutModal({ open: show, onClose }) {
     const [version, setVersion] = useState("");
@@ -16,22 +18,17 @@ function AboutModal({ open: show, onClose }) {
         }
     }, [show]);
 
-    const timeoutRef = useRef(null);
-
-    useEffect(() => {
-        return () => {
-            if (timeoutRef.current) clearTimeout(timeoutRef.current);
-        };
-    }, []);
-
     if (!show) return null;
 
-    const handleCheck = () => {
-        requestManualCheck();
+    const handleCheck = async () => {
         setCheckStatus("checking");
-        timeoutRef.current = setTimeout(() => {
-            setCheckStatus(prev => prev === "checking" ? "uptodate" : prev);
-        }, 8000);
+        try {
+            const result = await check({ timeout: CHECK_TIMEOUT_MS });
+            setCheckStatus(result ? "available" : "uptodate");
+        } catch (e) {
+            console.error("Update check failed:", e);
+            setCheckStatus("error");
+        }
     };
 
     const handleBackdropClick = (e) => {
@@ -62,6 +59,8 @@ function AboutModal({ open: show, onClose }) {
                 >
                     {checkStatus === "checking" && "Checking..."}
                     {checkStatus === "uptodate" && "Up to Date"}
+                    {checkStatus === "available" && "Update Available"}
+                    {checkStatus === "error" && "Check Failed"}
                     {!checkStatus && (
                         <>
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

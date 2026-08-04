@@ -1,12 +1,10 @@
 import { useState, useEffect, useCallback } from "react";
 import { check } from "@tauri-apps/plugin-updater";
 import { relaunch } from "@tauri-apps/plugin-process";
+import { getLastUpdateCheck, recordUpdateCheck } from "./storage";
 
-let manualTrigger = null;
-
-export function requestManualCheck() {
-  if (manualTrigger) manualTrigger();
-}
+const CHECK_TIMEOUT_MS = 5_000;
+const CHECK_INTERVAL_MS = 24 * 60 * 60 * 1000;
 
 export function useUpdateChecker() {
   const [update, setUpdate] = useState(null);
@@ -15,33 +13,34 @@ export function useUpdateChecker() {
   const [dismissed, setDismissed] = useState(false);
 
   const checkForUpdates = useCallback(async () => {
+    const lastCheck = await getLastUpdateCheck();
+    if (lastCheck && Date.now() - lastCheck < CHECK_INTERVAL_MS) {
+      setStatus("uptodate");
+      return "uptodate";
+    }
     try {
       setStatus("checking");
-      const result = await check();
+      const result = await check({ timeout: CHECK_TIMEOUT_MS });
       if (result) {
         setUpdate(result);
         setStatus("available");
         setDismissed(false);
-      } else {
-        setUpdate(null);
-        setStatus("uptodate");
+        await recordUpdateCheck();
+        return "available";
       }
+      setUpdate(null);
+      setStatus("uptodate");
+      await recordUpdateCheck();
+      return "uptodate";
     } catch (e) {
       console.error("Update check failed:", e);
       setStatus("error");
+      return "error";
     }
   }, []);
 
   useEffect(() => {
     checkForUpdates();
-  }, [checkForUpdates]);
-
-  useEffect(() => {
-    manualTrigger = () => {
-      setDismissed(false);
-      checkForUpdates();
-    };
-    return () => { manualTrigger = null; };
   }, [checkForUpdates]);
 
   const downloadUpdate = useCallback(async () => {

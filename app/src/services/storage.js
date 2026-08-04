@@ -141,6 +141,15 @@ export async function setTheme(theme) {
     await editData('userSettings.json', { theme });
 }
 
+export async function getLastUpdateCheck() {
+    const data = await getData('userSettings.json', true);
+    return data?.["lastUpdateCheck"] || 0;
+}
+
+export async function recordUpdateCheck() {
+    await editData('userSettings.json', { lastUpdateCheck: Date.now() });
+}
+
 export function getSystemTheme() {
     return window.matchMedia?.("(prefers-color-scheme: light)").matches ? "light" : "dark";
 }
