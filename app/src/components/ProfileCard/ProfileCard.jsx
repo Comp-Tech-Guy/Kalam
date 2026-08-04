@@ -2,16 +2,23 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { removeData } from "../../services/storage";
 import sidecar from "../../services/sidecar";
+import RainmeterIcon from "../icons/RainmeterIcon";
+import YasbIcon from "../icons/YasbIcon";
+import GlazeWmIcon from "../icons/GlazeWmIcon";
+import ZebarIcon from "../icons/ZebarIcon";
+import WindhawkIcon from "../icons/WindhawkIcon";
+import KomorebiIcon from "../icons/KomorebiIcon";
+import BloomIcon from "../icons/BloomIcon";
 import "./ProfileCard.css";
 
 const TOOL_ICONS = {
-  RainmeterLayoutName: { label: "Rainmeter", icon: "🌧️" },
-  "Yasb-Yaml": { label: "YASB", icon: "📊" },
-  "GlazeWM-Config": { label: "GlazeWM", icon: "🪟" },
-  "Zebar-Config": { label: "Zebar", icon: "📌" },
-  "Windhawk-Mods": { label: "Windhawk", icon: "🔧" },
-  "Komorebi-Config": { label: "Komorebi", icon: "🟪" },
-  "Bloom-Config": { label: "Bloom", icon: "🌺" },
+  RainmeterLayoutName: { label: "Rainmeter", icon: <RainmeterIcon size={14} /> },
+  "Yasb-Yaml": { label: "YASB", icon: <YasbIcon size={14} /> },
+  "GlazeWM-Config": { label: "GlazeWM", icon: <GlazeWmIcon size={14} /> },
+  "Zebar-Config": { label: "Zebar", icon: <ZebarIcon size={14} /> },
+  "Windhawk-Mods": { label: "Windhawk", icon: <WindhawkIcon size={14} /> },
+  "Komorebi-Config": { label: "Komorebi", icon: <KomorebiIcon size={14} /> },
+  "Bloom-Config": { label: "Bloom", icon: <BloomIcon size={14} /> },
 };
 
 function ProfileCard({ data, onReceive }) {

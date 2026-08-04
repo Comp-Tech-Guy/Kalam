@@ -5,6 +5,13 @@ import { addData, editData, getData } from "../../services/storage";
 import sidecar from "../../services/sidecar";
 import SelectMenu from "../../components/SelectMenu/SelectMenu";
 import ResizableTextarea from "../../components/ResizableTextarea/ResizableTextarea";
+import RainmeterIcon from "../../components/icons/RainmeterIcon";
+import YasbIcon from "../../components/icons/YasbIcon";
+import GlazeWmIcon from "../../components/icons/GlazeWmIcon";
+import ZebarIcon from "../../components/icons/ZebarIcon";
+import WindhawkIcon from "../../components/icons/WindhawkIcon";
+import KomorebiIcon from "../../components/icons/KomorebiIcon";
+import BloomIcon from "../../components/icons/BloomIcon";
 import "../../styles/forms.css";
 import "./CreateProfile.css";
 
@@ -383,7 +390,7 @@ function CreateProfile() {
           {enabledApps.rainmeter && (
             <AccordionSection
               title="Rainmeter"
-              icon="🌧️"
+              icon={<RainmeterIcon size={18} />}
               expanded={!!expandedSections.rainmeter}
               onToggle={() => toggleSection("rainmeter")}
             >
@@ -411,7 +418,7 @@ function CreateProfile() {
           {enabledApps.yasb && (
             <AccordionSection
               title="YASB"
-              icon="📊"
+              icon={<YasbIcon size={18} />}
               expanded={!!expandedSections.yasb}
               onToggle={() => toggleSection("yasb")}
             >
@@ -439,7 +446,7 @@ function CreateProfile() {
           {enabledApps.glazewm && (
             <AccordionSection
               title="GlazeWM"
-              icon="🪟"
+              icon={<GlazeWmIcon size={18} />}
               expanded={!!expandedSections.glazewm}
               onToggle={() => toggleSection("glazewm")}
             >
@@ -458,7 +465,7 @@ function CreateProfile() {
           {enabledApps.zebar && (
             <AccordionSection
               title="Zebar"
-              icon="📌"
+              icon={<ZebarIcon size={18} />}
               expanded={!!expandedSections.zebar}
               onToggle={() => toggleSection("zebar")}
             >
@@ -477,7 +484,7 @@ function CreateProfile() {
           {enabledApps.komorebi && (
             <AccordionSection
               title="Komorebi"
-              icon="🟪"
+              icon={<KomorebiIcon size={18} />}
               expanded={!!expandedSections.komorebi}
               onToggle={() => toggleSection("komorebi")}
             >
@@ -505,7 +512,7 @@ function CreateProfile() {
           {enabledApps.bloom && (
             <AccordionSection
               title="Bloom"
-              icon="🌺"
+              icon={<BloomIcon size={18} />}
               expanded={!!expandedSections.bloom}
               onToggle={() => toggleSection("bloom")}
             >
@@ -524,7 +531,7 @@ function CreateProfile() {
           {enabledApps.windhawk && (
             <AccordionSection
               title="Windhawk"
-              icon="🔧"
+              icon={<WindhawkIcon size={18} />}
               expanded={!!expandedSections.windhawk}
               onToggle={() => toggleSection("windhawk")}
             >

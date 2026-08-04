@@ -54,6 +54,12 @@
 
 .accordion-icon {
   font-size: 1rem;
+  display: inline-flex;
+  align-items: center;
+}
+
+.accordion-icon svg {
+  display: block;
 }
 
 .accordion-title {
