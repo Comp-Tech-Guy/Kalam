@@ -22,7 +22,7 @@ export async function initializeFS(){
     });
     const defaultSettings = {
         "onboardingComplete": false,
-        "theme": "dark",
+        "theme": "system",
         "rainmeter-Path": "",
         "Yasb-Config-Path": "",
         "Yasb-Exe-Path": "",
@@ -139,6 +139,14 @@ export async function setOnboardingComplete(value = true) {
 
 export async function setTheme(theme) {
     await editData('userSettings.json', { theme });
+}
+
+export function getSystemTheme() {
+    return window.matchMedia?.("(prefers-color-scheme: light)").matches ? "light" : "dark";
+}
+
+export function resolveTheme(theme) {
+    return theme === "system" ? getSystemTheme() : theme;
 }
 
 export function exportProfile(profile) {

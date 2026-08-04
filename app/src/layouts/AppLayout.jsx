@@ -2,7 +2,7 @@ import { useState, useEffect, Suspense, lazy } from "react";
 import "./AppLayout.css";
 import logo from "../assets/kalam-icon.png";
 import { getCurrentWindow } from '@tauri-apps/api/window';
-import { initializeFS, getData } from '../services/storage';
+import { initializeFS, getData, resolveTheme } from '../services/storage';
 import { NavLink, Outlet } from "react-router-dom";
 import UpdateBanner from '../components/UpdateBanner/UpdateBanner';
 import About from '../components/About/About';
@@ -18,12 +18,12 @@ function AppLayout() {
     async function init() {
       try {
         await initializeFS();
-        const settings = await getData('userSettings.json', true);
-      
+      const settings = await getData('userSettings.json', true);
+
       // Apply theme
-      const theme = settings?.theme || 'dark';
-      document.documentElement.setAttribute('data-theme', theme);
-      
+      const theme = settings?.theme || 'system';
+      document.documentElement.setAttribute('data-theme', resolveTheme(theme));
+
       if (settings && settings.onboardingComplete === false) {
         setShowOnboarding(true);
       } else {
@@ -35,6 +35,19 @@ function AppLayout() {
       }
     }
     init();
+  }, []);
+
+  useEffect(() => {
+    const media = window.matchMedia('(prefers-color-scheme: light)');
+    const onSystemThemeChange = async () => {
+      const latest = await getData('userSettings.json', true);
+      const current = latest?.theme || 'system';
+      if (current === 'system') {
+        document.documentElement.setAttribute('data-theme', resolveTheme(current));
+      }
+    };
+    media.addEventListener('change', onSystemThemeChange);
+    return () => media.removeEventListener('change', onSystemThemeChange);
   }, []);
 
   const appWindow = getCurrentWindow();
