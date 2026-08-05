@@ -104,6 +104,20 @@ jobs:
             Write-Host "No version changes to commit — files already match."
           }
 
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Build sidecar binary
+        shell: pwsh
+        working-directory: sidecar
+        run: |
+          pip install pyinstaller
+          python -m PyInstaller kalam-core.spec --noconfirm
+          New-Item -ItemType Directory -Force ../app/src-tauri/binaries/kalam-core | Out-Null
+          Copy-Item dist/kalam-core-x86_64-pc-windows-msvc.exe ../app/src-tauri/binaries/kalam-core/ -Force
+
       - name: Build and release
         uses: tauri-apps/tauri-action@v1
         env:
