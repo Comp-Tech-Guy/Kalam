@@ -4,7 +4,7 @@
 
 <div align="center">
 
-  ![Version](https://img.shields.io/badge/version-0.1.0-blue)
+  ![Version](https://img.shields.io/badge/version-1.0.0-blue)
   ![Platform](https://img.shields.io/badge/platform-Windows-0078d4)
   ![Tauri](https://img.shields.io/badge/Tauri-v2-24C8DB)
   ![License](https://img.shields.io/badge/license-MIT-green)
@@ -130,4 +130,5 @@ cd app
 npm install
 npm run tauri dev
 ```
+
 
