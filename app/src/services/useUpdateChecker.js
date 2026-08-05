@@ -32,8 +32,7 @@ export function useUpdateChecker() {
       setStatus("uptodate");
       await recordUpdateCheck();
       return "uptodate";
-    } catch (e) {
-      console.error("Update check failed:", e);
+    } catch {
       setStatus("error");
       return "error";
     }
@@ -65,8 +64,7 @@ export function useUpdateChecker() {
         }
       });
       setStatus("downloaded");
-    } catch (e) {
-      console.error("Download failed:", e);
+    } catch {
       setStatus("error");
     }
   }, [update]);
@@ -78,8 +76,7 @@ export function useUpdateChecker() {
         await update.install();
         await relaunch();
       }
-    } catch (e) {
-      console.error("Install failed:", e);
+    } catch {
       setStatus("error");
     }
   }, [update]);

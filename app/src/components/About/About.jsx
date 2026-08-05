@@ -25,8 +25,7 @@ function AboutModal({ open: show, onClose }) {
         try {
             const result = await check({ timeout: CHECK_TIMEOUT_MS });
             setCheckStatus(result ? "available" : "uptodate");
-        } catch (e) {
-            console.error("Update check failed:", e);
+        } catch {
             setCheckStatus("error");
         }
     };

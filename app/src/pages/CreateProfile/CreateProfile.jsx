@@ -319,9 +319,7 @@ function CreateProfile() {
       });
       if (select === null) return;
       setImagePath(select);
-    } catch (e) {
-      console.error("Error selecting file:", e);
-    }
+    } catch {}
   }
 
   return (

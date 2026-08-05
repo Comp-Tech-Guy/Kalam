@@ -29,9 +29,8 @@ Pre-release suffixes (e.g. `0.2.0-alpha.1`, `0.2.0-rc.1`) are used for testing b
 4. Manually publish the draft on GitHub Releases page
 5. App detects update on next start
 
-## Zero-based versioning
+## Version history
 
-Until the first stable release (`1.0.0`), the major version stays at `0`:
-- **`0.1.0`** — initial development (current)
-- **`0.2.0`**, `0.3.0`, ... — incremental features and fixes
-- **`1.0.0`** — first stable, once the app is feature-complete for general use
+- **`0.1.0`** — initial development
+- **`1.0.0`** — first stable release (current). Feature-complete for general use; all system logic lives in the Python sidecar.
+- **`2.0.0`** — planned. Python sidecar replaced by native Rust Tauri commands (breaking change — see `plans.md`).
